@@ -32,16 +32,21 @@ options_min = optimoptions('fminunc', 'Display','off', 'MaxIterations', 1000,  '
 
 
 
-% GMM
-f1 = @(Theta) InstrumentGMMConcOpt([Theta;sig], Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,har,NLConsFactor) + psi * sum(Theta(2:end-2).^2); %psi * sum(abs(Theta(2:end))); %+ 
+% GMM (psi>0: with ridge penalty)
+f1 = @(Theta) InstrumentGMMConcOpt([Theta;sig], Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor) + psi * sum(Theta(2:end-2).^2); 
 
 [Theta1, ~]  = fminunc(f1, Theta0_init, options_min);
 
 Theta1_final = [Theta1;sig];
 
+%the first parameter is the constant
+Rfcons = Theta(1);
+gamma = reshape(Theta(2:1+K), K, 1);
 
-[~,mmoments] = InstrumentGMMConcOpt([Theta1;sig], Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,har,NLConsFactor);
-[amoments, cmoments, portRet, weight,Sigma,Beta,alphas] = InstMomentsConc([Theta1;sig], Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor);
+%run to get some intermediate results
+[Beta, Sigma, alphas] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sigma,NLConsFactor);
+weight =  PortfolioWeight(Beta,Sigma,iotaN);
+[mmoments,amoments, cmoments, ~,portRet] = InstMomentsConc([Theta1;sig],Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor);
 
 
 

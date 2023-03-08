@@ -1,4 +1,4 @@
-function [obj] = InstrumentGMMConcOpt(Theta, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor, varargin)
+function [obj] = InstrumentGMMConcOpt(Theta, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor)
 %wrapper function to compute GMM objective
 T = size(R, 2);
 
