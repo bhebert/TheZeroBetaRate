@@ -196,10 +196,10 @@ end
 
 %Estimate zero-beta rate
 
-[test, Theta, Jv, portRet3, weight, Sigma, Beta, alphas,mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psi,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor);
+[test, Theta, Sv, portRet3, weight, Sigma, Beta, alphas,mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psi,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor);
 
 
-[test; Jv; Theta]
+[test; Sv; Theta]
 
 K = size(Zinput,1);
 Rf = Theta(1);
@@ -338,22 +338,22 @@ print(cfig, '-dpng', "Output/TBillvCons_"+opts.Name+".png");
 %can't run GMM tests with ridge
 if ~opts.RunRidge
 
-Jvs = zeros(size(sigs));
-JvsRF = zeros(size(sigs));
-JvsMkt = zeros(size(sigs));
+Svs = zeros(size(sigs));
+SvsRF = zeros(size(sigs));
+SvsMkt = zeros(size(sigs));
 tests = zeros(size(sigs));
 threshs = zeros(size(sigs));
 
 
 parfor i = 1:length(sigs)
-    [ti,~,jvi,~, ~, ~, ~, ~,~, ~,~,threshi] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'ZB',opts.har,opts.NLConsFactor);
-    [~,~,jviRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'RF',opts.har,opts.NLConsFactor);
-    [~,~,jviMkt] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor);
+    [ti,~,svi,~, ~, ~, ~, ~,~, ~,~,threshi] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'ZB',opts.har,opts.NLConsFactor);
+    [~,~,sviRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'RF',opts.har,opts.NLConsFactor);
+    [~,~,sviMkt] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor);
     tests(i) = ti;
-    Jvs(i) = jvi;
+    Svs(i) = svi;
     threshs(i)=threshi;
-    JvsRF(i)=jviRF;
-    JvsMkt(i) = jviMkt;
+    SvsRF(i)=sviRF;
+    SvsMkt(i) = sviMkt;
 end
 
 sigs(tests==1)
@@ -362,9 +362,9 @@ isigs = 1./sigs;
 
 cfig=figure(3);
 hold on;
-plot(isigs,log(Jvs),'-','LineWidth',2,'Color',colors_list{1});
-plot(isigs,log(JvsRF),'-.','LineWidth',2,'Color',colors_list{3});
-plot(isigs,log(JvsMkt),'--','LineWidth',2,'Color',colors_list{4});
+plot(isigs,log(Svs),'-','LineWidth',2,'Color',colors_list{1});
+plot(isigs,log(SvsRF),'-.','LineWidth',2,'Color',colors_list{3});
+plot(isigs,log(SvsMkt),'--','LineWidth',2,'Color',colors_list{4});
 plot(isigs,log(threshs),'k:','LineWidth',2);
 legend('Zero-Beta','Tsy','Mkt','Threshold');
 ylabel('log(S-stat)');
