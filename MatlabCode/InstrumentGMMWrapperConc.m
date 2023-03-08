@@ -15,14 +15,15 @@ rho_init = -.02/12;
 if strcmp(asset,'RF') || strcmp(asset,'Mkt')
     Theta0_init = [rho_init];
 else
-    Theta_init = [0; zeros(K,1); rho_init; sig]; 
    
-        % run once to build initial guess
-        [~,~,portRet_init] = InstMomentsConc(Theta_init, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor);
+    % run once to build initial guess with zbrate = safe rate
+    [Beta, Sigma] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation,iotaN, iotaM, 0, zeros(K,1), sigma,NLConsFactor);
+    weight =  PortfolioWeight(Beta,Sigma,iotaN);
+    portRet_init = weight * R; 
 
-        Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
-
-        Theta0_init = [Theta0; rho_init];
+    %use infeasible OLS as starting point
+    Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
+    Theta0_init = [Theta0; rho_init];
 end
 
 
