@@ -1,3 +1,8 @@
-.csv
-.asv
+*.csv
+*.asv
+.DS_Store
+*.png
+*.mat
+*.tex
+
 .DS_Store
