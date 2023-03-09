@@ -16,12 +16,12 @@ function momjacbobian = InstMomentsFullJacobian(Theta,Beta,alphas, R, Rm, Z, Rb,
     %reference for what function call should look like
     %use 'ZB' and not 'ZBFull' because we don't want proj moments
     %okay if Rfex = [] because it won't be used
-    %InstMomentsConc([Theta1;sig],Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,'ZB',NLConsFactor);
+    %InstMomentsConc([Theta1;sig],alphas,Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,'ZB',NLConsFactor);
 
-    %alphas = reshape(x(3+K+size(Beta,1)*size(Beta,2):end),size(Beta,1),1),
-    %not necessary in function call
 
-    func = @(x) InstMomentsConc([x(1:2+K);sig],reshape(x(3+K:2+K+size(Beta,1)*size(Beta,2)), ...
+    func = @(x) InstMomentsConc([x(1:2+K);sig], ...
+            reshape(x(3+K+size(Beta,1)*size(Beta,2):end),size(Beta,1),1), ...
+            reshape(x(3+K:2+K+size(Beta,1)*size(Beta,2)), ...
             size(Beta,1),size(Beta,2)), weight, ...
             R,Rm,Z,Rb,iotaN,iotaM,ConsG,inflation,[],'ZB',NLConsFactor);
 
