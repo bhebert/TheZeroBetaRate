@@ -3,11 +3,7 @@ function [Beta, Sigma,alphas] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation, iotaN,
 % Method.
 
 
-N = size(R, 1); 
 T = size(R, 2);
-TC = size(ConsG,1);
-
-
 
 % ---- OLS to Recover Beta ---- %
 zbrate = gamma'*Z + Rf + Rb; % zero-beta rate
@@ -35,45 +31,6 @@ Beta = BetaFull(1:end-1,1:end);
 alphas = BetaFull(end,1:end);
 
 eF = X' - Xv * BetaFull;
-
-%the below code does not work quite correctly
-%because the cons factor needs to be orthogonalized
-% %compute beta to the factors, excluding consumption factor
-% %include time series constant (alpha in text)
-% Xv = [Xm;ones(1,T)]';
-% BetaF = Xv \ X';
-% 
-% %residuals from factor model
-% eF = X' - Xv * BetaF;
-% 
-% %betas not including constant (alpha)
-% BetaFnc = BetaF(1:end-1,1:end);
-% 
-% % consumption factor to orthogonalize against
-% ConsF = 100*(exp(-sigma*ConsG/100 - inflation')-1);
-% 
-% %default: consumption data is also monthly
-% eFC = eF;
-% 
-% 
-% if T == 3*TC
-%     %if consumption data is quarterly, turn regession residuals to
-%     %quarterly
-%     eFC = quarterly(eF);
-% elseif T == 12*TC
-%     %if consumption data is annual, turn regession residuals to
-%     %annual
-%     eFC = annual(eF);
-% else
-%     assert(T==TC,"Consumption must be monthly, quarterly, or annual");
-% end
-% 
-% % compute beta of factor residuals to consumption
-% BetaC = [ConsF,ones(size(ConsG))] \ eFC;
-% 
-% 
-% %total beta vector (to orthogonalize against)
-% Beta = [BetaFnc',BetaC(1,:)'];
 
 
 %covariance matrix of residuals
