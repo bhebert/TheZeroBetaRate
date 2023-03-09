@@ -1,14 +1,14 @@
-function [pvar,mvar] = InstGMMSE(Theta,Beta,alphas, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,weight,har,sig,NLConsFactor,varargin)
+function [pvar,mvar] = InstGMMSE(Theta,Beta,alphas, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,weight,har,sig,NLConsFactor)
 
     K = size(Z, 1);
     T= size(Z,2);
 
-    if strcmp(asset,'ZB')
-        [~,amoments, cmoments, projmoments] = InstMomentsConc([Theta1;sig],Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,'ZBFull',NLConsFactor);
-        momfull=[projmoments; amoments; cmoments];
+ 
+    [~,amoments, cmoments, projmoments] = InstMomentsConc([Theta1;sig],Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,'ZBFull',NLConsFactor);
+    momfull=[projmoments; amoments; cmoments];
 
-        %[~, momfull] = InstMomentsFull(Theta,Beta,alphas', R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,weight,NLConsFactor);
-    end
+    %[~, momfull] = InstMomentsFull(Theta,Beta,alphas', R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,weight,NLConsFactor);
+    
 
    
 
