@@ -188,7 +188,7 @@ if opts.RunRidge
     tightfig(cfig);
 
     set(cfig,'PaperOrientation','landscape');
-    print(cfig, '-dpng', "Output/PsiGraph_"+opts.Name+".png");
+    print(cfig, '-dpng', "../Output/PsiGraph_"+opts.Name+".png");
 
     [v,ind] = min(results(:,2));
     psi = results(ind,1);
@@ -222,7 +222,7 @@ else
 end
 
 %save re-scaled coefficient estimates and standard errors
-write(table(ZSDiag*[Rf;gamma], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "Output/ses_" + opts.Name + ".csv");
+write(table(ZSDiag*[Rf;gamma], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/ses_" + opts.Name + ".csv");
 
 
 zbrate = gamma'*Zinput + Rf + Rbinput; % zero-beta rate
@@ -237,7 +237,7 @@ std(portRet3-zbrate)
 ([Zinput;ones(size(portRet3))]' \ (portRet3-Rbinput)')' - [gamma;Rf]'
 
 %save time series
-write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12), "Output/zero_beta_rate" + opts.Name + ".csv")
+write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12), "../Output/zero_beta_rate" + opts.Name + ".csv")
 
 % regression with both variables
 fitlm([RbinputReal;zbrateReal]',cons_gr_ann/12)
@@ -285,7 +285,7 @@ if opts.RunRidge
     xlabel('Time')
     tightfig(cfig);
     set(cfig,'PaperOrientation','landscape');
-    print(cfig, '-dpng', "Output/NominalRates_"+opts.Name+".png");
+    print(cfig, '-dpng', "../Output/NominalRates_"+opts.Name+".png");
 end
 
 % plot the results.
@@ -312,7 +312,7 @@ xlabel('Time')
 tightfig(cfig);
 
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "Output/ZBvCons_"+opts.Name+".png");
+print(cfig, '-dpng', "../Output/ZBvCons_"+opts.Name+".png");
 
 
 % plot the results.
@@ -334,7 +334,7 @@ legend('show')
 xlabel('Time')
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "Output/TBillvCons_"+opts.Name+".png");
+print(cfig, '-dpng', "../Output/TBillvCons_"+opts.Name+".png");
 
 
 %can't run GMM tests with ridge
@@ -373,7 +373,7 @@ ylabel('log(S-stat)');
 xlabel('ies (1/sigma)');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "Output/Stest_" + opts.Name + ".png");
+print(cfig, '-dpng', "../Output/Stest_" + opts.Name + ".png");
 
 
 end
@@ -405,11 +405,11 @@ if strcmp(opts.Name,'Main')
     xlabel('Time')
     tightfig(cfig);
     set(cfig,'PaperOrientation','landscape');
-    print(cfig, '-dpng', "Output/BondvCons_"+opts.Name+".png");
+    print(cfig, '-dpng', "../Output/BondvCons_"+opts.Name+".png");
     
     
 end
     
 clear cfig ans;
-save("Output/MainRun_"+ opts.Name +".mat");
+save("../Output/MainRun_"+ opts.Name +".mat");
 
