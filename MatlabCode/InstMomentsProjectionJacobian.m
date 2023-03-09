@@ -32,7 +32,7 @@ function momjacobian = InstMomentsProjectionJacobian(Theta,Beta,alphas, R, Rm, Z
         M = size(Rm, 1);
     end
 
-    e = R - alphas - (iotaN - Beta*iotaMp)*zbrate - Beta*Rmp;
+    e = R - alphas' - (iotaN - Beta*iotaMp)*zbrate - Beta*Rmp;
 
     % dg(e)/dRf constant moment
     dge_dRf = zeros(N, 1);
