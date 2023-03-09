@@ -8,7 +8,7 @@ gamma = reshape(Theta(2:1+K), K, 1);
 sigma = Theta(end);
 
 if strcmp(asset,'ZB')
-    [Beta, Sigma] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sigma,NLConsFactor);
+    [Beta, Sigma, alphas] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sigma,NLConsFactor);
     weight =  PortfolioWeight(Beta,Sigma,iotaN);
     Nm = size(Z,1) + 1;
 else
@@ -17,7 +17,7 @@ else
     Nm = 1;
 end
 
-mmoments = InstMomentsConc(Theta, Beta, weight, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,Rfex, asset,NLConsFactor);
+mmoments = InstMomentsConc(Theta, alphas, Beta, weight, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,Rfex, asset,NLConsFactor);
 
 obj = T*mmoments(1:Nm)'* mmoments(1:Nm);
 

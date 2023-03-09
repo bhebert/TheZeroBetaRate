@@ -1,4 +1,4 @@
-function [mmoments, amoments, consmoments, projmoments, portRet] = InstMomentsConc(Theta, Beta, weight, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,Rfex, asset,NLConsFactor)
+function [mmoments, amoments, consmoments, projmoments, portRet] = InstMomentsConc(Theta, alphas, Beta, weight, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,Rfex, asset,NLConsFactor)
 
 N = size(R, 1); T = size(R, 2);  K = size(Z, 1);
 
@@ -64,10 +64,11 @@ else
     %don't compute this unless computing standard errors
     if strcmp(asset,'ZBFull')
         if NLConsFactor 
-            e = R - alphas - (iotaN - Beta*[iotaM;0])*zbrate - Beta*[Rm;ConsF'];
+            ConsF = 100*(exp(-sigma*ConsG/100 - inflation')-1);
+            e = R - alphas' - (iotaN - Beta*[iotaM;0])*zbrate - Beta*[Rm;ConsF'];
             Fmat = [ones(1,T);Rm-iotaM*zbrate;ConsF'];
         else
-            e = R - alphas - (iotaN - Beta*iotaM)*zbrate - Beta*Rm;
+            e = R - alphas' - (iotaN - Beta*iotaM)*zbrate - Beta*Rm;
             Fmat = [ones(1,T);Rm-iotaM*zbrate];
         end
 

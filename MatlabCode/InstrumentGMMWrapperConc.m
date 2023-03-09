@@ -46,7 +46,7 @@ gamma = reshape(Theta1(2:1+K), K, 1);
 %run to get some intermediate results
 [Beta, Sigma, alphas] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sig,NLConsFactor);
 weight =  PortfolioWeight(Beta,Sigma,iotaN);
-[mmoments,amoments, cmoments, ~,portRet] = InstMomentsConc([Theta1;sig],Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor);
+[mmoments,amoments, cmoments, ~,portRet] = InstMomentsConc([Theta1;sig],alphas,Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor);
 
 
 

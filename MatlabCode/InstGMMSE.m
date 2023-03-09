@@ -5,7 +5,7 @@ function [pvar,mvar] = InstGMMSE(Theta,Beta,alphas, R, Rm, Z, Rb, iotaN, iotaM, 
 
  
     %don't need Rfex in this call
-    [~,amoments, cmoments, projmoments] = InstMomentsConc(Theta,Beta,weight, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,[],'ZBFull',NLConsFactor);
+    [~,amoments, cmoments, projmoments] = InstMomentsConc(Theta,alphas,Beta,weight, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,[],'ZBFull',NLConsFactor);
     momfull=[projmoments; amoments; cmoments];
 
     %[~, momfull] = InstMomentsFull(Theta,Beta,alphas', R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,weight,NLConsFactor);
