@@ -39,13 +39,21 @@ f1 = @(Theta) InstrumentGMMConcOpt([Theta;sig], Rinput, Rminput, Zinput, Rbinput
 
 Theta1_final = [Theta1;sig];
 
-%the first parameter is the constant
-Rfcons = Theta1(1);
-gamma = reshape(Theta1(2:1+K), K, 1);
+if strcmp(asset,'RF') || strcmp(asset,'Mkt')
+    Beta = [];
+    Sigma = [];
+    alphas = [];
+    weight = [];
+else
+    %the first parameter is the constant
+    Rfcons = Theta1(1);
+    gamma = reshape(Theta1(2:1+K), K, 1);
 
-%run to get some intermediate results
-[Beta, Sigma, alphas] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sig,NLConsFactor);
-weight =  PortfolioWeight(Beta,Sigma,iotaN);
+    %run to get some intermediate results
+    [Beta, Sigma, alphas] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sig,NLConsFactor);
+    weight =  PortfolioWeight(Beta,Sigma,iotaN);
+end
+
 [mmoments,amoments, cmoments, ~,portRet] = InstMomentsConc([Theta1;sig],alphas,Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor);
 
 
