@@ -1,5 +1,13 @@
 function [sigmatilde,dtilde]=analytical_shrinkage(X,k)
 
+% this code is published in the supplemental materials of
+% Ledoit, Olivier, and Michael Wolf. "Analytical nonlinear shrinkage of large-dimensional covariance matrices." 
+% Ann. Statist. 48(5): 3043-3065 (October 2020). DOI: 10.1214/19-AOS1921
+
+%the code was downloaded from Michael Wolf's website,
+%https://www.econ.uzh.ch/en/people/faculty/wolf/publications.html
+%accessed Mar 8, 2023
+
 % X is the raw data matrix of size n x p:
 % - the rows correspond to observations
 % - the columns correspond to variables

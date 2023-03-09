@@ -51,7 +51,11 @@ eP = SigmaFroot\(X-mu);
 
 %use LW2017 estimator with direct kernel method to get
 %regularized covariance matrix
-SigmaP = DirectKernel(eP');
+%SigmaP = DirectKernel(eP');
+
+%use LW2020 estimator with analytical method to get
+%regularized covariance matrix
+SigmaP = analytical_shrinkage(eP');
 
 %undo the pre-conditioning to get final cov matrix estimate
 Sigma = SigmaFroot*SigmaP*SigmaFroot;
