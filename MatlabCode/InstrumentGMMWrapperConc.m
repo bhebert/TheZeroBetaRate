@@ -7,7 +7,7 @@ function [test, Theta1_final, Sv, portRet, weight, Sigma, Beta, alphas, mmoments
 %                           Estimation
 %-----------------------------------------------------------------
 
-N = size(Rinput, 1); T = size(Rinput, 2); M = size(Rminput, 1); K = size(Zinput, 1);
+N = size(Rinput, 1); T = size(Rinput, 2); K = size(Zinput, 1);
 
 %an initial discount rate of about 2%/yr
 rho_init = -.02/12;
@@ -17,9 +17,9 @@ if strcmp(asset,'RF') || strcmp(asset,'Mkt')
 else
    
     % run once to build initial guess with zbrate = safe rate
-    [Beta, Sigma] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation,iotaN, iotaM, 0, zeros(K,1), sigma,NLConsFactor);
+    [Beta, Sigma] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, 0, zeros(K,1), sig,NLConsFactor);
     weight =  PortfolioWeight(Beta,Sigma,iotaN);
-    portRet_init = weight * R; 
+    portRet_init = weight * Rinput; 
 
     %use infeasible OLS as starting point
     Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
@@ -44,7 +44,7 @@ Rfcons = Theta(1);
 gamma = reshape(Theta(2:1+K), K, 1);
 
 %run to get some intermediate results
-[Beta, Sigma, alphas] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sigma,NLConsFactor);
+[Beta, Sigma, alphas] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sig,NLConsFactor);
 weight =  PortfolioWeight(Beta,Sigma,iotaN);
 [mmoments,amoments, cmoments, ~,portRet] = InstMomentsConc([Theta1;sig],Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor);
 
