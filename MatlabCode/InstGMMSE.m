@@ -4,7 +4,7 @@ function [pvar,mvar] = InstGMMSE(Theta,Beta,alphas, R, Rm, Z, Rb, iotaN, iotaM, 
     T= size(Z,2);
 
  
-    [~,amoments, cmoments, projmoments] = InstMomentsConc(Theta,Beta,weight, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,'ZBFull',NLConsFactor);
+    [~,amoments, cmoments, projmoments] = InstMomentsConc(Theta,Beta,weight, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,Rfex,'ZBFull',NLConsFactor);
     momfull=[projmoments; amoments; cmoments];
 
     %[~, momfull] = InstMomentsFull(Theta,Beta,alphas', R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,weight,NLConsFactor);
