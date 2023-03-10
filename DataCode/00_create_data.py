@@ -278,7 +278,7 @@ from portfolio_construction import generate_portfolio
 generate_CCM(main_path, username)
 
 # generate portfolios
-output_portfolio, output_portfolio_27 = generate_portfolio([0, 0.3, 0.7, 1], True)
+output_portfolio, output_portfolio_27 = generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
 
 
 output_portfolio = pd.merge(output_portfolio, 
