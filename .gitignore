@@ -4,6 +4,7 @@
 *.png
 *.mat
 *.tex
-
-.DS_Store
-.DS_Store
+*.xlsx
+*.txt
+*.xls
+*.dta
