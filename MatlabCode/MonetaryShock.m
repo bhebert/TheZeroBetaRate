@@ -1,7 +1,13 @@
 clear;
 clc;
+close all;
 
-Nlags = 25;
+% color list
+% visually distinct colors via colorbrewer2.org
+colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
+
+
+Nlags = 12;
 
 %% Load data
 load("../Output/MainRun_Ridge.mat");
@@ -57,40 +63,21 @@ for l = 0:Nlags-1
     reg_results(1+l, 3, 3) = CIs(2,2); 
 end
 
-figure(1)
+figure(1);
 % zero beta rate
-tiledlayout(1,2)
-ax1 = nexttile;
+
 hold on
-plot(0:Nlags-1, reg_results(:, 1, 1), "k-")
-plot(0:Nlags-1, reg_results(:, 2, 1), "b--")
-plot(0:Nlags-1, reg_results(:, 3, 1), "b--")
-plot(0:Nlags-1, reg_results(:, 1, 2), "r-")
-plot(0:Nlags-1, reg_results(:, 2, 2), "g--")
-plot(0:Nlags-1, reg_results(:, 3, 2), "g--")
+plot(1:Nlags, (reg_results(:, 1, 1))/5, '-', 'DisplayName', 'Real Zero-Beta Rate /5','LineWidth',2,'Color',colors_list{1})
+plot(1:Nlags, (reg_results(:, 1, 2)), '-.', 'DisplayName', 'Exp. Real T-Bill Ret.','LineWidth',2,'Color',colors_list{3})
+plot(1:Nlags, (reg_results(:, 1, 3)), '--', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
+
+legend('show','Location','southwest')
 hold off
-yline(0, 'r-')
-xlabel('Lag')
-ylabel('Coefficient')
-title("Zero Beta Rate and T-Bill Yield")
-pbaspect(ax1,[1 1 1])
-
-% t-bill rate
-ax2 = nexttile;
-hold on
-plot(0:Nlags-1, reg_results(:, 1, 3), "k-")
-plot(0:Nlags-1, reg_results(:, 2, 3), "b--")
-plot(0:Nlags-1, reg_results(:, 3, 3), "b--")
-hold off
-yline(0, 'r-')
-xlabel('Lag')
-ylabel('Coefficient')
-title("Convenience Yield")
-pbaspect(ax2,[1 1 1])
-
-
-
-
+yline(0, 'k-','HandleVisibility','off');
+xlabel('Months after Shock')
+ylabel('Real Rate/Consumption Growth')
+title("Effects of the Romer-Romer Shock")
+ylim([-6,3])
 saveas(gcf, "../Output/local_projection_rr.png")
 
 % Local Projections With NS
@@ -130,63 +117,18 @@ end
 figure(2)
 
 
-% zero beta rate
-tiledlayout(1,2)
-ax1 = nexttile;
 hold on
-plot(0:Nlags-1, reg_results(:, 1, 1), "k-")
-plot(0:Nlags-1, reg_results(:, 2, 1), "b--")
-plot(0:Nlags-1, reg_results(:, 3, 1), "b--")
-plot(0:Nlags-1, reg_results(:, 1, 2), "r-")
-plot(0:Nlags-1, reg_results(:, 2, 2), "g--")
-plot(0:Nlags-1, reg_results(:, 3, 2), "g--")
+plot(1:Nlags, (reg_results(:, 1, 1))/5, '-', 'DisplayName', 'Real Zero-Beta Rate /5','LineWidth',2,'Color',colors_list{1})
+plot(1:Nlags, (reg_results(:, 1, 2)), '-.', 'DisplayName', 'Exp. Real T-Bill Ret.','LineWidth',2,'Color',colors_list{3})
+plot(1:Nlags, (reg_results(:, 1, 3)), '--', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
+ylim([-6,3])
+legend('show','Location','southwest')
+yline(0, 'k-','HandleVisibility','off');
 hold off
-yline(0, 'r-')
-xlabel('Lag')
-ylabel('Coefficient')
-title("Zero Beta Rate and T-Bill Yield")
-pbaspect(ax1,[1 1 1])
+xlabel('Months after Shock')
+ylabel('Real Rate/Consumption Growth')
+title("Effects of the Nakamura-Steinsson Shock")
 
-% t-bill rate
-ax2 = nexttile;
-hold on
-plot(0:Nlags-1, reg_results(:, 1, 3), "k-")
-plot(0:Nlags-1, reg_results(:, 2, 3), "b--")
-plot(0:Nlags-1, reg_results(:, 3, 3), "b--")
-hold off
-yline(0, 'r-')
-xlabel('Lag')
-ylabel('Coefficient')
-title("Convenience Yield")
-pbaspect(ax2,[1 1 1])
-
-
-% % zero beta rate
-% tiledlayout(1,2)
-% ax1 = nexttile;
-% hold on
-% plot(0:Nlags-1, reg_results(:, 1, 1), "k-")
-% plot(0:Nlags-1, reg_results(:, 2, 1), "b--")
-% plot(0:Nlags-1, reg_results(:, 3, 1), "b--")
-% hold off
-% yline(0, 'r-')
-% xlabel('Lag')
-% ylabel('Coefficient')
-% title("Zero Beta Rate")
-% pbaspect(ax1,[1 1 1])
-% 
-% % t-bill rate
-% ax2 = nexttile;
-% hold on
-% plot(0:Nlags-1, reg_results(:, 1, 2), "k-")
-% plot(0:Nlags-1, reg_results(:, 2, 2), "b--")
-% plot(0:Nlags-1, reg_results(:, 3, 2), "b--")
-% hold off
-% yline(0, 'r-')
-% xlabel('Lag')
-% ylabel('Coefficient')
-% title("T-Bill Rate")
-% pbaspect(ax2,[1 1 1])
 
 saveas(gcf, "../Output/local_projection_ns.png")
 
