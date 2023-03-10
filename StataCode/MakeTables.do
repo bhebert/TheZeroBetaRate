@@ -223,10 +223,10 @@ foreach var in `nameMain' {
 	local i = `i' + 1
 }
 
-esttab `ests', se label nostar
-esttab `ests' using ../Output/RREffects.tex, se label nostar replace
+esttab `ests', label nostar not gaps
+esttab `ests' using ../Output/RREffects.tex, not label nostar replace gaps
 
-esttab DTBillRR DZeroBetaRR Dp_consRR, se label nostar
+esttab DTBillRR DZeroBetaRR Dp_consRR, not label nostar gaps
 
 import delimited ../Output/NSData_Main.csv, clear
 gen dt = date(date,"YMD")
@@ -277,8 +277,8 @@ foreach var in `nameMain' {
 	local i = `i' + 1
 }
 
-esttab `ests', se label nostar
-esttab `ests' using ../Output/NSEffects.tex, se label nostar replace
+esttab `ests', label nostar not gaps
+esttab `ests' using ../Output/NSEffects.tex, not label nostar replace gaps
 
-esttab DTBillRR DZeroBetaRR Dp_consRR DTBill DZeroBeta Dp_cons, se label nostar
-esttab DTBillRR DZeroBetaRR Dp_consRR DTBill DZeroBeta Dp_cons using ../Output/BothEffects.tex, se label nostar replace
+esttab DTBillRR DZeroBetaRR Dp_consRR DTBill DZeroBeta Dp_cons, not label nostar gaps
+esttab DTBillRR DZeroBetaRR Dp_consRR DTBill DZeroBeta Dp_cons using ../Output/BothEffects.tex, not label nostar replace gaps
