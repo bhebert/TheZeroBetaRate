@@ -92,20 +92,11 @@ def generate_consumption(main_path):
 
     # %% Read Data
 
-    # Consumption Quarterly
-    con_q = read_data("NIPA_table_2_3_5_Q.xlsx", "B:KR", 6, 29, 1947, 2022, 'Q', 2, True)
-
     # Consumption Monthly
-    con_m = read_data("NIPA_table_2_8_5_M.xlsx", "B:ACL", 6, 11, 1959, 2022, 'M', 8, True)
-
-    # Price index quarterly
-    pi_q = read_data("NIPA_table_2_3_4_Q.xlsx", "B:KR", 6, 29, 1947, 2022, 'Q', 2, False)
+    con_m = read_data("NIPA_table_2_8_5_M.xlsx", "B:ACL", 6, 11, 1959, 2022, 'M', 8, True)  
 
     # Price index monthly
     pi_m = read_data("NIPA_table_2_8_4_M.xlsx", "B:ACL", 6, 11, 1959, 2022, 'M', 8, False )
-
-    # Quarterly Population
-    pop_q = read_data("NIPA_table_2_1_Q.xlsx", "B:KS", 6, 46, 1947, 2022, 'Q', 3, False)
 
     # Monthly population
     pop_m = read_data("NIPA_table_2_6_M.xlsx", "B:ACN", 6, 43, 1959, 2022, 'M', 10, False)
@@ -114,42 +105,6 @@ def generate_consumption(main_path):
 
     ## Series
     # Hall (1988)
-    hall_q = (
-        pd.merge(
-            con_q[['date', 'Nondurable goods']], 
-            pi_q[['date', 'Nondurable goods']], 
-            how = 'left', on = 'date'
-            )
-        .merge(pop_q[['date', 'Population (midperiod, thousands)']],
-            how='left', on=['date'])
-        .assign(non_dur_real = lambda x: x['Nondurable goods_x'] / x['Nondurable goods_y'] * 100,
-                non_dur_real_pc = lambda x: x['non_dur_real'] / x['Population (midperiod, thousands)'] * 1000)
-        .loc[:, ['date', 'non_dur_real', 'non_dur_real_pc']]
-        .assign(cg_nd_r = lambda x: x['non_dur_real'].diff()/x['non_dur_real'].shift(1) * 100,
-                cg_nd_r_pc = lambda x: x['non_dur_real_pc'].diff()/x['non_dur_real_pc'].shift(1) * 100)
-        .dropna()
-    )
-
-    hall_a = (
-        pd.merge(
-            con_q[['date', 'Nondurable goods']], 
-            pi_q[['date', 'Nondurable goods']], 
-            how = 'left', on = 'date'
-            )
-        .assign(non_dur_real = lambda x: x['Nondurable goods_x'] / x['Nondurable goods_y'] * 100,
-                year = lambda x: x['date'].dt.year)
-        .loc[:, ['date', 'year', 'non_dur_real']]
-        .groupby('year').agg({'date': 'last',
-                            'non_dur_real': 'sum'})
-        .query("year < 2022")
-        .merge(pop_q[['date', 'Population (midperiod, thousands)']],
-            how='left', on=['date'])
-        .assign(cg_nd_r = lambda x: x['non_dur_real'].diff()/x['non_dur_real'].shift(1) * 100,
-                non_dur_real_pc = lambda x: x['non_dur_real'] / x['Population (midperiod, thousands)'] * 1000,
-                cg_nd_r_pc = lambda x: x['non_dur_real_pc'].diff()/x['non_dur_real_pc'].shift(1) * 100)
-        .dropna()
-        .reset_index()
-    )
 
     hall_m = (
         pd.merge(
@@ -175,47 +130,6 @@ def generate_consumption(main_path):
     # %%
 
     # Jagannathan and Wang (2007)
-    jw_q = (
-        pd.merge(
-            con_q[['date', 'Nondurable goods', 'Services']], 
-            pi_q[['date', 'Nondurable goods', 'Services']], 
-            how = 'left', on = 'date'
-            )
-        .merge(pop_q[['date', 'Population (midperiod, thousands)']],
-            how='left', on=['date'])
-        .assign(non_dur_real = lambda x: x['Nondurable goods_x'] / x['Nondurable goods_y'] * 100,
-                service_real = lambda x: x['Services_x'] / x['Services_y'] * 100,
-                nd_sv_real = lambda x: x['non_dur_real'] + x['service_real'],
-                nd_sv_real_pc = lambda x: x['nd_sv_real'] / x['Population (midperiod, thousands)'] * 1000)
-        .loc[:, ['date', 'nd_sv_real', 'nd_sv_real_pc']]
-        .assign(cg_nd_sv_r = lambda x: x['nd_sv_real'].diff()/x['nd_sv_real'].shift(1) * 100 ,
-                cg_nd_sv_r_pc = lambda x: x['nd_sv_real_pc'].diff()/x['nd_sv_real_pc'].shift(1) * 100 )
-        .dropna()
-    )
-
-
-    jw_a = (
-        pd.merge(
-            con_q[['date', 'Nondurable goods', 'Services']], 
-            pi_q[['date', 'Nondurable goods', 'Services']], 
-            how = 'left', on = 'date'
-            )
-        .assign(non_dur_real = lambda x: x['Nondurable goods_x'] / x['Nondurable goods_y'] * 100,
-                service_real = lambda x: x['Services_x'] / x['Services_y'] * 100,
-                nd_sv_real = lambda x: x['non_dur_real'] + x['service_real'],
-                year = lambda x: x['date'].dt.year)
-        .loc[:, ['date', 'year', 'nd_sv_real']]
-        .groupby('year').agg({'date': 'last',
-                            'nd_sv_real': 'sum'})
-        .query("year < 2022")
-        .merge(pop_q[['date', 'Population (midperiod, thousands)']],
-            how='left', on=['date'])
-        .assign(cg_nd_sv_r = lambda x: x['nd_sv_real'].diff()/x['nd_sv_real'].shift(1) * 100,
-                nd_sv_real_pc = lambda x: x['nd_sv_real'] / x['Population (midperiod, thousands)'] * 1000,
-                cg_nd_sv_r_pc = lambda x: x['nd_sv_real_pc'].diff()/x['nd_sv_real_pc'].shift(1) * 100)
-        .dropna()
-        .reset_index()
-    )
 
 
     jw_m = (
@@ -239,7 +153,7 @@ def generate_consumption(main_path):
 
 
     # %% Output Datasets
-    output_list = ['hall_q', 'hall_a', 'hall_m', 'jw_q', 'jw_a', 'jw_m']
+    output_list = ['hall_m', 'jw_m']
 
 
     
