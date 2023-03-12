@@ -36,7 +36,7 @@ Portfolios:
 #                          Main Path
 ################################################################
 
-main_path = "YOUR DIRECTORY"
+main_path = "YOUR PATH"
 username = "YOUR WRDS USERNAME" # to access the WRDS database
 
 ################################################################
@@ -275,7 +275,7 @@ from CCM import generate_CCM
 from portfolio_construction import generate_portfolio
 
 # generate CCM dataset
-generate_CCM(main_path, username)
+generate_CCM(main_path)
 
 # generate portfolios
 output_portfolio, output_portfolio_27 = generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
