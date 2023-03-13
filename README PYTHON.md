@@ -27,9 +27,10 @@ Python-related instructions for Mac OS X:
 	conda install pandas
 	conda install xlrd
 	conda install openpyxl
+	conda install joblib
 	pip install wrds
 	pip install pyarrow
-
+	pip install statsmodels
 
 3) Run code
 
@@ -37,13 +38,22 @@ Python-related instructions for Mac OS X:
 	
 	b) cd to DataCode
 	
-	c) edit 00_create_data.py to set:
-		i) main_path to the "TheZeroBetaRate" directory
-		ii) your WRDS username
+	c) edit path_variables.md to set:
+		i) main_path to the "TheZeroBetaRate" directory. For example,
+			 main_path: "/Users/bhebert/Documents/GitHub/TheZeroBetaRate"
+		ii) your WRDS username (in quotes)
+	
+	d) python3 A1_CCM_download.py 
+		i) on this first run, you will be asked to create a ".pgpass" file. the program will work regardless of whether you do this, but doing so will eliminate the need to enter a password each time.
+		ii) on the first run, or if you didn't create a .pgpass, you will need to enter your WRDS password.
+		iii) running this takes between 10 and 20m and will depend on your internet bandwidth to the WRDS servers
+	
+	e) python3 A2_beta_estimation.py
+	
+		i) you may get the warning "UserWarning: A worker stopped while some jobs were given to the executor." which can be disregarded. This occurs because the code tries to use all available cores to speed up this process.
 	
 	d) python3 00_create_data.py
 	
-		i) on this first run, you will be asked to create a ".pgpass" file. the program will work regardless of whether you do this, but doing so will eliminate the need to enter a password each time.
-		ii) on the first run, or if you didn't create a .pgpass, you will need to enter your WRDS password.
-		iii) you will get the warning "Workbook contains no default style, apply openpyxl's default"" which can be disregarded.
+
+		iii) you may get the warning "Workbook contains no default style, apply openpyxl's default"" which can be disregarded.
 	
