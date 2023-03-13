@@ -13,25 +13,19 @@ Python-related instructions for Mac OS X:
 	c) fix permission on .conda file: (substitute $USER for your username)
 		sudo chown -R $USER ~/.conda
 	
-	d) create a virtual environment:
+	d) create a virtual environment with bio-env.md :
 	
-		conda create --name zbenv
-		
+		conda create --name zbenv --file bio-env.md
+	
 	e) activate virtual environment
 	
 		conda activate zbenv
-		
-		
+	
 2) Install packages
 
-	conda install pandas
-	conda install xlrd
-	conda install openpyxl
-	conda install joblib
 	pip install wrds
 	pip install pyarrow
-	pip install statsmodels
-
+	
 3) Run code
 
 	a) cd to "TheZeroBetaRate" directory
@@ -56,4 +50,3 @@ Python-related instructions for Mac OS X:
 	
 
 		iii) you may get the warning "Workbook contains no default style, apply openpyxl's default"" which can be disregarded.
-	
