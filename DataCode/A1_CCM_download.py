@@ -15,9 +15,11 @@ from pandas.tseries.offsets import *
 import wrds
 
 
-main_path = "/Users/qitong/Library/CloudStorage/Dropbox/Projects/TheZeroBetaRate"
-
-
+with open('path_variables.txt', 'r') as f:
+    main_path = f.readline().split('"')[1]
+    username = f.readline().split('"')[1]
+    
+# %%
 ccm_path = os.path.join(main_path, "Raw Data", "CCM")
 if not os.path.exists(ccm_path):
     os.makedirs(ccm_path)
@@ -27,7 +29,7 @@ if not os.path.exists(ccm_path):
 ###################
 # Connect to WRDS #
 ###################
-conn=wrds.Connection(wrds_username='qitongwang')
+conn=wrds.Connection(wrds_username=username)
 
 
 

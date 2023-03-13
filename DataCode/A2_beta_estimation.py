@@ -40,7 +40,8 @@ import statsmodels.formula.api as smf
 from joblib import Parallel, delayed
 
 
-main_path = "YOUR PATH"
+with open('path_variables.txt', 'r') as f:
+    main_path = f.readline().split('"')[1]
 
 raw_path = os.path.join(main_path, "Raw Data")
 

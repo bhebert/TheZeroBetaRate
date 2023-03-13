@@ -36,8 +36,9 @@ Portfolios:
 #                          Main Path
 ################################################################
 
-main_path = "YOUR PATH"
-username = "YOUR WRDS USERNAME" # to access the WRDS database
+with open('path_variables.txt', 'r') as f:
+    main_path = f.readline().split('"')[1]
+    username = f.readline().split('"')[1]
 
 ################################################################
 
