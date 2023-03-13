@@ -1,0 +1,2 @@
+main_path: "MAIN_PATH"
+WRDS_USERNAME: "YOUR USERNAME"

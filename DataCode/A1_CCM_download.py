@@ -15,9 +15,10 @@ from pandas.tseries.offsets import *
 import wrds
 
 
-with open('path_variables.txt', 'r') as f:
+with open('path_variables.md', 'r') as f:
     main_path = f.readline().split('"')[1]
     username = f.readline().split('"')[1]
+    
     
 # %%
 ccm_path = os.path.join(main_path, "Raw Data", "CCM")
