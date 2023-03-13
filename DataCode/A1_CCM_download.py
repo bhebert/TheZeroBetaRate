@@ -59,18 +59,13 @@ comp.to_csv(os.path.join(ccm_path, "FF5_comp.csv"), index=False)
 #      CRSP       #
 ###################
 crsp_m = conn.raw_sql("""
-                      select a.permno, a.permco, a.date,
-                      a.ret, a.retx, a.shrout, a.prc, b.shrcd, b.exchcd, b.naics
-                      from crsp.msf as a
-                      left join crsp.msenames as b
-                      on a.permno=b.permno
-                      and b.namedt<=a.date
-                      and a.date<=b.nameendt
-                      where a.date between '01/01/1959' and '12/31/2021'
-                      and b.exchcd between 1 and 3 
+                      select permno, permco, date,
+                      ret, retx, shrout, prc
+                      from crsp.msf 
+                      where date <= '12/31/2020'
                       """, date_cols=['date']) 
 
-crsp_m = crsp_m.drop(columns=['shrcd', 'exchcd'])
+# crsp_m = crsp_m.drop(columns=['shrcd', 'exchcd'])
 crsp_m.to_csv(os.path.join(ccm_path, "crsp_m.csv"), index=True)
 
 # %%

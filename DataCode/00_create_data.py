@@ -392,3 +392,5 @@ generate_MS(main_path)
 ################################################################
 from consumption import generate_consumption
 generate_consumption(main_path)
+
+# %%

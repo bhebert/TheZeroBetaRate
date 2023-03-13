@@ -1,2 +1,2 @@
-main_path: "MAIN_PATH"
-WRDS_USERNAME: "YOUR USERNAME"
+main_path: "/Users/qitong/Library/CloudStorage/Dropbox/Projects/TheZeroBetaRate"
+WRDS_USERNAME: "qitongwang"
