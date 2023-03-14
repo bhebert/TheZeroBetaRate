@@ -277,9 +277,9 @@ if opts.RunRidge
     cfig=figure(3);
     colororder({colors_list{1},colors_list{4},colors_list{3},colors_list{2}});
     hold on
-    plot(dts, zbrate*12, '-.', 'DisplayName', 'Zero-Beta Rate (Ridge)','LineWidth',2,'Color',colors_list{1});
+    plot(dts, zbrate*12, '-', 'DisplayName', 'Zero-Beta Rate (Ridge)','LineWidth',2,'Color',colors_list{1});
     plot(dts, zbrate0*12, '-.', 'DisplayName', 'Zero-Beta Rate (Non-Ridge)','LineWidth',2,'Color',colors_list{4});
-    plot(dts, Rbinput*12, '-.', 'DisplayName', 'T-Bill Yield.','LineWidth',2,'Color',colors_list{3});
+    plot(dts, Rbinput*12, '--', 'DisplayName', 'T-Bill Yield.','LineWidth',2,'Color',colors_list{3});
     ylabel('Annualized Nominal Rate (mean +/- 4 s.d.)')
     legend('show')
     xlabel('Time')
@@ -293,7 +293,7 @@ cfig=figure(1);
 colororder({colors_list{1},colors_list{2}});
 hold on
 yyaxis left;
-plot(dts, zbrateReal*12, '-', 'DisplayName', 'Real Zero-Beta Rate','LineWidth',2,'Color',colors_list{1});
+plot(dts, zbrateReal*12, '-.', 'DisplayName', 'Real Zero-Beta Rate','LineWidth',2,'Color',colors_list{1});
 ylabel('Annualized Rate (mean +/- 4 s.d.)')
 
 ylim(mean(zbrateReal'*12)+4*std(zbrateReal'*12)*[-1,1]);
@@ -303,7 +303,7 @@ yyaxis right;
 
 ylim(mean(p_cons')+4*std(p_cons')*[-1,1]);
 ylabel('Expect Cons. Growth (mean +/- 4 s.d.)');
-plot(dts, p_cons, '--', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
+plot(dts, p_cons, '-', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
 hold off
 yline(mean(p_cons'), 'k-','HandleVisibility','off');
 legend('show')
@@ -321,13 +321,13 @@ colororder({colors_list{3},colors_list{2}});
 hold on
 yyaxis left;
 
-plot(dts, RbinputReal*12, '-.', 'DisplayName', 'Exp. Real T-Bill Ret.','LineWidth',2,'Color',colors_list{3});
+plot(dts, RbinputReal*12, '--', 'DisplayName', 'Exp. Real T-Bill Ret.','LineWidth',2,'Color',colors_list{3});
 ylabel('Annualized Rate (mean +/- 4 s.d.)')
 ylim(mean(RbinputReal'*12)+4*std(RbinputReal'*12)*[-1,1]);
 yyaxis right;
 ylim(mean(p_cons')+4*std(p_cons')*[-1,1]);
 ylabel('Expect Cons. Growth (mean +/- 4 s.d.)');
-plot(dts, p_cons, '--', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
+plot(dts, p_cons, '-', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
 hold off
 yline(mean(p_cons'), 'k-','HandleVisibility','off');
 legend('show')
