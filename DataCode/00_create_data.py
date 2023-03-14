@@ -38,7 +38,6 @@ Portfolios:
 
 with open('path_variables.md', 'r') as f:
     main_path = f.readline().split('"')[1]
-    username = f.readline().split('"')[1]
 
 ################################################################
 

@@ -39,6 +39,27 @@ import statsmodels.formula.api as smf
 # better loop
 from joblib import Parallel, delayed
 
+# progress tracking
+import contextlib
+import joblib
+from tqdm import tqdm
+
+@contextlib.contextmanager
+def tqdm_joblib(tqdm_object):
+    """Context manager to patch joblib to report into tqdm progress bar given as argument"""
+    class TqdmBatchCompletionCallback(joblib.parallel.BatchCompletionCallBack):
+        def __call__(self, *args, **kwargs):
+            tqdm_object.update(n=self.batch_size)
+            return super().__call__(*args, **kwargs)
+
+    old_batch_callback = joblib.parallel.BatchCompletionCallBack
+    joblib.parallel.BatchCompletionCallBack = TqdmBatchCompletionCallback
+    try:
+        yield tqdm_object
+    finally:
+        joblib.parallel.BatchCompletionCallBack = old_batch_callback
+        tqdm_object.close()
+
 
 with open('path_variables.md', 'r') as f:
     main_path = f.readline().split('"')[1]
@@ -60,7 +81,9 @@ crsp_m = (
 ff = (
     pd.read_csv(os.path.join(raw_path, "Factors", "F-F_Research_Data_5_Factors_2x3.csv"), skiprows=3)
     .set_axis(['date', 'mktrf', 'smb', 'hml', 'rmw', 'cma', 'rf'], axis=1)
-    .assign(date = lambda x: pd.to_datetime(x['date'].astype(str)+'01') + MonthEnd(0))
+    .assign(date = lambda x: pd.to_datetime(x['date'].astype(str)+'01') + MonthEnd(0),
+            mktrf = lambda x: x['mktrf']/100,
+            rf = lambda x:x['rf']/100)
 )
 # merge with the monthly index data
 crsp = pd.merge(crsp_m, ff, how='inner', on=['date'])
@@ -71,7 +94,7 @@ crsp = pd.merge(crsp_m, ff, how='inner', on=['date'])
 # compute excess return
 crsp['eret'] = crsp['ret'] - crsp['rf']
 
-
+# %%
 # ## 3. Estimation
 
 # Estimate monthly beta for individual stock using monthly returns. OLS regress stock return on a constant and the contemporaneous return on the market portfolio return. 
@@ -129,12 +152,11 @@ def beta_estimation(permno):
 
 
 # run results in parallel
-results = Parallel(n_jobs=-1, verbose=1)([delayed(beta_estimation)(code) for code in codes])
+with tqdm_joblib(tqdm(desc="Beta Estimation", total=len(codes))) as progress_bar:
+    results = Parallel(n_jobs=8, verbose=0)([delayed(beta_estimation)(code) for code in codes])
 
 # unpack the results
-output = pd.DataFrame()
-for result in results:
-    output = pd.concat([output, result], ignore_index=True)
+output = pd.concat(results, ignore_index=True)
     
 # output = output.rename(columns={0:'permno', 1:'date', 2:'beta'})
 
