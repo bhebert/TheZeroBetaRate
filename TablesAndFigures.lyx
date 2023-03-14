@@ -83,8 +83,6 @@ theorems-std
 \html_math_output 0
 \html_css_as_file 0
 \html_be_strict false
-\author 140476948 "Ben Hebert"
-\author 167546520 "kurlat"
 \end_header
 
 \begin_body
@@ -489,8 +487,6 @@ name "fig:MP_shocks"
 \end_layout
 
 \begin_layout Standard
-
-\change_inserted 167546520 1678725300
 \begin_inset Float figure
 wide false
 sideways false
@@ -579,8 +575,6 @@ name "fig:exp-cg-vs-bond"
 
 \end_inset
 
-
-\change_inserted 140476948 1678473964
 
 \end_layout
 
@@ -727,39 +721,22 @@ vspace{1em}
 
 
 \backslash
-small{
-\backslash
-textit{Note:}  Comments go here.} 
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
 end{sidewaystable}
 \end_layout
 
 \end_inset
 
 
-\change_inserted 140476948 1678474875
-
 \end_layout
 
 \begin_layout Standard
-
-\change_inserted 140476948 1678474879
 \begin_inset Newpage clearpage
 \end_inset
 
 
-\change_unchanged
-
 \end_layout
 
 \begin_layout Standard
-
-\change_inserted 140476948 1678230279
 \begin_inset Float figure
 placement H
 wide false
@@ -767,13 +744,9 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-
-\change_inserted 140476948 1678230279
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-
-\change_inserted 140476948 1678230296
 Results with Bottom Decile Stocks Included
 \end_layout
 
@@ -783,8 +756,6 @@ Results with Bottom Decile Stocks Included
 \end_layout
 
 \begin_layout Plain Layout
-
-\change_inserted 140476948 1678230279
 \begin_inset Box Frameless
 position "t"
 hor_pos "c"
@@ -804,8 +775,6 @@ backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
-
-\change_inserted 140476948 1678230279
 \begin_inset Graphics
 	filename Output/ZBvCons_NoDrop20.png
 	width 100col%
@@ -837,8 +806,6 @@ backgroundcolor "none"
 status open
 
 \begin_layout Plain Layout
-
-\change_inserted 140476948 1678230279
 \begin_inset Graphics
 	filename Output/Stest_NoDrop20.png
 	width 100col%
@@ -1080,7 +1047,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/ZBvCons_LinearCons.png
+	filename Output/ZBvCons_LinearCons.png
 	width 100col%
 
 \end_inset
@@ -1111,7 +1078,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/Stest_LinearCons.png
+	filename Output/Stest_LinearCons.png
 	width 100col%
 
 \end_inset
@@ -1295,7 +1262,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/Stest_MktOnly.png
+	filename Output/Stest_MktOnly.png
 	width 100col%
 
 \end_inset
@@ -1383,7 +1350,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/Stest_FF3Only.png
+	filename Output/Stest_FF3Only.png
 	width 100col%
 
 \end_inset
@@ -1440,7 +1407,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/ZBvCons_AltBAAS.png
+	filename Output/ZBvCons_AltBAAS.png
 	width 100col%
 
 \end_inset
@@ -1528,7 +1495,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/ZBvCons_AltCAPE.png
+	filename Output/ZBvCons_AltCAPE.png
 	width 100col%
 
 \end_inset
@@ -1704,7 +1671,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/ZBvCons_Shadow.png
+	filename Output/ZBvCons_Shadow.png
 	width 100col%
 
 \end_inset
@@ -1735,7 +1702,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/Stest_Shadow.png
+	filename Output/Stest_Shadow.png
 	width 100col%
 
 \end_inset
@@ -1823,7 +1790,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/Stest_VaryingBetas.png
+	filename Output/Stest_VaryingBetas.png
 	width 100col%
 
 \end_inset
@@ -1880,7 +1847,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../../../Library/CloudStorage/Dropbox/Implied Interest Rates/OutputForPaper/ZBvCons_NDOnly.png
+	filename Output/ZBvCons_NDOnly.png
 	width 100col%
 
 \end_inset
@@ -1927,18 +1894,12 @@ status open
 \end_inset
 
 
-\change_inserted 140476948 1678474844
-
 \end_layout
 
 \begin_layout Standard
-
-\change_inserted 140476948 1678474849
 \begin_inset Newpage clearpage
 \end_inset
 
-
-\change_unchanged
 
 \end_layout
 
