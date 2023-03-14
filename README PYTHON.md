@@ -39,6 +39,9 @@ Python-related instructions
 		i) main_path to the "TheZeroBetaRate" directory. For example,
 			 main_path: "/Users/bhebert/Documents/GitHub/TheZeroBetaRate"
 		ii) your WRDS username (in quotes)
+		
+		iii) (optional) if using git/github, and you don't want this file to be tracked as a change, after these edits, use this command line:
+			git update-index --assume-unchanged path_variables.md 
 	
 	c) python3 A1_CCM_download.py 
 		i) on this first run, you will be asked to create a ".pgpass" file. the program will work regardless of whether you do this, but doing so will eliminate the need to enter a password each time.
