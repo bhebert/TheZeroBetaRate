@@ -364,13 +364,13 @@ nodrop20path = os.path.join(main_path, "Input", "NoDrop20")
 if not os.path.exists(nodrop20path):
     os.mkdir(nodrop20path)
     
-output_portfolio\
+nodrop20_portfolio\
     .query("date in @dates")\
     .dropna(axis = 1)\
     .to_csv("Input/NoDrop20/FF5_plus_Industry_Portfolios_{0}.csv".format(name_tag), index=False)
     
     
-output_portfolio_27\
+nodrop20_portfolio_27\
     .query("date in @dates")\
     .dropna(axis = 1)\
     .to_csv("Input/NoDrop20/27_plus_Industry_Portfolios_{0}.csv".format(name_tag), index=False)
