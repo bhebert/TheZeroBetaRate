@@ -10,10 +10,10 @@ sigma = 5;
 nu = 1/6;
 psi = 10;
 M(1) = 1;
-M(2) = 0.99;
-B(1) =1.02;
-B_ss_annual = .9;
-M_ss_annual = .3;
+M(2) = 0.991;
+B(1) = 1.014;
+B_ss_annual = .5/.68;
+M_ss_annual = .16/.68;
 
 
 %% Fixed Parameters
@@ -23,8 +23,8 @@ rho_annual = 0.1;
 spread_annual = 0.07;
 % sticky_annual = 0.8;
 % sticky_bond_annual = 0.5;
-T_annual = 300;
-Tplot_annual = 4;
+T_annual = 100;
+Tplot_annual = 3;
 c_ss_annual = 1;
 
 
@@ -41,7 +41,6 @@ B_ss = B_ss_annual;
 M_ss = M_ss_annual;
 Tplot = Tplot_annual*freq;
 c_ss = c_ss_annual/freq;
-ts = linspace(1,Tplot,Tplot);
 
 P_ss = 1;
 r_ss = 1/delta*(1+mubar)-1;
@@ -49,7 +48,7 @@ rb_ss = r_ss - spread*(1+r_ss);
 
 guesspar = [.25;.1];
 
-[par err] = fsolve(@(e) errss_alt(e,P_ss,c_ss,M_ss,B_ss,r_ss,rb_ss),guesspar)
+[par e_par] = fsolve(@(e) err(e,P_ss,c_ss,M_ss,B_ss,r_ss,rb_ss),guesspar)
                                
 alpha = par(1);
 eta = par(2);
@@ -124,82 +123,63 @@ end
 pi = P(1:T)./[1/(1+mubar),P(1:T-1)]-1;
 r_real = r-pi;
 
- 
-%% Plot 
-
-figure(2)
-
-% subplot(2,5,1)
-% plot(ts,(1+mu(1:Tplot)).^freq-1,ts,(1+mubar)^freq*ones(1,Tplot)-1,'--')
-% xlabel('t')
-% ylabel('\mu')
-
-subplot(2,4,2)
-plot((ts-1)/freq,(1+r(1:Tplot)).^freq-1,(ts-1)/freq,(1+r_ss)^freq*ones(1,Tplot)-1,'--')
-xlabel('t')
-ylabel('r')
-
-subplot(2,4,1)
-plot((ts-1)/freq,M(1:Tplot)./(1+mubar).^(0:Tplot-1)/M_ss)
-xlabel('t')
-ylabel('M')
-
-% subplot(2,5,5)
-% plot(ts,P(1:Tplot)./(1+mubar).^(0:Tplot-1))
-% xlabel('t')
-% ylabel('P')
-% 
-subplot(2,4,4)
-plot((ts-1)/freq,c(1:Tplot)*freq)
-xlabel('t')
-ylabel('c')
-% % 
-% subplot(2,5,6)
-% plot(ts,(1+pi(1:Tplot)).^freq-1)
-% xlabel('t')
-% ylabel('\pi')
-% 
-subplot(2,4,6)
-plot((ts-1)/freq,(1+s(1:Tplot)).^freq-1, (ts-1)/freq,spread_annual*ones(1,Tplot),'--')
-xlabel('t')
-ylabel('spread')
-% 
-subplot(2,4,3)
-plot((ts-1)/freq,(1+rb(1:Tplot)).^freq-1,(ts-1)/freq,(1+rb_ss)^freq*ones(1,Tplot)-1,'--')
-xlabel('t')
-ylabel('r_b')
-
-
-subplot(2,4,5)
-plot((ts-1)/freq,B(1:Tplot)./(1+mubar).^(0:Tplot-1)/B_ss)
-xlabel('t')
-ylabel('Bond supply')
-
-subplot(2,4,7)
-plot((ts-1)/freq,H(1:Tplot)./(1+mubar).^(0:Tplot-1)/H_ss)
-xlabel('t')
-ylabel('Composite Liquidity Supply')
-
-
-subplot(2,4,8)
-plot((ts-1)/freq,(1+iota(1:Tplot)).^freq-1)
-xlabel('t')
-ylabel('Composite Liquidity Cost')
-
 
 %% On-impact:
 
-% This is a RR shock
-% dr0 = [((1+r(1))^freq - (1+r_ss)^freq)*100 ,-1.514] 
-% drb = [((1+rb(1))^freq - (1+rb_ss)^freq)*100, 0.338]
-% dgc = [((c(2)/c(1))^freq - 1)*100, -.292]
-
 % This is 1/10 of a NS shock
-dr0 = [((1+r(1))^freq - (1+r_ss)^freq)*100 ,-2.5*5/10] 
-drb = [((1+rb(1))^freq - (1+rb_ss)^freq)*100, 1.8/10]
-dgc = [((c(2)/c(1))^freq - 1)*100, -.2]
+dr0 = [((1+r(1))^freq - (1+r_ss)^freq)*100 ,-1.31] 
+drb = [((1+rb(1))^freq - (1+rb_ss)^freq)*100, 1.77/10]
+dlogc = [(log(c(1))-log(c_ss))*100, 0] 
+dgc = (c(2)/c(1)-1)*100, 
+
+dlogiota = (log(iota(1))-log(iota_ss))*100
+dlogH = (log(H(1))-log(H_ss))*100
 
 
-% dlogc = [(log(c(1))-log(c_ss))*100, -5.95] 
+%% 3-period plots
 
-return
+ts = linspace(0,Tplot,Tplot+1);
+
+figure(1)
+
+subplot(2,3,4)
+plot(ts,[M_ss/(1+mubar),M(1:Tplot)]./(1+mubar).^(ts-1)/M_ss)
+xlabel('$t$','Interpreter','Latex')
+ylabel('Money supply','Interpreter','Latex')
+set(gca,'TickLabelInterpreter','latex')
+
+
+subplot(2,3,1)
+plot(ts,[B_ss/(1+mubar),B(1:Tplot)]./(1+mubar).^(ts-1)/B_ss)
+xlabel('$t$','Interpreter','Latex')
+ylabel('Bond Supply','Interpreter','Latex')
+set(gca,'TickLabelInterpreter','latex')
+
+
+subplot(2,3,3)
+plot(ts,(1+[r_ss,r(1:Tplot)]).^freq-1)
+xlabel('$t$','Interpreter','Latex')
+ylabel('Zero-Beta Rate','Interpreter','Latex')
+set(gca,'TickLabelInterpreter','latex')
+
+
+subplot(2,3,6)
+plot(ts,(1+[rb_ss,rb(1:Tplot)]).^freq-1)
+xlabel('$t$','Interpreter','Latex')
+ylabel('Safe Rate','Interpreter','Latex')
+set(gca,'TickLabelInterpreter','latex')
+
+
+subplot(2,3,2)
+plot(ts,[c_ss,c(1:Tplot)])
+xlabel('$t$','Interpreter','Latex')
+ylabel('Consumption','Interpreter','Latex')
+set(gca,'TickLabelInterpreter','latex')
+
+subplot(2,3,5)
+plot(ts,(1+[spread,s(1:Tplot)]).^freq-1)
+xlabel('$t$','Interpreter','Latex')
+ylabel('Spread','Interpreter','Latex')
+set(gca,'TickLabelInterpreter','latex')
+
+saveas(gcf, "/Users/kurlat/Dropbox/Implied Interest Rates/OutputForPaper/model.png")
