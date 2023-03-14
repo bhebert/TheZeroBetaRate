@@ -48,7 +48,9 @@ Python-related instructions
 	d) python3 A2_beta_estimation.py
 	
 		i) you may get the warning "UserWarning: A worker stopped while some jobs were given to the executor." which can be disregarded. This occurs because the code tries to use all available cores to speed up this process.
+		ii) this took about 45m on a 2021 M1 Macbook pro
 	
 	e) python3 00_create_data.py
 
 		i) you may get the warning "Workbook contains no default style, apply openpyxl's default"" which can be disregarded.
+		ii) takes only a couple minutes on a 2021 M1 Macbook pro
