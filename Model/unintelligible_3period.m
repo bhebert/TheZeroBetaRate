@@ -186,6 +186,7 @@ plot((ts-1)/freq,(1+iota(1:Tplot)).^freq-1)
 xlabel('t')
 ylabel('Composite Liquidity Cost')
 
+saveas(gcf, "../Output/model.png")
 
 %% On-impact:
 
