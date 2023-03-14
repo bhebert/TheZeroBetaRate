@@ -20,7 +20,7 @@ Python-related instructions
 
 	b) create a virtual environment with bio-env.md :
 	
-		conda create --name zbenv --file bio-env.md
+		conda create --name zbenv --file requirements.md
 	
 	c) activate virtual environment
 	

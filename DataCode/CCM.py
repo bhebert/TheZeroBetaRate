@@ -11,8 +11,6 @@ from dateutil.relativedelta import *
 from pandas.tseries.offsets import *
 
 
-import wrds
-
 def generate_CCM(main_path):
     """Generate the Compustat, CRSP merged dataset that will be used in later construction.
 
