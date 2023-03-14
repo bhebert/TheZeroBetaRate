@@ -33,6 +33,12 @@ Instructions:
         
         		i) this will run very quickly.
 		
+	e) cd to TheZeroBetaRate/Model
+	
+	f) run model.m
+	
+		i) this will run very quickly.
+		
 4) Run STATA to generate tables
 
 	a) open Stata. Tested with Stata MP 17.0 on an M1 Macbook Pro.
