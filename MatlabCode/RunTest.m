@@ -161,7 +161,7 @@ end
 
 
 %Values of Sigma to use in S-test
-sigs = [0.25:0.25:0.75,1,4/3,5/3,2:1:opts.sigma_max];
+sigs = [0.25:0.25:0.75,1,4/3,5/3,2,5/2,3:1:opts.sigma_max];
 
 
 % code for Ridge cross-validation to select penalty psi

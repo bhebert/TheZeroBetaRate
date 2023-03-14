@@ -36,8 +36,8 @@ Portfolios:
 #                          Main Path
 ################################################################
 
-main_path = "YOUR DIRECTORY"
-username = "YOUR WRDS USERNAME" # to access the WRDS database
+with open('path_variables.md', 'r') as f:
+    main_path = f.readline().split('"')[1]
 
 ################################################################
 
@@ -275,10 +275,10 @@ from CCM import generate_CCM
 from portfolio_construction import generate_portfolio
 
 # generate CCM dataset
-generate_CCM(main_path, username)
+generate_CCM(main_path)
 
 # generate portfolios
-output_portfolio, output_portfolio_27 = generate_portfolio([0, 0.3, 0.7, 1], True)
+output_portfolio, output_portfolio_27 = generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
 
 
 output_portfolio = pd.merge(output_portfolio, 
@@ -294,9 +294,26 @@ output_portfolio_27 = pd.merge(output_portfolio_27,
                     left_on='date', 
                     right_on='Date')
 
+# generate portfolios without dropping the smallest 20% stocks.
+# this is for robustness checks.
+nodrop20_portfolio, nodrop20_portfolio_27 = generate_portfolio(main_path,[0, 0.3, 0.7, 1], False)
+
+nodrop20_portfolio = pd.merge(nodrop20_portfolio, 
+                    instruments.loc[:, ['Date', 'CPI']], 
+                    how='inner', 
+                    left_on='date', 
+                    right_on='Date')
+
+
+nodrop20_portfolio_27 = pd.merge(nodrop20_portfolio_27, 
+                    instruments.loc[:, ['Date', 'CPI']], 
+                    how='inner', 
+                    left_on='date', 
+                    right_on='Date')
+
 # %%
 if convert_to_real is True:
-    for dataset in [output_portfolio, output_portfolio_27]:
+    for dataset in [output_portfolio, output_portfolio_27, nodrop20_portfolio, nodrop20_portfolio_27]:
         
         for col in dataset.columns:
             if (col != 'date') and (col != 'CPI') and (col != 'Date'):
@@ -304,7 +321,7 @@ if convert_to_real is True:
                 
 # %%
 
-for dataset in [output_portfolio, output_portfolio_27]:
+for dataset in [output_portfolio, output_portfolio_27, nodrop20_portfolio, nodrop20_portfolio_27]:
     dataset.drop(columns=['Date', 'CPI'], inplace = True)
 
 
@@ -342,6 +359,22 @@ output_portfolio_27\
     .to_csv("Input/27_plus_Industry_Portfolios_{0}.csv".format(name_tag), index=False)
 
 
+# save the robustness check portfolios to a subfolder under Input/
+nodrop20path = os.path.join(main_path, "Input", "NoDrop20")
+if not os.path.exists(nodrop20path):
+    os.mkdir(nodrop20path)
+    
+output_portfolio\
+    .query("date in @dates")\
+    .dropna(axis = 1)\
+    .to_csv("Input/NoDrop20/FF5_plus_Industry_Portfolios_{0}.csv".format(name_tag), index=False)
+    
+    
+output_portfolio_27\
+    .query("date in @dates")\
+    .dropna(axis = 1)\
+    .to_csv("Input/NoDrop20/27_plus_Industry_Portfolios_{0}.csv".format(name_tag), index=False)
+
     
 # %%
 ################################################################
@@ -358,3 +391,5 @@ generate_MS(main_path)
 ################################################################
 from consumption import generate_consumption
 generate_consumption(main_path)
+
+# %%

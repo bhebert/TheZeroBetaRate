@@ -4,21 +4,15 @@ This program creates the testing assets
 
 
 #%%
-from os.path import join, expanduser
+from os.path import join
 import numpy as np
 import pandas as pd
 from pandas.tseries.offsets import *
 from functools import reduce
 
 
-main_path = expanduser("~/Dropbox/Projects/Implied Interest Rates/Estimation")
-raw_path = join(main_path, "Raw Data")
-process_path = join(main_path, "Processed Data")
-out_path = join(main_path, "Input")
 
-
-
-def generate_portfolio(segment, drop_20):
+def generate_portfolio(main_path, segment, drop_20):
     """generate portfolio according to Fama French 1993
 
     Args:
@@ -28,6 +22,11 @@ def generate_portfolio(segment, drop_20):
     Returns:
         DataFrame: Two DataFrames
     """
+
+    raw_path = join(main_path, "Raw Data")
+    process_path = join(main_path, "Processed Data")
+
+
 
     ######################################################
     # Generation

@@ -9,4 +9,5 @@
 *.xls
 *.dta
 *.smcl
-*.zip
+*.pyc
+*.lyx~

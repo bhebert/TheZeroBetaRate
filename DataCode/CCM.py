@@ -11,9 +11,7 @@ from dateutil.relativedelta import *
 from pandas.tseries.offsets import *
 
 
-import wrds
-
-def generate_CCM(main_path, username):
+def generate_CCM(main_path):
     """Generate the Compustat, CRSP merged dataset that will be used in later construction.
 
     Args:
@@ -111,17 +109,11 @@ def generate_CCM(main_path, username):
     ###################
     # Use Delisted Information #
     ###################
-    conn=wrds.Connection(wrds_username=username)
-
-    # add delisting return
-    dlret = conn.raw_sql("""
-                        select permno, dlret, dlstdt 
-                        from crsp.msedelist
-                        """, date_cols=['dlstdt'])
+    dlret = pd.read_csv(join(raw_path, "CCM", 'dlret.csv'), index_col=0)
 
     dlret.permno=dlret.permno.astype(int)
     #dlret['dlstdt']=pd.to_datetime(dlret['dlstdt'])
-    dlret['ddate']=dlret['dlstdt']+MonthEnd(0)
+    dlret['ddate']=pd.to_datetime(dlret['dlstdt'])+MonthEnd(0)
 
     crsp = pd.merge(crsp_m, dlret, how='left',on=['permno','ddate'])
     crsp['dlret']=crsp['dlret'].fillna(0)

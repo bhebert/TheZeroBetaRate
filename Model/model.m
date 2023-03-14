@@ -123,7 +123,7 @@ end
 pi = P(1:T)./[1/(1+mubar),P(1:T-1)]-1;
 r_real = r-pi;
 
-
+ 
 %% On-impact:
 
 % This is 1/10 of a NS shock
@@ -182,4 +182,4 @@ xlabel('$t$','Interpreter','Latex')
 ylabel('Spread','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
-saveas(gcf, "/Users/kurlat/Dropbox/Implied Interest Rates/OutputForPaper/model.png")
+saveas(gcf, "../Output/model.png")
