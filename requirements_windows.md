@@ -22,7 +22,6 @@ cryptography=39.0.1=py310h21b164f_0
 et_xmlfile=1.1.0=py310haa95532_0
 gflags=2.2.2=ha925a31_0
 glog=0.5.0=hd77b12b_0
-greenlet=2.0.2=pypi_0
 icc_rt=2022.1.0=h6049295_2
 idna=3.4=py310haa95532_0
 intel-openmp=2021.4.0=haa95532_3556
@@ -42,7 +41,6 @@ mkl-service=2.4.0=py310h2bbff1b_0
 mkl_fft=1.3.1=py310ha0764ea_0
 mkl_random=1.2.2=py310h4ed8f06_0
 numexpr=2.8.4=py310hd213c9f_0
-numpy=1.24.2=pypi_0
 numpy-base=1.23.5=py310h04254f7_0
 openpyxl=3.0.10=py310h2bbff1b_0
 openssl=1.1.1t=h2bbff1b_0
@@ -51,21 +49,17 @@ pandas=1.5.3=py310h4ed8f06_0
 patsy=0.5.3=py310haa95532_0
 pip=23.0.1=py310haa95532_0
 pooch=1.4.0=pyhd3eb1b0_0
-psycopg2-binary=2.9.5=pypi_0
 pyarrow=8.0.0=py310h26aae1b_0
 pycparser=2.21=pyhd3eb1b0_0
 pyopenssl=23.0.0=py310haa95532_0
 pysocks=1.7.1=py310haa95532_0
 python=3.10.9=h966fe2a_2
 python-dateutil=2.8.2=pyhd3eb1b0_0
-pytz=2022.7.1=pypi_0
 re2=2022.04.01=hd77b12b_0
 requests=2.28.1=py310haa95532_1
-scipy=1.10.1=pypi_0
 setuptools=65.6.3=py310haa95532_0
 six=1.16.0=pyhd3eb1b0_1
 snappy=1.1.9=h6c2663c_0
-sqlalchemy=1.4.46=pypi_0
 sqlite=3.40.1=h2bbff1b_0
 statsmodels=0.13.5=py310h9128911_1
 tk=8.6.12=h2bbff1b_0
@@ -78,7 +72,6 @@ vs2015_runtime=14.27.29016=h5e58377_2
 wheel=0.38.4=py310haa95532_0
 win_inet_pton=1.1.0=py310haa95532_0
 wincertstore=0.2=py310haa95532_2
-wrds=3.1.6=pypi_0
 xlrd=2.0.1=pyhd3eb1b0_0
 xz=5.2.10=h8cc25b3_1
 zlib=1.2.13=h8cc25b3_0
