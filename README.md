@@ -21,7 +21,7 @@ Instructions:
 
 3) Run MATLAB code to generate results
 
-        a) Open MATLAB. tested with R2022a on an M1 Macbook pro, known not to work on R2019b or earlier.
+        a) Open MATLAB. tested with R2022a on an M1 Macbook pro and a Windows PC, known not to work on R2019b or earlier.
         
         b) cd to TheZeroBetaRate/MatlabCode
         
@@ -41,7 +41,7 @@ Instructions:
 		
 4) Run STATA to generate tables
 
-	a) open Stata. Tested with Stata MP 17.0 on an M1 Macbook Pro.
+	a) open Stata. Tested with Stata MP 17.0 on an M1 Macbook Pro and a Windows PC.
 	
 	b) cd to TheZeroBetaRate/StataCode
 	

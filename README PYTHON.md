@@ -9,8 +9,9 @@ One set of reasonable instructions for Mac OS X:
 
 	a) install homebrew
 	
-	b) install anaconda 3.10 with homebrew
-		https://medium.com/ayuth/install-anaconda-on-macos-with-homebrew-c94437d63a37
+	b) install anaconda 2022.10 with homebrew. i.e.
+		i) brew install --cask anaconda
+		ii) add appropriate path to .zshrc in home directory, then restart terminal. E.g.  export PATH="/opt/homebrew/anaconda3/bin:$PATH"
 
 	c) fix permission on .conda file: (substitute $USER for your username)
 		sudo chown -R $USER ~/.conda
