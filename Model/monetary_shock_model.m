@@ -4,6 +4,8 @@ clc
 
 global sigma nu psi
 
+colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
+
 %% Parameters
 
 sigma = 5;
@@ -152,42 +154,42 @@ ts = linspace(0,Tplot,Tplot+1);
 figure(1)
 
 subplot(2,3,4)
-plot(ts,[M_ss/(1+mubar),M(1:Tplot)]./(1+mubar).^(ts-1)/M_ss)
-xlabel('$t$','Interpreter','Latex')
+plot(ts,[M_ss/(1+mubar),M(1:Tplot)]./(1+mubar).^(ts-1)/M_ss,'Color',colors_list{1},'LineWidth',2)
+xlabel('Year','Interpreter','Latex')
 ylabel('Money supply','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,1)
-plot(ts,[B_ss/(1+mubar),B(1:Tplot)]./(1+mubar).^(ts-1)/B_ss)
-xlabel('$t$','Interpreter','Latex')
+plot(ts,[B_ss/(1+mubar),B(1:Tplot)]./(1+mubar).^(ts-1)/B_ss,'Color',colors_list{1},'LineWidth',2)
+xlabel('Year','Interpreter','Latex')
 ylabel('Bond Supply','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,3)
-plot(ts,(1+[r_ss,r(1:Tplot)]).^freq-1)
-xlabel('$t$','Interpreter','Latex')
+plot(ts,(1+[r_ss,r(1:Tplot)]).^freq-1,'Color',colors_list{1},'LineWidth',2)
+xlabel('Year','Interpreter','Latex')
 ylabel('Zero-Beta Rate','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,6)
-plot(ts,(1+[rb_ss,rb(1:Tplot)]).^freq-1)
-xlabel('$t$','Interpreter','Latex')
+plot(ts,(1+[rb_ss,rb(1:Tplot)]).^freq-1,'Color',colors_list{1},'LineWidth',2)
+xlabel('Year','Interpreter','Latex')
 ylabel('Safe Rate','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,2)
-plot(ts,[c_ss,c(1:Tplot)])
-xlabel('$t$','Interpreter','Latex')
+plot(ts,[c_ss,c(1:Tplot)],'Color',colors_list{1},'LineWidth',2)
+xlabel('Year','Interpreter','Latex')
 ylabel('Consumption','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 subplot(2,3,5)
-plot(ts,(1+[spread,s(1:Tplot)]).^freq-1)
-xlabel('$t$','Interpreter','Latex')
+plot(ts,(1+[spread,s(1:Tplot)]).^freq-1,'Color',colors_list{1},'LineWidth',2)
+xlabel('Year','Interpreter','Latex')
 ylabel('Spread','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 

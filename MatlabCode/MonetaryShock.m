@@ -67,16 +67,19 @@ figure(1);
 % zero beta rate
 
 hold on
-plot(1:Nlags, (reg_results(:, 1, 1))/5, '-', 'DisplayName', 'Real Zero-Beta Rate /5','LineWidth',2,'Color',colors_list{1})
-plot(1:Nlags, (reg_results(:, 1, 2)), '-.', 'DisplayName', 'Exp. Real T-Bill Ret.','LineWidth',2,'Color',colors_list{3})
-plot(1:Nlags, (reg_results(:, 1, 3)), '--', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
 
-legend('show','Location','southwest')
+plot(1:Nlags, (reg_results(:, 1, 1))/5, '-','LineWidth',2,'Color',colors_list{1})
+plot(1:Nlags, (reg_results(:, 1, 2)), '-.','LineWidth',2,'Color',colors_list{3})
+plot(1:Nlags, (reg_results(:, 1, 3)), '--','LineWidth',2,'Color',colors_list{2})
+
+set(gca,'TickLabelInterpreter','latex')
+legend('Real Zero-Beta Rate /5','$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
+
 hold off
 yline(0, 'k-','HandleVisibility','off');
-xlabel('Months after Shock')
-ylabel('Real Rate/Consumption Growth')
-title("Effects of the Romer-Romer Shock")
+xlabel('Months after Shock','Interpreter','latex')
+ylabel('Percent','Interpreter','latex')
+title("Effects of the Romer-Romer Shock",'Interpreter','latex')
 ylim([-6,3])
 saveas(gcf, "../Output/local_projection_rr.png")
 
@@ -118,16 +121,18 @@ figure(2)
 
 
 hold on
-plot(1:Nlags, (reg_results(:, 1, 1))/5, '-', 'DisplayName', 'Real Zero-Beta Rate /5','LineWidth',2,'Color',colors_list{1})
-plot(1:Nlags, (reg_results(:, 1, 2)), '-.', 'DisplayName', 'Exp. Real T-Bill Ret.','LineWidth',2,'Color',colors_list{3})
-plot(1:Nlags, (reg_results(:, 1, 3)), '--', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
+plot(1:Nlags, (reg_results(:, 1, 1))/5, '-', 'LineWidth',2,'Color',colors_list{1})
+plot(1:Nlags, (reg_results(:, 1, 2)), '-.', 'LineWidth',2,'Color',colors_list{3})
+plot(1:Nlags, (reg_results(:, 1, 3)), '--', 'LineWidth',2,'Color',colors_list{2})
 ylim([-6,3])
-legend('show','Location','southwest')
+set(gca,'TickLabelInterpreter','latex')
+legend('Real Zero-Beta Rate /5','$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
+
 yline(0, 'k-','HandleVisibility','off');
 hold off
-xlabel('Months after Shock')
-ylabel('Real Rate/Consumption Growth')
-title("Effects of the Nakamura-Steinsson Shock")
+xlabel('Months after Shock','Interpreter','latex')
+ylabel('Percent','Interpreter','latex')
+title("Effects of the Nakamura-Steinsson Shock",'Interpreter','latex')
 
 
 saveas(gcf, "../Output/local_projection_ns.png")
