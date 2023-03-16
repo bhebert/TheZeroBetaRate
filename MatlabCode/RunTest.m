@@ -183,8 +183,9 @@ if opts.RunRidge
 
     cfig = figure(4);
     plot(results(:,1), sqrt(results(:,2)),'LineWidth',2);
+    set(gca,'TickLabelInterpreter','latex')
     xlabel('$\psi$', 'Interpreter','latex');
-    ylabel('Loss');
+    ylabel('Loss', 'Interpreter','latex');
     tightfig(cfig);
 
     set(cfig,'PaperOrientation','landscape');
@@ -237,7 +238,7 @@ std(portRet3-zbrate)
 ([Zinput;ones(size(portRet3))]' \ (portRet3-Rbinput)')' - [gamma;Rf]'
 
 %save time series
-write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12), "../Output/zero_beta_rate" + opts.Name + ".csv")
+write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate'), "../Output/zero_beta_rate" + opts.Name + ".csv")
 
 % regression with both variables
 fitlm([RbinputReal;zbrateReal]',cons_gr_ann/12)
@@ -319,11 +320,11 @@ print(cfig, '-dpng', "../Output/ZBvCons_"+opts.Name+".png");
 
 % plot the results.
 cfig=figure(2);
-colororder({colors_list{3},colors_list{2}});
+colororder({colors_list{1},colors_list{2}});
 hold on
 yyaxis left;
 
-plot(dts, RbinputReal*12, '--','LineWidth',2,'Color',colors_list{3});
+plot(dts, RbinputReal*12, '--','LineWidth',2,'Color',colors_list{1});
 set(gca,'TickLabelInterpreter','latex')
 
 ylabel('Annualized Rate (mean +/- 4 s.d.)','Interpreter','Latex');
@@ -396,7 +397,7 @@ if strcmp(opts.Name,'Main')
     hold on
     yyaxis left;
 
-    plot(dts, p_bond*12, '-.', 'DisplayName', 'Exp. Real Tsy Bond Ret.','LineWidth',2,'Color',colors_list{4});
+    plot(dts, p_bond*12, '-.', 'DisplayName', 'Exp. Real Tsy Bond Ret.','LineWidth',2,'Color',colors_list{1});
     ylabel('Annualized Rate (mean +/- 4 s.d.)')
     ylim(mean(p_bond'*12)+4*std(p_bond'*12)*[-1,1]);
     yyaxis right;

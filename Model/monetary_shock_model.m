@@ -11,9 +11,9 @@ colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
 sigma = 5;
 nu = 1/6;
 psi = 10;
-delta_annual = 0.92;            % Discount factor
+delta_annual = 0.91;            % Discount factor
 mubar_annual = 0.02;            % Steady state inflation
-spread_annual = 0.07;           % Steady state spread
+spread_annual = 0.08;           % Steady state spread
 freq = 1;                       % Frequency of the model (1 for annual, 4 for quarterly, etc.)
 delta = delta_annual^(1/freq);
 mubar = (1+mubar_annual)^(1/freq)-1;
@@ -49,8 +49,8 @@ eta = par(2);
 %% Path of shocks
 
 M(1) = 1;           % On impact, M does not change
-M(2) = 0.991;       % M falls one period later
-B(1) = 1.014;       % Bonds rise on impact
+M(2) = 0.9916;       % M falls one period later
+B(1) = 1.0112;       % Bonds rise on impact
 
 
 M(3:T) = M(2);      % M stays constant after period 2
@@ -154,41 +154,41 @@ ts = linspace(0,Tplot,Tplot+1);
 figure(1)
 
 subplot(2,3,4)
-plot(ts,[M_ss/(1+mubar),M(1:Tplot)]./(1+mubar).^(ts-1)/M_ss,'Color',colors_list{1},'LineWidth',2)
+plot(ts,[M_ss/(1+mubar),M(1:Tplot)]./(1+mubar).^(ts-1)/M_ss,'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
 ylabel('Money supply','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,1)
-plot(ts,[B_ss/(1+mubar),B(1:Tplot)]./(1+mubar).^(ts-1)/B_ss,'Color',colors_list{1},'LineWidth',2)
+plot(ts,[B_ss/(1+mubar),B(1:Tplot)]./(1+mubar).^(ts-1)/B_ss,'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
 ylabel('Bond Supply','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,3)
-plot(ts,(1+[r_ss,r(1:Tplot)]).^freq-1,'Color',colors_list{1},'LineWidth',2)
+plot(ts,(1+[r_ss,r(1:Tplot)]).^freq-1,'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
 ylabel('Zero-Beta Rate','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,6)
-plot(ts,(1+[rb_ss,rb(1:Tplot)]).^freq-1,'Color',colors_list{1},'LineWidth',2)
+plot(ts,(1+[rb_ss,rb(1:Tplot)]).^freq-1,'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
 ylabel('Safe Rate','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,2)
-plot(ts,[c_ss,c(1:Tplot)],'Color',colors_list{1},'LineWidth',2)
+plot(ts,[c_ss,c(1:Tplot)],'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
 ylabel('Consumption','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 subplot(2,3,5)
-plot(ts,(1+[spread,s(1:Tplot)]).^freq-1,'Color',colors_list{1},'LineWidth',2)
+plot(ts,(1+[spread,s(1:Tplot)]).^freq-1,'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
 ylabel('Spread','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
