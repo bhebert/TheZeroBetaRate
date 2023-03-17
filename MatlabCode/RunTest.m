@@ -310,7 +310,7 @@ plot(dts, p_cons, '-','LineWidth',2,'Color',colors_list{2})
 hold off
 yline(mean(p_cons'), 'k-','HandleVisibility','off');
 
-legend('Real Zero-Beta Rate','$\bf{E}[$Cons. Growth$]$','show','Interpreter','Latex');
+legend('Real Zero-Beta Rate','$\bf{E}[$Cons. Growth$]$','Interpreter','Latex');
 
 tightfig(cfig);
 
@@ -335,7 +335,7 @@ ylabel('$\bf{E}[$Cons. Growth$]$ (mean +/- 4 s.d.)','Interpreter','Latex');
 plot(dts, p_cons, '-','LineWidth',2,'Color',colors_list{2})
 hold off
 yline(mean(p_cons'), 'k-','HandleVisibility','off');
-legend('$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Interpreter','Latex');
+legend('$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','Interpreter','Latex');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/TBillvCons_"+opts.Name+".png");
@@ -393,7 +393,7 @@ if strcmp(opts.Name,'Main')
 
     
     cfig=figure(5);
-    colororder({colors_list{4},colors_list{2}});
+    colororder({colors_list{1},colors_list{2}});
     hold on
     yyaxis left;
 

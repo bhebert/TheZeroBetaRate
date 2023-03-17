@@ -9,8 +9,8 @@ colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
 %% Parameters
 
 sigma = 5;
-nu = 1/6;
-psi = 10;
+nu = 1;
+psi = 1;
 delta_annual = 0.91;            % Discount factor
 mubar_annual = 0.02;            % Steady state inflation
 spread_annual = 0.08;           % Steady state spread
@@ -47,11 +47,19 @@ eta = par(2);
 
 
 %% Path of shocks
+% M(1) = 1;           % On impact, M does not change
+% M(2) = 0.892;       % M falls one period later
+% B(1) = 1.067;       % Bonds rise on impact
 
 M(1) = 1;           % On impact, M does not change
-M(2) = 0.9916;       % M falls one period later
-B(1) = 1.0112;       % Bonds rise on impact
+M(2) = 0.9834;       % M falls one period later
+B(1) = 1.009;       % Bonds rise on impact
 
+
+
+% M(1) = 0.94;           % On impact, M does not change
+% M(2) = 0.84;       % M falls one period later
+% B(1) = 1;       % Bonds rise on impact
 
 M(3:T) = M(2);      % M stays constant after period 2
 
@@ -138,6 +146,8 @@ dr0 = ((1+r(1))^freq - (1+r_ss)^freq)*100
 % Safe rate
 drb = ((1+rb(1))^freq - (1+rb_ss)^freq)*100
 
+ratio = -drb/dr0
+
 % Consumption level
 dlogc = (log(c(1))-log(c_ss))*100 
 
@@ -151,7 +161,7 @@ Tplot = 3;
 
 ts = linspace(0,Tplot,Tplot+1);
 
-figure(1)
+f = figure(1)
 
 subplot(2,3,4)
 plot(ts,[M_ss/(1+mubar),M(1:Tplot)]./(1+mubar).^(ts-1)/M_ss,'Color',colors_list{2},'LineWidth',2)
@@ -193,4 +203,5 @@ xlabel('Year','Interpreter','Latex')
 ylabel('Spread','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
+f.Position = [200 200 700 400]
 saveas(gcf, "../Output/model.png")
