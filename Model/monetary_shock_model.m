@@ -9,9 +9,10 @@ colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
 %% Parameters
 
 sigma = 5;
-nu = 1/6;
-psi = 10;
-delta_annual = 0.91;            % Discount factor
+nu = 1;
+psi = 1;                        % nu and psi are parameters for a general CES function for utility 
+                                % from money and bonds. Set them to 1 for log-separable
+delta_annual = 1/1.1;           % Discount factor
 mubar_annual = 0.02;            % Steady state inflation
 spread_annual = 0.08;           % Steady state spread
 freq = 1;                       % Frequency of the model (1 for annual, 4 for quarterly, etc.)
@@ -43,15 +44,14 @@ guesspar = [.25;.1];
 [par, e_par] = fsolve(@(e) err(e,P_ss,c_ss,M_ss,B_ss,r_ss,rb_ss),guesspar);
                                
 alpha = par(1);
-eta = par(2);
+eta = par(2);       % alpga and eta are parameters of the CES utility of money and bonds
 
 
 %% Path of shocks
 
 M(1) = 1;           % On impact, M does not change
-M(2) = 0.9916;       % M falls one period later
-B(1) = 1.0112;       % Bonds rise on impact
-
+M(2) = 0.9836;      % M falls one period later
+B(1) = 1.00914;     % Bonds rise on impact
 
 M(3:T) = M(2);      % M stays constant after period 2
 
@@ -129,6 +129,12 @@ while dist > e
    
 end  
 
+%% Copmute inflation and real rates
+
+pi = [mubar,P(2:T)./P(1:T-1)-1];
+r_real = (1+r)./(1+pi)-1;
+rb_real = (1+rb)./(1+pi)-1;
+
  
 %% Compute on-impact effect of a shock
 
@@ -151,7 +157,7 @@ Tplot = 3;
 
 ts = linspace(0,Tplot,Tplot+1);
 
-figure(1)
+f = figure(1)
 
 subplot(2,3,4)
 plot(ts,[M_ss/(1+mubar),M(1:Tplot)]./(1+mubar).^(ts-1)/M_ss,'Color',colors_list{2},'LineWidth',2)
@@ -168,16 +174,16 @@ set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,3)
-plot(ts,(1+[r_ss,r(1:Tplot)]).^freq-1,'Color',colors_list{2},'LineWidth',2)
+plot(ts,(1+[(1+r_ss)/(1+mubar)-1,r_real(1:Tplot)]).^freq-1,'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
-ylabel('Zero-Beta Rate','Interpreter','Latex')
+ylabel('Real Zero-Beta Rate','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
 subplot(2,3,6)
-plot(ts,(1+[rb_ss,rb(1:Tplot)]).^freq-1,'Color',colors_list{2},'LineWidth',2)
+plot(ts,(1+[(1+rb_ss)/(1+mubar)-1,rb_real(1:Tplot)]).^freq-1,'Color',colors_list{2},'LineWidth',2)
 xlabel('Year','Interpreter','Latex')
-ylabel('Safe Rate','Interpreter','Latex')
+ylabel('Real Safe Rate','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 
@@ -193,4 +199,5 @@ xlabel('Year','Interpreter','Latex')
 ylabel('Spread','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
+f.Position = [200 200 700 400]
 saveas(gcf, "../Output/model.png")
