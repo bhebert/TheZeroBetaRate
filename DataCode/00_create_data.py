@@ -56,9 +56,12 @@ if not os.path.exists(input_path):
     os.mkdir(input_path)
 
 # %%
-'''
-Hyper-parameters
-'''
+################################################################
+#                          Hyper-parameters
+################################################################
+
+beta_by_group = True
+
 
 convert_to_real = False
 if convert_to_real is True:
@@ -272,13 +275,17 @@ if convert_to_real is True:
 # CCM
 from CCM import generate_CCM
 # load portfolios
-from portfolio_construction import generate_portfolio
+import portfolio_construction 
+import portfolio_construction_old
 
 # generate CCM dataset
 generate_CCM(main_path)
 
 # generate portfolios
-output_portfolio, output_portfolio_27 = generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
+if beta_by_group is True:
+    output_portfolio, output_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
+elif beta_by_group is False:
+    output_portfolio, output_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
 
 
 output_portfolio = pd.merge(output_portfolio, 
@@ -296,7 +303,10 @@ output_portfolio_27 = pd.merge(output_portfolio_27,
 
 # generate portfolios without dropping the smallest 20% stocks.
 # this is for robustness checks.
-nodrop20_portfolio, nodrop20_portfolio_27 = generate_portfolio(main_path,[0, 0.3, 0.7, 1], False)
+if beta_by_group is True:
+    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1], False)
+elif beta_by_group is False:
+    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], False)
 
 nodrop20_portfolio = pd.merge(nodrop20_portfolio, 
                     instruments.loc[:, ['Date', 'CPI']], 
@@ -311,9 +321,13 @@ nodrop20_portfolio_27 = pd.merge(nodrop20_portfolio_27,
                     left_on='date', 
                     right_on='Date')
 
+portfolio_datasets = [output_portfolio, output_portfolio_27, nodrop20_portfolio, nodrop20_portfolio_27]
+
+    
+
 # %%
 if convert_to_real is True:
-    for dataset in [output_portfolio, output_portfolio_27, nodrop20_portfolio, nodrop20_portfolio_27]:
+    for dataset in portfolio_datasets:
         
         for col in dataset.columns:
             if (col != 'date') and (col != 'CPI') and (col != 'Date'):
@@ -321,7 +335,7 @@ if convert_to_real is True:
                 
 # %%
 
-for dataset in [output_portfolio, output_portfolio_27, nodrop20_portfolio, nodrop20_portfolio_27]:
+for dataset in portfolio_datasets:
     dataset.drop(columns=['Date', 'CPI'], inplace = True)
 
 

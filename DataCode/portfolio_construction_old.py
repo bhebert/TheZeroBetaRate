@@ -18,7 +18,7 @@ def generate_portfolio(main_path, segment, drop_20):
     Args:
         segment (list): A list of number between 0 and 1 to indicate the quantiles used to divide stocks into groups.
         drop_20 (boolean): Whether to drop the smallest 20% ME stocks in the data.
-        
+
     Returns:
         DataFrame: Two DataFrames
     """
@@ -35,6 +35,38 @@ def generate_portfolio(main_path, segment, drop_20):
     betas = pd.read_csv(
         join(raw_path, "beta_estimated.csv"), engine="pyarrow", index_col=0
     ).assign(date=lambda x: pd.to_datetime(x["date"]) + MonthEnd(0))
+
+    crsp = (
+        pd.read_csv(join(raw_path, "CCM", "crsp_m.csv"), index_col=0, engine='pyarrow')
+        .assign(date = lambda x: pd.to_datetime(x['date']) + MonthEnd(0))
+    )
+
+    mseall = (
+        pd.read_csv(join(raw_path, "CCM", "mseall.csv"), index_col=0, engine='pyarrow')
+        .assign(date = lambda x: pd.to_datetime(x['date']) + MonthEnd(0))
+        .drop_duplicates(subset=["date", "permno", "permco"])
+    )
+
+    merged = reduce(
+        lambda left, right: pd.merge(
+            left, right, on=["permno", "permco", "date"], how="inner"
+        ),
+        [crsp, betas, mseall[["permno", "permco", "date", "exchcd", "shrcd"]]],
+    )
+
+    merged = merged.query(
+        "((exchcd == 1 and shrcd == 10) or (shrcd == 11)) and (date.dt.month == 6)"
+    )
+
+    beta_breakpoints = merged.groupby("date")["beta"].describe(
+        percentiles=np.arange(5, 105, 5) / 100
+    )
+    beta_breakpoints = beta_breakpoints.iloc[:, 4:-1]
+    column_names = []
+    for i in range(20):
+        column_names.append("beta_p{0}".format((i + 1) * 5))
+    beta_breakpoints.columns = column_names
+    beta_breakpoints = beta_breakpoints.reset_index()
 
 
 
@@ -67,10 +99,9 @@ def generate_portfolio(main_path, segment, drop_20):
     # %%
 
     ccm_june = ccm[ccm["date"].dt.month == 6]
-    ccm_june = ccm_june.merge(betas, on=["permno", "permco", "date"], how="inner")
 
     ccm_june2 = ccm_june.copy()
-    for var in ['bm', 'me', 'op', 'inv', 'beta']:
+    for var in ['bm', 'me', 'op', 'inv']:
         breaks = (
             ccm_june
             .query("exchcd == 1 and bm > 0 and me > 0 and (shrcd == 10 or shrcd == 11)")
@@ -97,90 +128,28 @@ def generate_portfolio(main_path, segment, drop_20):
         
         ccm_june2 = pd.merge(ccm_june2, breaks, how = 'inner', on = ['date'])
 
-    
-    # 
+    ccm_june2 = pd.merge(ccm_june2, betas, on=["permno", "permco", "date"], how="inner")
+    ccm_june2 = pd.merge(ccm_june2, beta_breakpoints, on="date", how="inner")
+            
+
     for var in ["bm", "me", "beta", "op", 'inv']:
         conds = []
-        for cut in [30, 70]:
+        for cut in [30, 70, 100]:
             new_var = var + "_p" + str(cut)
             conds.append(ccm_june2[var] <= ccm_june2[new_var])
 
-        vals = [1, 2]
+        vals = [1, 2, 3]
         port_var = var + "_port"
         ccm_june2[port_var] = np.select(conds, vals)
-        
-        ccm_june2.loc[ccm_june2[var] > ccm_june2[new_var], port_var] = 3
-    
-    # A separate section to compute the beta groups by size groups.
-    # This is because the small stocks may have inaccurate betas due to
-    # liquidity reasons.
-    for group_var in [
-        ['me_port', 'op_port'], ['me_port', 'inv_port'], ['me_port', 'bm_port']
-    ]:  
-        two_var = "_".join([str(item).replace("_port", "") for item in group_var])
-        
-        beta_breaks = (
-            ccm_june2
-            .query("bm > 0 and me > 0 and (shrcd == 10 or shrcd == 11)")
-            .replace([np.inf, -np.inf], np.nan)
-            .dropna(how='all')
-            .groupby(['date']+group_var)['beta']
-            .quantile(segment)
-            .reset_index()
-            .rename(columns={'level_3': 'group'})
-            )
-
-        group_num = 1
-        beta_breaks['group2'] = 0
-        for i in segment:
-            beta_breaks['group2'] = np.where(beta_breaks['group']==i, group_num, beta_breaks['group2'])
-            group_num = group_num + 1
-
-        beta_breaks['group'] = beta_breaks['group2'].astype(int)
-        beta_breaks = beta_breaks.drop('group2', axis=1)
-        beta_breaks = beta_breaks.pivot(index=['date']+group_var, columns='group', values='beta').reset_index()
-
-        names = ['date']+group_var
-        for ix, i in enumerate(segment):
-            names.append("{0}_p{1}".format('beta_' + two_var, int(segment[ix]*100) ))
-        beta_breaks = beta_breaks.set_axis(names, axis = 1)
-
-        ccm_june2 = pd.merge(ccm_june2, beta_breaks, how = 'left', on = ['date']+group_var)
-        conds = []
-        for cut in [30, 70]:
-            new_var = 'beta_' + two_var + "_p" + str(cut)
-            conds.append(ccm_june2['beta'] <= ccm_june2[new_var])
-
-        vals = [1, 2]
-        port_var = 'beta' + "_port_" + two_var
-        ccm_june2[port_var] = np.select(conds, vals)      
-        
-        ccm_june2.loc[ccm_june2['beta'] > ccm_june2[new_var], port_var] = 3
-        
-        # An useful object for debugging.
-        # beta_counts = (
-        #     ccm_june2
-        #     .groupby(['date']+ group_var + [port_var])['beta']
-        #     .count()
-        # )
-
-
             
             
 
 
     # %%
-    
-    port_list = []
-    for col in ccm_june2.columns:
-        if "_port" in col:
-            port_list.append(col)
-            
-                
     ccm_june2 = (
         ccm_june2.pipe(pd.DataFrame.drop_duplicates, subset=["permco", "permno", "date"])
         .assign(year=lambda x: x["date"].dt.year + 1)
-        .loc[:, ["permco", "permno", "year"]+port_list]
+        .loc[:, ["permco", "permno", "year", "bm_port", "me_port", "beta_port", "op_port", "inv_port"]]
     )
 
 
@@ -212,12 +181,13 @@ def generate_portfolio(main_path, segment, drop_20):
 
 
     # %%
+    ccm3 = ccm2.query("bm_port != 0 and me_port != 0 and beta_port != 0 and op_port != 0 and inv_port != 0")
+    ccm4 = ccm2.query("bm_port != 0 and me_port != 0 and beta_port != 0")
 
 
     def generate_portfolio(dataframe, ports):
         group_data = (
-            dataframe[(dataframe[ports]!=0).all(1)]
-            .groupby(["date"] +ports)
+            dataframe.groupby(["date"] +ports)
             .apply(wavg, "retadj", "wt")
             .reset_index()
             .rename(columns={0: "mret"})
@@ -243,13 +213,12 @@ def generate_portfolio(main_path, segment, drop_20):
         return group_data
 
 
-    # FF5 portfolios with size-dependent beta groups
-    beta_size_op = generate_portfolio(ccm2, ['beta_port_me_op', 'me_port', 'op_port'])
-    beta_size_inv = generate_portfolio(ccm2, ['beta_port_me_inv', 'me_port', 'inv_port'])
-    bm_size_beta = generate_portfolio(ccm2, ['bm_port', 'me_port', 'beta_port_me_bm'])
+    beta_size_op = generate_portfolio(ccm3, ['beta_port', 'me_port', 'op_port'])
+    beta_size_inv = generate_portfolio(ccm3, ['beta_port', 'me_port', 'inv_port'])
+    bm_size_beta = generate_portfolio(ccm3, ['bm_port', 'me_port', 'beta_port'])
 
-    # only 27 portfolio from FF3 with size-dependent beta groups
-    beta_size_bm = generate_portfolio(ccm2, ['beta_port_me_bm', 'me_port', 'bm_port'])
+    # only 27 portfolio from FF3
+    beta_size_bm = generate_portfolio(ccm4, ['beta_port', 'me_port', 'bm_port'])
 
 
     # %%
