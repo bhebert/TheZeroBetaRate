@@ -60,6 +60,8 @@ if not os.path.exists(input_path):
 #                          Hyper-parameters
 ################################################################
 
+
+# Whether to sort beta separately within each subgroup.
 beta_by_group = True
 
 
@@ -165,7 +167,11 @@ TSP = (
     .loc[:, ['Date', 'TSP']]
     )   
 
-to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread]
+from price_dividend_ratio import DP_ratio
+
+DP = DP_ratio(main_path)
+
+to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread, DP]
 
 instruments = RF
 
@@ -174,11 +180,11 @@ for df in to_merge:
 
 instruments = (
     instruments
-    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread']]
+    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread', 'DP_ratio']]
     # .assign(BAAS = lambda x: x['BAA'] - x['TSP'] - x['RF']*12)
     .assign(BAAS = lambda x: x['BAA'] - x['AAA'])
     .drop(columns=['BAA', 'AAA'])
-    .dropna(subset=['RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread'])
+    .dropna(subset=['RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'DP_ratio'])
     )
 
 

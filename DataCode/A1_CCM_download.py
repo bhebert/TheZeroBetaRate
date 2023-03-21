@@ -104,4 +104,12 @@ ccm_link = (
 ccm_link.to_csv(os.path.join(ccm_path, "ccm_link.csv"), index=True)
 
 
+
+# %%
+msi = conn.raw_sql("""
+                   select date, vwretd, vwretx
+                   from crsp.msi
+                   """)
+
+msi.to_csv(os.path.join(ccm_path, "msi.csv"), index=True)
 # %%
