@@ -228,7 +228,8 @@ write(table(ZSDiag*[Rf;gamma], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/
 
 zbrate = gamma'*Zinput + Rf + Rbinput; % zero-beta rate
 
-zbrateReal = zbrate + exp_inf' - 1;
+%change here: missing factor of 100
+zbrateReal = zbrate + 100*(exp_inf' - 1);
 
 %check that the mean and covariances make sense
 mean(portRet3-zbrate)
@@ -391,7 +392,8 @@ if strcmp(opts.Name,'Main')
 
 
     bond_betas = [Zinput;ones(1,T)]' \ (Rminput(6,:)+Rbinput)';
-    p_bond = bond_betas' * [Zinput;ones(1,T)] + exp_inf' - 1;
+    %fix factor of 100 here as well
+    p_bond = bond_betas' * [Zinput;ones(1,T)] + 100*(exp_inf' - 1);
     
 
     
