@@ -283,7 +283,7 @@ if opts.RunRidge
     plot(dts, Rbinput*12, '--', 'DisplayName', 'T-Bill Yield.','LineWidth',2,'Color',colors_list{3});
     ylabel('Annualized Nominal Rate (mean +/- 4 s.d.)','Interpreter','Latex')
     set(gca,'TickLabelInterpreter','latex')
-    l = legend('show')
+    l = legend('show');
     set(l,'Interpreter','Latex')
     tightfig(cfig);
     set(cfig,'PaperOrientation','landscape');
