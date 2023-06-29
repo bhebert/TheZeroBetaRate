@@ -68,14 +68,18 @@ tsset month
 
 
 local inames
+local i = 0
 
 foreach ins in `insts' {
+	
+	local i = `i'+1
 	local nm = regexr("`ins'","\.","")
 	
 	local inames `inames' `nm'
 	su `ins'
 	gen ins_`nm' = `ins' - r(mean)
-	label var ins_`nm' `nm'
+	local vname : word `i' of `nameMain'
+	label var ins_`nm' `vname'
 	egen z_`nm' = std(`ins') if month >= ym(1973,3)
 }
 
