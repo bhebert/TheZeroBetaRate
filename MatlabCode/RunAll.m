@@ -143,8 +143,18 @@ opts.NoCOVID = true;
 RunTest;
 
 opts = optsDefault;
-opts.Name = 'HAR-NW';
-opts.har = 'NW';
+opts.Name = 'Pre2004';
+opts.SplitSample = true;
+opts.SplitYear = 2004;
+opts.RunRidge = true;
 RunTest;
+
+opts = optsDefault;
+opts.Name = 'Pre1989';
+opts.SplitSample = true;
+opts.SplitYear = 1989;
+opts.RunRidge = true;
+RunTest;
+
 
 

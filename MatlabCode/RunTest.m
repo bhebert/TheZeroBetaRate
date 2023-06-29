@@ -111,10 +111,20 @@ dts2 = dates(3:end)';
 
 
 % code to truncate sample
-if opts.NoCOVID 
+if opts.NoCOVID || opts.SplitSample
 
-    Tmax = find(dts2==datetime(2019,12,31));
-  
+    if opts.NoCOVID
+        Tmax = find(dts2>datetime(2019,12,31),1)-1;
+    else
+        Tmax = find(dts2>datetime(opts.SplitYear,12,31),1)-1;
+    end
+    dtsFull = dates(2:end-1)';
+    Zfull = Zinput;
+    Rbinputfull = Rbinput;
+    Rfull = Rinput;
+    cons_full = cons_gr_ann;
+
+
     Rinput = Rinput(:,1:Tmax);  
     Zinput = Zinput(:,1:Tmax);
     Rminput = Rminput(:,1:Tmax);
@@ -144,6 +154,13 @@ Zinput_pre = Zinput';
 Zscales = std(Zinput');
 ZSDiag = eye(length(Zscales)+1);
 ZSDiag(2:end,2:end) = diag(1./Zscales);
+
+if opts.SplitSample
+    Zfull = Zfull - mean(Zinput,2);
+    Zfull = ZSDiag(2:end,2:end)*Zfull; 
+end
+
+
 Zinput = normalize(Zinput')';   % standardize the Z input variables.
 
 
@@ -343,6 +360,68 @@ legend({'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$'},'Interprete
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/TBillvCons_"+opts.Name+".png");
+
+
+if opts.SplitSample
+
+    if opts.RunRidge
+        p_cons_full = Zfull' * ba(:,fitinfoa.IndexMinMSE) + fitinfoa.Intercept(fitinfoa.IndexMinMSE);
+        p_cons_full = p_cons_full';
+    else
+        p_cons_full = cbetas' * [Zfull;ones(1,size(Zfull,2))];
+    end
+
+    exp_inf_full =  [Zfull',ones(size(Zfull,2),1)] * beta_inf;
+
+    zbratefull = gamma'*Zfull + Rf + Rbinputfull; % zero-beta rate
+
+    %change here: missing factor of 100
+    zbrateRealFull = zbratefull + 100*(exp_inf_full' - 1);
+
+    % plot the results.
+    cfig=figure(5);
+    colororder({colors_list{1},colors_list{2}});
+    hold on
+  
+ 
+
+    yyaxis left;
+    p1=plot(dtsFull, zbrateRealFull*12, '-.','LineWidth',2,'Color',colors_list{1});
+    set(gca,'TickLabelInterpreter','latex');
+    ylabel('Annualized Rate (mean +/- 6 s.d.)','Interpreter','Latex')
+    
+    ylim(mean(zbrateReal'*12)+6*std(zbrateReal'*12)*[-1,1]);
+
+    yyaxis right;
+    
+    
+    ylim(mean(p_cons')+6*std(p_cons')*[-1,1]);
+    ylabel('$\bf{E}[$Cons. Growth$]$ (mean +/- 6 s.d.)','Interpreter','Latex');
+    p2=plot(dtsFull, p_cons_full, '-','LineWidth',2,'Color',colors_list{2});
+    hold off
+    yline(mean(p_cons'), 'k-','HandleVisibility','off');
+    
+    xline(dtsFull(Tmax),'k-','HandleVisibility','off');
+    
+
+
+    legend({'Real Zero-Beta Rate','$\bf{E}[$Cons. Growth$]$'},'Interpreter','Latex');
+
+    %this code makes the zero-beta rate dashed line go on top
+    ax = gca;
+    p1.ZData = ones(length(p1.YData),1);
+    p2.ZData = zeros(length(p1.YData),1);
+    ax.SortMethod = 'depth';
+    clear p1 p2 ax;
+
+    tightfig(cfig);
+    
+    set(cfig,'PaperOrientation','landscape');
+    print(cfig, '-dpng', "../Output/ZBvCons_"+opts.Name+"_OOS.png");
+
+
+    
+end
 
 
 %can't run GMM tests with ridge
