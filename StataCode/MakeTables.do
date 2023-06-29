@@ -140,11 +140,11 @@ eststo gmm_preg
 estadd scalar F = `gmm_wald'
 estadd scalar F_p = `pval'
 
-esttab gmm_preg simple_preg, scalars("F Wald/F" "F_p p-value") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") 
+esttab gmm_preg simple_preg, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") 
 
-esttab gmm_preg simple_preg using ../Output/GMMReg.csv, scalars("F Wald/F" "F_p p-value") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") replace
+esttab gmm_preg simple_preg using ../Output/GMMReg.csv, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") replace
 
-esttab gmm_preg simple_preg using ../Output/GMMReg.tex, scalars("F Wald/F" "F_p p-value") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") replace
+esttab gmm_preg simple_preg using ../Output/GMMReg.tex, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") replace
 
 
 
