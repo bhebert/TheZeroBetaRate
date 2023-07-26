@@ -55,7 +55,11 @@ opts = struct('Name','Main');
 opts.AssetFile = '27_plus_Industry_Portfolios_Nominal.csv';
 opts.VaryingBeta = false;
 opts.LinearConsumption = false;
-opts.NLConsFactor = true;
+
+%June 2023: switched main specification to not include cons factor
+%makes exposition clearer
+opts.NLConsFactor = false;
+
 opts.SigmaInit = 5;
 opts.Factors = {'Mkt','SMB','HML','RMW','CMA','term_spread','DEF'};
 opts.Instruments = {'RF','UMP','EBP','TSP','CPI_rolling'};
@@ -94,10 +98,12 @@ opts.LinearConsumption = true;
 opts.NLConsFactor = false;
 RunTest;
 
+%June 2023: Renamed this from NoCons to WithCons due to switch in main spec
+%renamed this from 
 opts = optsDefault;
-opts.Name = 'NoCons';
+opts.Name = 'WithCons';
 opts.LinearConsumption = false;
-opts.NLConsFactor = false;
+opts.NLConsFactor = true;
 RunTest;
 
 opts = optsDefault;
