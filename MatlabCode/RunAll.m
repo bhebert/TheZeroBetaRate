@@ -88,10 +88,13 @@ opts.Name = 'NoDrop20';
 opts.AssetFile = 'NoDrop20/FF5_plus_Industry_Portfolios_Nominal.csv';
 RunTest;
 
-opts = optsDefault;
-opts.Name = 'FF5Industry';
-opts.AssetFile = 'FF5_plus_Industry_Portfolios_Nominal.csv';
-RunTest;
+%robustness test of portfolios constructed from BLLP data
+%not included in main paper
+%github code will not generate this file, so commented by default
+%opts = optsDefault;
+%opts.Name = 'AltDataBLLP';
+%opts.AssetFile = 'AltData.csv';
+%RunTest;
 
 
 %June 2023: switched main spec to FF5, so robustness is not FF3
@@ -101,6 +104,16 @@ opts = optsDefault;
 opts.Name = 'FF3Industry';
 opts.AssetFile = '27_plus_Industry_Portfolios_Nominal.csv';
 RunTest;
+
+%alternative portfolios by RA attempting to replicate 
+%not included in paper, so commented by default
+%github code will not generate the required input file
+%opts = optsDefault;
+%opts.Name = 'FF3IndustryPaul';
+%opts.AssetFile = '27_plus_Industry_Portfolios_Nominal_paul.csv';
+%RunTest;
+
+
 opts = optsDefault;
 opts.Name = 'Sigma1';
 opts.SigmaInit = 1;
