@@ -293,7 +293,7 @@ generate_CCM(main_path)
 
 # generate portfolios
 if beta_by_group is True:
-    output_portfolio, output_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1], [0, 0.33, 0.66, 1], True, False)
+    output_portfolio, output_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1], [0, 0.3, 0.7, 1], True, False)
 elif beta_by_group is False:
     output_portfolio, output_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], [0, 0.3, 0.7, 1],  True, False)
 
@@ -314,7 +314,7 @@ output_portfolio_27 = pd.merge(output_portfolio_27,
 # generate portfolios without dropping the smallest 20% stocks.
 # this is for robustness checks.
 if beta_by_group is True:
-    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1],[ 0, 0.33, 0.66, 1], False, False)
+    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1],[ 0, 0.3, 0.7, 1], False, False)
 elif beta_by_group is False:
     nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], [0, 0.3, 0.7, 1], False, False)
 
