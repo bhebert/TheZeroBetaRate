@@ -2,13 +2,13 @@
 //make sure this lines up with the instruments used in "Main" specification
 local insts L.rf L.ump L.ebp L.tsp L2.cpi_rolling 
 
-local specs Main NoDrop20 FF5Industry Sigma1 LinearCons NoCons MktOnly FF3Only AltBAAS AltCAPE LagCons Shadow VaryingBetas NDOnly NoCOVID
+local specs Main NoDrop20 FF3Industry Sigma1 LinearCons WithCons MktOnly FF3Only AltBAAS AltCAPE LagCons Shadow VaryingBetas NDOnly NoCOVID
 
 local nameMain RF UMP EBP TSP CPI_Rolling
-local nameFF5Industry RF UMP EBP TSP CPI_Rolling
+local nameFF3Industry RF UMP EBP TSP CPI_Rolling
 local nameSigma1 RF UMP EBP TSP CPI_Rolling
 local nameLinearCons RF UMP EBP TSP CPI_Rolling
-local nameNoCons RF UMP EBP TSP CPI_Rolling
+local nameWithCons RF UMP EBP TSP CPI_Rolling
 local nameMktOnly RF UMP EBP TSP CPI_Rolling
 local nameFF3Only RF UMP EBP TSP CPI_Rolling
 local nameAltBAAS RF UMP TSP CPI_Rolling BAAS

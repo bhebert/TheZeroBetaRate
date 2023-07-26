@@ -44,6 +44,8 @@
 %10 produces most graphs, 20 is sufficient to illustrate non-linear
 %'rare disasters' effect
 
+%NoCOVID: true/false, end data in Dec 2019
+
 %SplitSample/SplitYear: fit regressions only on earlier data, plot full
 %sample
 
