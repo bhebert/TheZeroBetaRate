@@ -240,7 +240,10 @@ else
 end
 
 %save re-scaled coefficient estimates and standard errors
-write(table(ZSDiag*[Rf;gamma], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/ses_" + opts.Name + ".csv");
+% new draft of paper defines gamma slightly differently
+% this code patch makes the output consistent with new draft
+% todo: rewrite code to use definition of gamma consistent with new draft
+write(table(ZSDiag*[Rf;gamma] + [0; 1; zeros(K-1,1)], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/ses_" + opts.Name + ".csv");
 
 
 zbrate = gamma'*Zinput + Rf + Rbinput; % zero-beta rate
