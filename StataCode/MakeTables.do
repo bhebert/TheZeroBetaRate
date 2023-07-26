@@ -47,6 +47,8 @@ rename var2 exprfRateReal
 rename var3 zbRateReal
 rename var4 portRetReal
 rename var5 cons_g
+rename var6 zbRateNom
+rename var7 portRetNom
 
 
 gen Date = date(date,"YMD")
@@ -104,7 +106,9 @@ use `temp', clear
 gen spread = portRetReal - exprfRateReal
 label var spread "Convenience Spread"
 
-reg spread ins_*, robust
+//changed to portfolio return instead of spread to be consistent with
+//change in definition of gamma in paper
+reg portRetNom ins_*, robust
 
 local n_ins = e(df_m)
 

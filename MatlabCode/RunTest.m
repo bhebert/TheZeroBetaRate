@@ -259,7 +259,7 @@ std(portRet3-zbrate)
 ([Zinput;ones(size(portRet3))]' \ (portRet3-Rbinput)')' - [gamma;Rf]'
 
 %save time series
-write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate'), "../Output/zero_beta_rate" + opts.Name + ".csv")
+write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate',portRet3'), "../Output/zero_beta_rate" + opts.Name + ".csv")
 
 % regression with both variables
 fitlm([RbinputReal;zbrateReal]',cons_gr_ann/12)
