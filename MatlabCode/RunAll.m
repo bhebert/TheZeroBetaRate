@@ -52,7 +52,13 @@
 
 
 opts = struct('Name','Main');
-opts.AssetFile = '27_plus_Industry_Portfolios_Nominal.csv';
+
+%June 2023: switched to also include investment/profitability 3x3x3 sorts
+%these sorts now make sense given fix to portfolio construction
+%which eliminated problem of empty or almost-empty buckets
+opts.AssetFile = 'FF5_plus_Industry_Portfolios_Nominal.csv';
+
+
 opts.VaryingBeta = false;
 opts.LinearConsumption = false;
 
@@ -67,7 +73,7 @@ opts.LaggedCons = false;
 opts.ConsumptionVar = 'JW';
 opts.RunRidge = false;
 opts.GenSEs = true;
-opts.sigma_max = 10;
+opts.sigma_max = 12;
 opts.NoCOVID = false;
 opts.har = 'COV';
 opts.SplitSample = false;
@@ -79,7 +85,7 @@ RunTest;
 
 opts = optsDefault;
 opts.Name = 'NoDrop20';
-opts.AssetFile = 'NoDrop20/27_plus_Industry_Portfolios_Nominal.csv';
+opts.AssetFile = 'NoDrop20/FF5_plus_Industry_Portfolios_Nominal.csv';
 RunTest;
 
 opts = optsDefault;
@@ -87,6 +93,14 @@ opts.Name = 'FF5Industry';
 opts.AssetFile = 'FF5_plus_Industry_Portfolios_Nominal.csv';
 RunTest;
 
+
+%June 2023: switched main spec to FF5, so robustness is not FF3
+opts = optsDefault;
+%opts.Name = 'FF5Industry';
+%opts.AssetFile = 'FF5_plus_Industry_Portfolios_Nominal.csv';
+opts.Name = 'FF3Industry';
+opts.AssetFile = '27_plus_Industry_Portfolios_Nominal.csv';
+RunTest;
 opts = optsDefault;
 opts.Name = 'Sigma1';
 opts.SigmaInit = 1;
