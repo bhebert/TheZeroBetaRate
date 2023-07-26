@@ -139,7 +139,7 @@ UMP = (
     )
 
 
-from shadow_spread import generate_shadow_spread
+from auxiliary_functions import generate_shadow_spread
 generate_shadow_spread(main_path)
 
 shadow_spread = (
@@ -167,11 +167,15 @@ TSP = (
     .loc[:, ['Date', 'TSP']]
     )   
 
-from price_dividend_ratio import DP_ratio
+from auxiliary_functions import DP_ratio
 
 DP = DP_ratio(main_path)
 
-to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread, DP]
+from auxiliary_functions import generate_value_spread
+
+value_spread = generate_value_spread(main_path)
+
+to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread, DP, value_spread]
 
 instruments = RF
 
@@ -180,11 +184,11 @@ for df in to_merge:
 
 instruments = (
     instruments
-    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread', 'DP_ratio']]
+    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread', 'DP_ratio', 'value_spread']]
     # .assign(BAAS = lambda x: x['BAA'] - x['TSP'] - x['RF']*12)
     .assign(BAAS = lambda x: x['BAA'] - x['AAA'])
     .drop(columns=['BAA', 'AAA'])
-    .dropna(subset=['RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'DP_ratio'])
+    .dropna(subset=['RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'DP_ratio', 'value_spread'])
     )
 
 
@@ -289,9 +293,9 @@ generate_CCM(main_path)
 
 # generate portfolios
 if beta_by_group is True:
-    output_portfolio, output_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
+    output_portfolio, output_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1], [0, 0.33, 0.66, 1], True, False)
 elif beta_by_group is False:
-    output_portfolio, output_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], True)
+    output_portfolio, output_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], [0, 0.3, 0.7, 1],  True, False)
 
 
 output_portfolio = pd.merge(output_portfolio, 
@@ -310,9 +314,9 @@ output_portfolio_27 = pd.merge(output_portfolio_27,
 # generate portfolios without dropping the smallest 20% stocks.
 # this is for robustness checks.
 if beta_by_group is True:
-    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1], False)
+    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction.generate_portfolio(main_path,[0, 0.3, 0.7, 1],[ 0, 0.33, 0.66, 1], False, False)
 elif beta_by_group is False:
-    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], False)
+    nodrop20_portfolio, nodrop20_portfolio_27 = portfolio_construction_old.generate_portfolio(main_path,[0, 0.3, 0.7, 1], [0, 0.3, 0.7, 1], False, False)
 
 nodrop20_portfolio = pd.merge(nodrop20_portfolio, 
                     instruments.loc[:, ['Date', 'CPI']], 
@@ -400,7 +404,7 @@ nodrop20_portfolio_27\
 ################################################################
 #                          Monetary Shocks
 ################################################################
-from monetary_shocks import generate_MS
+from auxiliary_functions import generate_MS
 generate_MS(main_path)
 
 
@@ -409,7 +413,7 @@ generate_MS(main_path)
 ################################################################
 #                          Consumption
 ################################################################
-from consumption import generate_consumption
+from auxiliary_functions import generate_consumption
 generate_consumption(main_path)
 
 # %%

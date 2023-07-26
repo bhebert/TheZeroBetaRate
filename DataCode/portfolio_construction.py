@@ -11,18 +11,13 @@ from pandas.tseries.offsets import *
 from functools import reduce
 
 
+######################################################
+# Hyperparameters
+######################################################
 
-def generate_portfolio(main_path, segment, drop_20):
-    """generate portfolio according to Fama French 1993
 
-    Args:
-        segment (list): A list of number between 0 and 1 to indicate the quantiles used to divide stocks into groups.
-        drop_20 (boolean): Whether to drop the smallest 20% ME stocks in the data.
-        
-    Returns:
-        DataFrame: Two DataFrames
-    """
 
+def generate_groups(main_path, segment, beta_segment, drop_20, share_code_restriction):
     raw_path = join(main_path, "Raw Data")
     process_path = join(main_path, "Processed Data")
 
@@ -56,18 +51,16 @@ def generate_portfolio(main_path, segment, drop_20):
     )
 
 
-
-    if drop_20 is True:
-        # Get rid of the 20% smallest stocks
-        size_cutoff = ccm.groupby(['date'])['me'].quantile(0.2).reset_index().rename(columns={"me":"size_cutoff"})
-        ccm = pd.merge(ccm, size_cutoff, on='date', how='inner')
-        ccm = ccm.query("me >= size_cutoff")
-
-
     # %%
 
     ccm_june = ccm[ccm["date"].dt.month == 6]
     ccm_june = ccm_june.merge(betas, on=["permno", "permco", "date"], how="inner")
+    
+    if drop_20 is True:
+        # Get rid of the 20% smallest stocks
+        size_cutoff = ccm_june.groupby(['date'])['me'].quantile(0.2).reset_index().rename(columns={"me":"size_cutoff"})
+        ccm_june = pd.merge(ccm_june, size_cutoff, on='date', how='inner')
+        ccm_june = ccm_june.query("me >= size_cutoff")
 
     ccm_june2 = ccm_june.copy()
     for var in ['bm', 'me', 'op', 'inv', 'beta']:
@@ -119,20 +112,32 @@ def generate_portfolio(main_path, segment, drop_20):
     ]:  
         two_var = "_".join([str(item).replace("_port", "") for item in group_var])
         
-        beta_breaks = (
-            ccm_june2
-            .query("bm > 0 and me > 0 and (shrcd == 10 or shrcd == 11)")
-            .replace([np.inf, -np.inf], np.nan)
-            .dropna(how='all')
-            .groupby(['date']+group_var)['beta']
-            .quantile(segment)
-            .reset_index()
-            .rename(columns={'level_3': 'group'})
-            )
+        if share_code_restriction is True:
+            beta_breaks = (
+                ccm_june2
+                .query("bm > 0 and me > 0 and (shrcd == 10 or shrcd == 11)")
+                .replace([np.inf, -np.inf], np.nan)
+                .dropna(how='all')
+                .groupby(['date']+group_var)['beta']
+                .quantile(beta_segment)
+                .reset_index()
+                .rename(columns={'level_3': 'group'})
+                )
+        else:
+            beta_breaks = (
+                ccm_june2
+                .query("bm > 0 and me > 0")
+                .replace([np.inf, -np.inf], np.nan)
+                .dropna(how='all')
+                .groupby(['date']+group_var)['beta']
+                .quantile(beta_segment)
+                .reset_index()
+                .rename(columns={'level_3': 'group'})
+                )
 
         group_num = 1
         beta_breaks['group2'] = 0
-        for i in segment:
+        for i in beta_segment:
             beta_breaks['group2'] = np.where(beta_breaks['group']==i, group_num, beta_breaks['group2'])
             group_num = group_num + 1
 
@@ -141,21 +146,21 @@ def generate_portfolio(main_path, segment, drop_20):
         beta_breaks = beta_breaks.pivot(index=['date']+group_var, columns='group', values='beta').reset_index()
 
         names = ['date']+group_var
-        for ix, i in enumerate(segment):
-            names.append("{0}_p{1}".format('beta_' + two_var, int(segment[ix]*100) ))
+        for ix, i in enumerate(beta_segment):
+            names.append("{0}_p{1}".format('beta_' + two_var, int(beta_segment[ix]*100) ))
         beta_breaks = beta_breaks.set_axis(names, axis = 1)
 
         ccm_june2 = pd.merge(ccm_june2, beta_breaks, how = 'left', on = ['date']+group_var)
         conds = []
-        for cut in [30, 70]:
-            new_var = 'beta_' + two_var + "_p" + str(cut)
+        for cut in [x * 100 for x in beta_segment[1:-1]]:
+            new_var = 'beta_' + two_var + "_p" + str(int(cut))
             conds.append(ccm_june2['beta'] <= ccm_june2[new_var])
 
-        vals = [1, 2]
+        vals = list(range(1, len(segment)-1))
         port_var = 'beta' + "_port_" + two_var
         ccm_june2[port_var] = np.select(conds, vals)      
         
-        ccm_june2.loc[ccm_june2['beta'] > ccm_june2[new_var], port_var] = 3
+        ccm_june2.loc[ccm_june2['beta'] > ccm_june2[new_var], port_var] = len(segment)-1
         
         # An useful object for debugging.
         # beta_counts = (
@@ -186,9 +191,26 @@ def generate_portfolio(main_path, segment, drop_20):
 
     ccm["year"] = ccm["date"].dt.year
     ccm2 = pd.merge(ccm, ccm_june2, on=["permno", "permco", "year"], how="inner")
+    
+    return ccm2
 
 
-    # %%
+    
+def generate_portfolio(main_path, segment, beta_segment, drop_20, share_code_restriction):
+    """generate portfolio according to Fama French 1993
+
+    Args:
+        segment (list): A list of number between 0 and 1 to indicate the quantiles used to divide stocks into groups.
+        drop_20 (boolean): Whether to drop the smallest 20% ME stocks in the data.
+        
+    Returns:
+        DataFrame: Two DataFrames
+    """    
+    
+    raw_path = join(main_path, "Raw Data")
+    
+    ccm2 = generate_groups(main_path, segment, beta_segment, drop_20, share_code_restriction)
+    
     def wavg(group, avg_name, weight_name):
         """
         Compute weighted average by group.
@@ -281,3 +303,8 @@ def generate_portfolio(main_path, segment, drop_20):
     
 
 # %%
+
+if __name__ == "__main__":
+    with open('path_variables.md', 'r') as f:
+        main_path = f.readline().split('"')[1]
+    generate_portfolio(main_path, [0, 0.3, 0.7, 1], [0, 0.33, 0.66, 1], True)
