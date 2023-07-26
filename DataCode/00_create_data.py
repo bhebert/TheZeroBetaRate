@@ -173,9 +173,9 @@ DP = DP_ratio(main_path)
 
 from auxiliary_functions import generate_value_spread
 
-value_spread = generate_value_spread(main_path)
+# value_spread = generate_value_spread(main_path)
 
-to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread, DP, value_spread]
+to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread, DP]
 
 instruments = RF
 
@@ -184,11 +184,11 @@ for df in to_merge:
 
 instruments = (
     instruments
-    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread', 'DP_ratio', 'value_spread']]
+    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread', 'DP_ratio']]
     # .assign(BAAS = lambda x: x['BAA'] - x['TSP'] - x['RF']*12)
     .assign(BAAS = lambda x: x['BAA'] - x['AAA'])
     .drop(columns=['BAA', 'AAA'])
-    .dropna(subset=['RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'DP_ratio', 'value_spread'])
+    .dropna(subset=['RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'DP_ratio'])
     )
 
 
