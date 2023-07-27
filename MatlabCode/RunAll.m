@@ -189,19 +189,21 @@ opts.Name = 'NoCOVID';
 opts.NoCOVID = true;
 RunTest;
 
-opts = optsDefault;
-opts.Name = 'Pre2004';
-opts.SplitSample = true;
-opts.SplitYear = 2004;
-opts.RunRidge = true;
-RunTest;
-
-opts = optsDefault;
-opts.Name = 'Pre1989';
-opts.SplitSample = true;
-opts.SplitYear = 1989;
-opts.RunRidge = true;
-RunTest;
+% Some split sample options. Did not make the final cut for the paper 
+% but should still run if uncommented.
+% opts = optsDefault;
+% opts.Name = 'Pre2004';
+% opts.SplitSample = true;
+% opts.SplitYear = 2004;
+% opts.RunRidge = true;
+% RunTest;
+% 
+% opts = optsDefault;
+% opts.Name = 'Pre1989';
+% opts.SplitSample = true;
+% opts.SplitYear = 1989;
+% opts.RunRidge = true;
+% RunTest;
 
 
 
