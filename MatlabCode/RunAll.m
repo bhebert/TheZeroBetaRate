@@ -113,10 +113,12 @@ RunTest;
 %opts.AssetFile = '27_plus_Industry_Portfolios_Nominal_paul.csv';
 %RunTest;
 
-
+%June 2023: Renamed this from Sigma1 to WithConsSigma1 due to switch in main spec 
 opts = optsDefault;
-opts.Name = 'Sigma1';
+opts.Name = 'WithConsSigma1';
 opts.SigmaInit = 1;
+opts.LinearConsumption = false;
+opts.NLConsFactor = true;
 RunTest;
 
 opts = optsDefault;
@@ -125,10 +127,10 @@ opts.LinearConsumption = true;
 opts.NLConsFactor = false;
 RunTest;
 
-%June 2023: Renamed this from NoCons to WithCons due to switch in main spec
-%renamed this from 
+%June 2023: Renamed this from NoCons to WithCons due to switch in main spec 
 opts = optsDefault;
-opts.Name = 'WithCons';
+opts.Name = 'WithConsSigma5';
+opts.SigmaInit = 5;
 opts.LinearConsumption = false;
 opts.NLConsFactor = true;
 RunTest;
