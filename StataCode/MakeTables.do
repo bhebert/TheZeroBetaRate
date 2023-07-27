@@ -224,8 +224,8 @@ local nameMain RF UMP EBP TSP CPI_Rolling
 local ests DTBillRR DZeroBetaRR Dp_consRR DConv
 local i = 1
 foreach var in `nameMain' {
-	gen g_`var' = 12*(var4_`i' - L2.var4_`i')
-	reg g_`var' shock_rr, robust
+	gen g_`var' = 12*(F4.var4_`i' - L2.var4_`i')
+	reg g_`var' shock_rr if DZeroBeta != ., robust
 	eststo g_`var'
 	local ests `ests' g_`var'
 	local i = `i' + 1
@@ -278,8 +278,8 @@ local nameMain RF UMP EBP TSP CPI_Rolling
 local ests DTBill DZeroBeta Dp_cons DConv
 local i = 1
 foreach var in `nameMain' {
-	gen g_`var' = 12*(var4_`i' - L2.var4_`i')
-	reg g_`var' shock, robust
+	gen g_`var' = 12*(F4.var4_`i' - L2.var4_`i')
+	reg g_`var' shock if DZeroBeta != ., robust
 	eststo g_`var'
 	local ests `ests' g_`var'
 	local i = `i' + 1
