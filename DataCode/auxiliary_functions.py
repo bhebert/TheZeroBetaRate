@@ -5,7 +5,8 @@ import numpy as np
 import os
 from os.path import join, exists
 from os import mkdir
-
+from datetime import timedelta
+from calendar import THURSDAY
 
 
 
@@ -159,27 +160,66 @@ def generate_shadow_spread(main_path):
 
     # compute yield curve for different maturities
     new_var = []
-    for t in range(1, 13):
+    
+    def func1(GBW, t):
+        new_series = GBW['BETA0'] + GBW['BETA1']*(1-np.exp(-t/12/GBW['TAU1']))/(t/12/GBW['TAU1']) + GBW['BETA2']*((1-np.exp(-t/12/GBW['TAU1']))/(t/12/GBW['TAU1']) - np.exp(-t/12/GBW['TAU1']))
+        return new_series
+    
+    def func2(GBW, t):
+        new_series = GBW['BETA0'] + GBW['BETA1']*(1-np.exp(-t/12/GBW['TAU1']))/(t/12/GBW['TAU1']) + GBW['BETA2']*((1-np.exp(-t/12/GBW['TAU1']))/(t/12/GBW['TAU1']) - np.exp(-t/12/GBW['TAU1'])) \
+            + GBW['BETA3']*((1-np.exp(-t/12/GBW['TAU2']))/(t/12/GBW['TAU2']) - np.exp(-t/12/GBW['TAU2']))
+        return new_series
+    
+    for t in range(1, 24):
         var_name = f"y{str(t)}m"
         new_var.append(var_name)
-        GBW[var_name] = GBW['BETA0'] + GBW['BETA1']*np.exp(-t/12/GBW['TAU1']) + GBW['BETA2']*(t/12/GBW['TAU1'])*np.exp(-t/12/GBW['TAU1']) \
-            + GBW['BETA3']*(t/12/GBW['TAU2'])*np.exp(-t/12/GBW['TAU2'])
+        GBW[var_name] = np.where(GBW['TAU2']<-999, func1(GBW, t), func2(GBW, t))
 
     yc = GBW[['Date'] + new_var]
+    
+    
+    def last_thursday(dt):
+        offset = (dt.weekday() - THURSDAY) % 7
+        last_thursday = dt - timedelta(days=offset)
 
-    output = yc.resample('M', on='Date')['y1m'].agg(['last']).reset_index().set_axis(['Date', 'y1m'], axis=1)
-    # output = yc.resample('Q', on='Date')['y3m'].agg(['last']).reset_index().set_axis(['Date', 'y3m'], axis=1)
-    output['Date'] = output['Date'] + pd.tseries.offsets.MonthEnd(0)
+        return last_thursday
 
-    TB1M = pd.read_excel(os.path.join(main_path, "Raw Data/Factors/ff3.xlsx"))
-    TB1M = TB1M.set_axis(['Date', '', '', '','RF'], axis=1)
-    TB1M['Date'] = pd.to_datetime(TB1M['Date'].astype(str) + '01') - pd.tseries.offsets.MonthEnd(1)
+    yc = pd.concat(
+        [yc, yc.apply(lambda row: last_thursday(row['Date']), axis=1).rename('last_thursday')],
+        axis=1
+    )
+    yc_q = (
+        yc
+        .groupby('last_thursday')[new_var].mean()
+        .resample('M').mean()
+        .reset_index()
+        .rename(columns={'last_thursday':'Date'})
+        )
 
-    output = pd.merge(output[['Date', 'y1m']],
-                    TB1M[['Date', 'RF']],
+    TB3M = pd.read_csv(os.path.join(main_path, "Raw Data/Shadow Rate/DTB3.csv"))
+    TB3M = TB3M.rename(columns={'DATE':'Date', 'DTB3':'t3m'})
+    TB3M = TB3M.assign(
+        Date = lambda x: pd.to_datetime(x['Date']),
+        t3m = lambda x: pd.to_numeric(x['t3m'], errors='coerce')
+    )
+    TB3M = pd.concat(
+        [TB3M, TB3M.apply(lambda row: last_thursday(row['Date']), axis=1).rename('last_thursday')],
+        axis=1
+    )
+    
+    TB3M_q = (
+        TB3M
+        .groupby('last_thursday')['t3m'].mean()
+        .resample('M').mean()
+        .reset_index()
+        .rename(columns={'last_thursday':'Date'})
+        )
+    
+    output = pd.merge(yc_q[['Date', 'y3m']],
+                    TB3M_q[['Date', 't3m']],
                     on='Date', how='inner')
 
-    output['shadow_spread'] = output['y1m']/12 - output['RF']
+    output['shadow_spread'] = output['y3m']/12 - output['t3m']/12
     output[['Date', 'shadow_spread']].to_csv(os.path.join(process_path, 'shadow_spread.csv'))
     
     
