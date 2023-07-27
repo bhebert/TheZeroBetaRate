@@ -32,6 +32,7 @@ Instructions:
         d) run MonetaryShock.m
         
         		i) this will run very quickly.
+		ii) This will generate at Matlab warning about renaming column headers that can be ignored.
 		
 	e) cd to TheZeroBetaRate/Model
 	
