@@ -197,6 +197,7 @@ gen shock_rr = L.resid_full
 label var shock_rr "RR_shock"
 
 gen DZeroBeta = 12*(F4.zbr - L2.zbr)
+gen DZeroBetaN = 12*(F4.zbn - L2.zbn)
 gen DTBill = 12*(F4.rf - L2.rf)
 
 
@@ -217,11 +218,11 @@ eststo DZeroBetaRR
 reg Dp_cons shock_rr, robust
 eststo Dp_consRR
 
-reg DConvenience shock_rr, robust
+reg DZeroBetaN shock_rr, robust //DConvenience
 eststo DConv
 
 local nameMain RF UMP EBP TSP CPI_Rolling
-local ests DTBillRR DZeroBetaRR Dp_consRR DConv
+local ests DTBillRR DZeroBetaRR Dp_consRR //DConv
 local i = 1
 foreach var in `nameMain' {
 	gen g_`var' = 12*(F4.var4_`i' - L2.var4_`i')
@@ -249,6 +250,7 @@ gen shock_rr = .
 label var shock_rr "RR_shock"
 
 gen DZeroBeta = 12*(F4.zbr - L2.zbr)
+gen DZeroBetaN = 12*(F4.zbn - L2.zbn)
 gen DTBill = 12*(F4.rf - L2.rf)
 
 
@@ -270,12 +272,12 @@ eststo DZeroBeta
 reg Dp_cons shock, robust
 eststo Dp_cons
 
-reg DConvenience shock, robust
+reg DZeroBetaN shock, robust //DConvenience
 eststo DConv
 
 
 local nameMain RF UMP EBP TSP CPI_Rolling
-local ests DTBill DZeroBeta Dp_cons DConv
+local ests DTBill DZeroBeta Dp_cons //DConv
 local i = 1
 foreach var in `nameMain' {
 	gen g_`var' = 12*(F4.var4_`i' - L2.var4_`i')
