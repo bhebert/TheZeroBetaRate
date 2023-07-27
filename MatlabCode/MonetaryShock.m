@@ -11,11 +11,15 @@ Nlags = 12;
 
 %% Load data
 load("../Output/MainRun_Ridge.mat");
-Zadj = gamma .* Zinput;
+%Zadj = gamma .* Zinput;
+
+%fix due to redefinition of gamma in paper
+Zadj = (gamma + [1/ZSDiag(2,2); zeros(K-1,1)]) .* Zinput;
+
 p_cons = p_cons';
-ZBR = table(dts', zbrateReal', RbinputReal',Zadj',p_cons');
+ZBR = table(dts', zbrateReal', RbinputReal',Zadj',p_cons',zbrate');
 % ZBR = table(dts, riskfree', Rf(1:end-1)*12);
-ZBR = renamevars(ZBR, ["Var1", "Var2", "Var3","Var5"], ["Date", "ZBR", "RF","PCons"]);
+ZBR = renamevars(ZBR, ["Var1", "Var2", "Var3","Var5","Var6"], ["Date", "ZBR", "RF","PCons","ZBN"]);
 
 RR = readtable("../Input/RR_shocks.csv");
 NS = readtable("../Input/NS_shocks.csv");
