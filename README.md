@@ -35,13 +35,13 @@ Instructions:
 		
 	e) cd to TheZeroBetaRate/Model
 	
-	f) run model.m
+	f) run monetary_shock_model.m
 	
 		i) this will run very quickly.
 		
 4) Run STATA to generate tables
 
-	a) open Stata. Tested with Stata MP 17.0 on an M1 Macbook Pro and a Windows PC.
+	a) open Stata. Tested with Stata MP 17.0 and 18.0 on an M1 Macbook Pro and a Windows PC.
 	
 	b) cd to TheZeroBetaRate/StataCode
 	
