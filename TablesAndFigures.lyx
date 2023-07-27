@@ -519,6 +519,7 @@ name "fig:MP_shocks-model"
 \align center
 \begin_inset Graphics
 	filename Output/model.png
+	width 90col%
 
 \end_inset
 
@@ -836,7 +837,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Results with FF5+Industry Portfolios
+Results with FF3+Industry Portfolios
 \end_layout
 
 \end_inset
@@ -865,7 +866,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename Output/ZBvCons_FF5Industry.png
+	filename Output/ZBvCons_FF3Industry.png
 	width 100col%
 
 \end_inset
@@ -896,7 +897,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename Output/Stest_FF5Industry.png
+	filename Output/Stest_FF3Industry.png
 	width 100col%
 
 \end_inset
@@ -1143,7 +1144,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename Output/ZBvCons_NoCons.png
+	filename Output/ZBvCons_WithCons.png
 	width 100col%
 
 \end_inset
@@ -1174,7 +1175,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename Output/Stest_NoCons.png
+	filename Output/Stest_WithCons.png
 	width 100col%
 
 \end_inset
