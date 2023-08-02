@@ -27,7 +27,7 @@ end
 
 
 %monthly value of rho
-rho = (0.96)^(1/12);
+rho = (0.95)^(1/12);
 
 % assumed value of 1/IES
 sigma = 5;
@@ -42,10 +42,25 @@ h=1;
 % constant does only a little
 PhiZ=([Zinput(:,1:end-h)',ones(T-h,1)] \ Zinput(:,1+h:end)');
 
+%gamma for nominal and real tbill rate
+gamma_tbill = zeros(size(gamma));
+gamma_tbill(1) = Zscales(1);
+gamma_tbill_real = gamma_tbill + 100*(beta_inf(1:end-1).*Zscales');
+
+
+%we need coefficients for the real zb rate, not the nominal or spread
+%the beta_inf was created before the Z was normalized, hence the Zscales
+%beta_inf predicts (1/(1+pi)) approx -pi, hence the + instead of -
+gamma_real = gamma + gamma_tbill + 100*(beta_inf(1:end-1).*Zscales');
 
 % Get the variable portion of the loading vector for the NPV calculation
 %divide by hundred important, can't be percent returns
-gvec = inv(eye(K)- (rho^h)*PhiZ(1:K,1:K))*gamma/100*h*(1/sigma-1);
+gvec = inv(eye(K)- (rho^h)*PhiZ(1:K,1:K))*gamma_real/100*h*(1/sigma-1);
+
+
+
+
+gvec_tbill = inv(eye(K)- (rho^h)*PhiZ(1:K,1:K))*gamma_tbill_real/100*h*(1/sigma-1);
 
 %compute the covariance matrix
 %recall the Zinput have already been centered here
@@ -54,7 +69,11 @@ Varmat = Zinput(:,1:end)*Zinput(:,1:end)'/T;
 %calculate the standard deviation
 sdnpv = sqrt(gvec'*Varmat*gvec)
 
+sdnpv_tbill = sqrt(gvec_tbill'*Varmat*gvec_tbill)
+
 ts = Zinput'*gvec;
+
+ts_tbill = Zinput'*gvec_tbill;
 
 %redundant, just a double-check.
 std(ts,1)
@@ -64,11 +83,12 @@ cape_series = table2array(Instruments(2:end-1,"CAPE"));
 cfig=figure;
 hold on;
 plot(dts,ts,'-b','LineWidth',2);
+plot(dts,ts_tbill,':g','LineWidth',2);
 ylim([-1,1]);
 ylabel("Log Valuation Ratio (Centered)")
 plot(dts,log(cape_series)-mean(log(cape_series)),'-.r','LineWidth',2);
 hold off;
-legend({'VAR-implied Log PD Ratio of Consumption Claim','Log CAPE Ratio'},'Interpreter','Latex');
+legend({'VAR-implied Log PD Ratio (zero-beta)','VAR-implied Log PD Ratio (T-bill)','Log CAPE Ratio'},'Interpreter','Latex');
 
 
 
