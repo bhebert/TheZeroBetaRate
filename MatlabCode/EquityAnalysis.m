@@ -25,9 +25,21 @@ if spec == 1
     gamma(index+1:end) = gammaMAIN(index:end);
 end
 
+%print out some stats for the discussion section
+mask=dts>datetime(2013,12,21) & dts<datetime(2019,1,1);
+mean(zbrate(mask) - Rbinput(mask))*12
+
+%one possible way to calibrate rho
+%don't want to use DP because of divs vs buybacks issue
+1/(1+mean(1./Instruments{:,"CAPE"}))
+
+%a different way to calibrate rho
+%implicitly assumes consumption claim return is zero-beta rate (on avg.)
+exp(mean(cons_gr_ann/12-zbrateReal')/100)^12
+
 
 %monthly value of rho
-rho = (0.95)^(1/12);
+rho = (0.94)^(1/12);
 
 % assumed value of 1/IES
 sigma = 5;
