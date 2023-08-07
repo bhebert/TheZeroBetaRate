@@ -90,7 +90,7 @@ theorems-std
 \begin_layout Title
 
 \series bold
-The Zero-Beta Rate
+The Zero-Beta Interest Rate
 \end_layout
 
 \begin_layout Author
@@ -107,7 +107,7 @@ begin{tabular}{cc} Sebastian Di Tella & Benjamin Hébert
 \backslash
  
 \backslash
-small{Stanford University} & 
+small{UC Berkeley and Stanford University} & 
 \backslash
 small{Stanford University} 
 \backslash
@@ -188,17 +188,64 @@ name "fig:exp-cg-vs-bill-2"
 \end_layout
 
 \begin_layout Plain Layout
-\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
 \begin_inset Graphics
-	filename Output/TBillvCons_Main.png
-	scale 45
+	filename Output/TbillvCons_Main.png
+	width 100col%
 
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
 \begin_inset Graphics
 	filename Output/ZBvCons_Main.png
-	scale 45
+	width 100col%
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -244,48 +291,6 @@ status open
 \backslash
 input{Output/GMMReg.tex}
 \end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Zero-beta rate and the T-Bill Yield
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:nominal_rates"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename Output/NominalRates_Ridge.png
-	width 100col%
 
 \end_inset
 
@@ -437,7 +442,7 @@ name "fig:stests"
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -452,10 +457,6 @@ name "fig:MP_shocks"
 \end_inset
 
 
-\begin_inset Newline newline
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -464,17 +465,64 @@ name "fig:MP_shocks"
 \end_layout
 
 \begin_layout Plain Layout
-\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
 \begin_inset Graphics
 	filename Output/local_projection_rr.png
-	scale 40
+	width 100col%
 
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
 \begin_inset Graphics
 	filename Output/local_projection_ns.png
-	scale 40
+	width 100col%
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -488,6 +536,7 @@ name "fig:MP_shocks"
 
 \begin_layout Standard
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -496,18 +545,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Effects of a Monetary Policy Shock in the Model 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:MP_shocks-model"
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-
+Predicted Valuation Ratio of a Consumption Claim
 \end_layout
 
 \end_inset
@@ -518,8 +556,8 @@ name "fig:MP_shocks-model"
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename Output/model.png
-	width 90col%
+	filename Output/ValuationGraph.png
+	width 100col%
 
 \end_inset
 
@@ -584,7 +622,7 @@ name "fig:exp-cg-vs-bond"
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -662,6 +700,51 @@ status open
 \backslash
 input{Output/NSEffects.tex}
 \end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effects of a Monetary Policy Shock in the Model 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MP_shocks-model"
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Output/model.png
+	width 90col%
 
 \end_inset
 
@@ -926,99 +1009,6 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Results with 
-\begin_inset Formula $\sigma=1$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49col%"
-special "none"
-height "1in"
-height_special "totalheight"
-thickness "0.4pt"
-separation "3pt"
-shadowsize "4pt"
-framecolor "black"
-backgroundcolor "none"
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename Output/ZBvCons_Sigma1.png
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49col%"
-special "none"
-height "1in"
-height_special "totalheight"
-thickness "0.4pt"
-separation "3pt"
-shadowsize "4pt"
-framecolor "black"
-backgroundcolor "none"
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename Output/Stest_Sigma1.png
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
 Results with a Linear Consumption Factor
 \end_layout
 
@@ -1108,7 +1098,104 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Results with No Consumption Factor
+Results with Consumption Factor, 
+\begin_inset Formula $\sigma=1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/ZBvCons_WithConsSigma1.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/Stest_WithConsSigma1.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Results with Consumption Factor, 
+\begin_inset Formula $\sigma=5$
+\end_inset
+
+
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:Results-with-NoCons"
@@ -1144,7 +1231,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename Output/ZBvCons_WithCons.png
+	filename Output/ZBvCons_WithConsSigma5.png
 	width 100col%
 
 \end_inset
@@ -1175,7 +1262,7 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename Output/Stest_WithCons.png
+	filename Output/Stest_WithConsSigma5.png
 	width 100col%
 
 \end_inset
@@ -1203,7 +1290,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Results with only the Market and Consumption Factors
+Results with only the Market Factor
 \end_layout
 
 \end_inset
@@ -1291,7 +1378,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Results with only the FF3 and Consumption Factors
+Results with only the FF3 Factors
 \end_layout
 
 \end_inset
@@ -1880,6 +1967,94 @@ status open
 \begin_layout Plain Layout
 \begin_inset Graphics
 	filename Output/Stest_NDOnly.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Results Excluding 2020
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/ZBvCons_NoCOVID.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/Stest_NoCovid.png
 	width 100col%
 
 \end_inset
