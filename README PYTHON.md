@@ -12,16 +12,16 @@ One set of reasonable instructions for Mac OS X:
 	b) install anaconda 2022.10 with homebrew. i.e.
 		i) brew install --cask anaconda
 		ii) add appropriate path to .zshrc in home directory, then restart terminal. E.g.  export PATH="/opt/homebrew/anaconda3/bin:$PATH"
-
+	
 	c) fix permission on .conda file: (substitute $USER for your username)
 		sudo chown -R $USER ~/.conda
-	
+
 One set of reasonable instructions for Windows: 
 
 	a) install Anaconda3-2022.10-Windows-x86_64.exe
-
+	
 	b) start "Anaconda Prompt (anaconda3)"
-		
+
 2) Setup environment.
 
 	a) cd to "TheZeroBetaRate" directory
@@ -70,3 +70,9 @@ One set of reasonable instructions for Windows:
 
 		i) you may get the warning "Workbook contains no default style, apply openpyxl's default"" which can be disregarded.
 		ii) takes only a couple minutes on a 2021 M1 Macbook pro
+
+​	  f) python3 A3_summary_statistics.py
+
+​			i) generates summary statistics tables in the appendix and files for illustration. These files are not 				needed to run the estimation.
+
+​	 

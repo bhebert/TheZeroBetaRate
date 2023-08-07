@@ -1,7 +1,9 @@
 ######################################################
-# Equity Portfolio Summary
-# Produce summary statistics for equity portfolio constructed
-# in portfolio_construction.py
+# Summary Statistics
+# Produce summary statistics for 
+# 1. Instruments
+# 2. Equity portfolio constructed
+# 
 # Produce table in the appendix and useful for debugging.
 ######################################################
 
@@ -9,8 +11,10 @@
 
 # %%
 from os.path import join
+import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from pandas.tseries.offsets import *
 from functools import reduce
 from portfolio_construction import generate_groups
@@ -23,21 +27,53 @@ with open('path_variables.md', 'r') as f:
     
 raw_path = join(main_path, "Raw Data")
 process_path = join(main_path, "Processed Data")
+input_path = join(main_path, "Input")
+output_path = join(main_path, "Output", "Data Output")
+if not os.path.exists(output_path):
+    os.mkdir(output_path)
 
+
+# %%
+######################################################
+# Instruments
+######################################################
+instruments = pd.read_csv(join(input_path, "Instruments.csv"))
+summary_vars = ['RF', 'UMP', 'EBP', 'CAPE', 'TSP', 'CPI_rolling', 'shadow_spread', 'BAAS']
+
+instruments_summary = (
+    instruments[summary_vars]
+    .describe()
+    .set_axis(['T-bill', 'Unemployment', 'Excess Bond Premium', 'CAPE', 'Term Spread', 'Inflation', 'Shadow Spread', 'Corporate Bond Spread'], axis=1)
+    .set_axis(['Count', 'Mean', 'Standard Deviation', 'Min', '25%', '50%', '75%', 'Max'], axis=0)
+    .iloc[1:].applymap('{:.3f}'.format)
+    .T
+    )
+
+instruments_summary.style.to_latex(join(output_path, 'instruments_summary.tex'))
+
+
+
+
+
+
+
+
+
+
+
+
+# %%
+######################################################
+# Test Assets
 ######################################################
 # Hyperparameters (should mirror the settings in 00_create_data)
-######################################################
 
 segment = [0, 0.3, 0.7, 1]
 beta_segment = [0, 0.33, 0.66, 1]
 drop_20 = True
 share_code_restriction = False 
 
-
-######################################################
 # Generation
-######################################################
-
 ccm2 = generate_groups(main_path, segment, beta_segment, drop_20, share_code_restriction)
 ccm2 = ccm2.query("date >= '1973-01-01'")
 
