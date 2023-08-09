@@ -2,6 +2,14 @@ clearvars -except opts optsDefault;
 clc;
 close all;
 
+% warning: code and paper use slightly different notation
+% new draft of paper defines gamma  
+% as predicting nominal zb rate 
+% the code defines gamme as predicting spread of zb rate vs bill yield
+% there are several code patches that adjust the output to reflect
+% the paper's convention
+
+
 addpath("../ExternalCode/");
 
 % color list
@@ -240,9 +248,9 @@ else
 end
 
 %save re-scaled coefficient estimates and standard errors
-% new draft of paper defines gamma slightly differently
+% new draft of paper defines gamma differently 
+% as predicting nominal zb rate not spread vs bills
 % this code patch makes the output consistent with new draft
-% todo: rewrite code to use definition of gamma consistent with new draft
 write(table(ZSDiag*[Rf;gamma] + [mean(Rbinput); 1; zeros(K-1,1)], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/ses_" + opts.Name + ".csv");
 
 
