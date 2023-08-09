@@ -52,6 +52,8 @@ cpi = table2array(Instruments(:, 'CPI'));
 Instruments(2:end,'CPI') = Instruments(1:end-1,'CPI');
 Instruments(2:end,'CPI_rolling') = Instruments(1:end-1,'CPI_rolling');
 
+%test code for lagging unemployment as well
+%Instruments(2:end,'UMP') = Instruments(1:end-1,'UMP');
 
 R = table2array(Portfolios(:, 2:end))'; 
 Rm = table2array(Factors(:, opts.Factors))'; 
