@@ -76,3 +76,5 @@ xlrd=2.0.1=pyhd3eb1b0_0
 xz=5.2.10=h8cc25b3_1
 zlib=1.2.13=h8cc25b3_0
 zstd=1.5.2=h19a0ad4_0
+
+jinja2=3.1.2

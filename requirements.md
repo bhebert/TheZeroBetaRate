@@ -16,8 +16,8 @@ brotli-bin=1.0.9=h1a28f6b_7
 brotlipy=0.7.0=py39h1a28f6b_1002
 bzip2=1.0.8=h620ffc9_4
 c-ares=1.18.1=h1a28f6b_0
-ca-certificates=2023.01.10=hca03da5_0
-certifi=2022.12.7=py39hca03da5_0
+ca-certificates=2023.05.30=hca03da5_0
+certifi=2023.7.22=py39hca03da5_0
 cffi=1.15.1=py39h80987f9_3
 charset-normalizer=2.0.4=pyhd3eb1b0_0
 cryptography=39.0.1=py39h834c97f_0
@@ -27,6 +27,7 @@ glog=0.5.0=hc377ac9_0
 grpc-cpp=1.46.1=h8e4afa7_1
 icu=68.1=hc377ac9_0
 idna=3.4=py39hca03da5_0
+jinja2=3.1.2=py39hca03da5_0
 joblib=1.1.1=py39hca03da5_0
 krb5=1.19.4=h8380606_0
 libboost=1.73.0=h49e8a49_12
@@ -49,12 +50,13 @@ libssh2=1.10.0=hf27765b_0
 libthrift=0.13.0=hd358383_6
 llvm-openmp=14.0.6=hc6e5704_0
 lz4-c=1.9.4=h313beb8_0
+markupsafe=2.1.1=py39h1a28f6b_0
 ncurses=6.4=h313beb8_0
 numexpr=2.8.4=py39h79ee842_0
 numpy=1.23.5=py39h1398885_0
 numpy-base=1.23.5=py39h90707a3_0
 openpyxl=3.0.10=py39h1a28f6b_0
-openssl=1.1.1t=h1a28f6b_0
+openssl=1.1.1v=h1a28f6b_0
 orc=1.7.4=hdca1487_1
 packaging=22.0=py39hca03da5_0
 pandas=1.5.3=py39h78102c4_0
