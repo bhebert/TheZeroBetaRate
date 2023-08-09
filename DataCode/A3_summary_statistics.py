@@ -34,20 +34,29 @@ if not os.path.exists(output_path):
 
 # %%
 ######################################################
-# Instruments
+# Other Instruments
 ######################################################
 instruments = pd.read_csv(join(input_path, "Instruments.csv")).query("Date >= '1973-02-01' and Date <= '2020-11-30'")
-summary_vars = ['RF', 'UMP', 'EBP', 'CAPE', 'TSP', 'CPI_rolling', 'shadow_spread', 'BAAS']
+summary_vars = ['RF', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'BAAS']
 
 instruments_summary = (
     instruments[summary_vars]
     .describe()
-    .set_axis(['T-bill Yield (\%)', 'Unemployment (\%)', 'Excess Bond Premium (\%)', 'CAPE', 'Term Spread (\%)', 'Inflation (\%)', 'Shadow Spread (\%)', 'Corporate Bond Spread (\%)'], axis=1)
+    .set_axis(['T-bill Yield (\%, Monthly)', 'Unemployment (\%)', 'Excess Bond Premium (\%, Monthly)', 'CAPE', 'Term Spread (\%, Annual)', 'Shadow Spread (\%, Monthly)', 'Corporate Bond Spread (\%, Annual)'], axis=1)
     .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
     )
 
+######################################################
+# Rolling Inflation 
+######################################################
+inflation_summary = (
+    instruments.query("Date >= '1973-01-01' and Date <= '2020-10-31'")
+    .loc[:, ['CPI_rolling']]
+    .describe()
+    .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
+)
 
-# instruments_summary.style.to_latex(join(output_path, 'instruments_summary.tex'))
+
 
 ######################################################
 # Consumption
@@ -67,8 +76,8 @@ cons_summary = (
 
 
 summary_table = (
-    pd.concat([instruments_summary, cons_summary], axis=1)
-    .rename(columns={'log_cg':'Consumption Growth (\%)'})
+    pd.concat([instruments_summary, inflation_summary, cons_summary], axis=1)
+    .rename(columns={'log_cg':'Consumption Growth (\%, Monthly)', 'CPI_rolling':'Rolling Inflation (\%, Monthly)'})
     .iloc[1:].applymap('{:.3f}'.format)
     .T
     )
