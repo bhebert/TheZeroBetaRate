@@ -14,7 +14,6 @@ from os.path import join
 import os
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from pandas.tseries.offsets import *
 from functools import reduce
 from portfolio_construction import generate_groups
@@ -37,23 +36,45 @@ if not os.path.exists(output_path):
 ######################################################
 # Instruments
 ######################################################
-instruments = pd.read_csv(join(input_path, "Instruments.csv"))
+instruments = pd.read_csv(join(input_path, "Instruments.csv")).query("Date >= '1973-02-01' and Date <= '2020-11-30'")
 summary_vars = ['RF', 'UMP', 'EBP', 'CAPE', 'TSP', 'CPI_rolling', 'shadow_spread', 'BAAS']
 
 instruments_summary = (
     instruments[summary_vars]
     .describe()
-    .set_axis(['T-bill', 'Unemployment', 'Excess Bond Premium', 'CAPE', 'Term Spread', 'Inflation', 'Shadow Spread', 'Corporate Bond Spread'], axis=1)
-    .set_axis(['Count', 'Mean', 'Standard Deviation', 'Min', '25%', '50%', '75%', 'Max'], axis=0)
+    .set_axis(['T-bill Yield (\%)', 'Unemployment (\%)', 'Excess Bond Premium (\%)', 'CAPE', 'Term Spread (\%)', 'Inflation (\%)', 'Shadow Spread (\%)', 'Corporate Bond Spread (\%)'], axis=1)
+    .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
+    )
+
+
+# instruments_summary.style.to_latex(join(output_path, 'instruments_summary.tex'))
+
+######################################################
+# Consumption
+######################################################
+jw_m = pd.read_csv(join(input_path, "Consumption", "jw_m.csv"))
+jw_m = (
+    jw_m
+    .assign(log_cg = lambda x: 100*np.log(1 + x['cg_nd_sv_r_pc']/100) )
+    .query("date >= '1973-03-31' and date <= '2020-12-31'")
+)
+
+cons_summary = (
+    jw_m['log_cg']
+    .describe()
+    .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
+    )
+
+
+summary_table = (
+    pd.concat([instruments_summary, cons_summary], axis=1)
+    .rename(columns={'log_cg':'Consumption Growth (\%)'})
     .iloc[1:].applymap('{:.3f}'.format)
     .T
     )
 
-instruments_summary.style.to_latex(join(output_path, 'instruments_summary.tex'))
 
-
-
-
+summary_table.style.to_latex(join(output_path, 'summary_table.tex'))
 
 
 
