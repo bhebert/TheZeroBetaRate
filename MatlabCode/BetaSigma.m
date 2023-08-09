@@ -60,6 +60,9 @@ SigmaP = analytical_shrinkage(eP');
 %undo the pre-conditioning to get final cov matrix estimate
 Sigma = SigmaFroot*SigmaP*SigmaFroot;
 
+%test code to use standard covariance estimate in place of LW
+%Sigma = Beta'*SigmaM*Beta + SigmaE;
+
 %code expects transposed shape
 Beta = Beta';
 
