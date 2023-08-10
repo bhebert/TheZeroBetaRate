@@ -133,39 +133,117 @@ def format_result(group_data, ports):
     
     return group_data
 
+def wavg(group, avg_name, weight_name):
+        """
+        Compute weighted average by group.
+        
+        INPUT
+        group - group instance produced by the pandas groupby method.
+        avg_name - target variable to compute the statistics
+        weight_name - variable to be used as weights
+        
+        OUTPUT
+        weighted_mean - weighted mean by group.
+        
+        by Qitong Wang - 01.28.2022
+        """
+        d = group[avg_name]
+        w = group[weight_name]
+        try:
+            return (d * w).sum() / w.sum()
+        except ZeroDivisionError:
+            return np.nan
+
+
+
+def portfolio_tables(ports):
+
+    count = (
+        ccm2[(ccm2[ports]!=0).all(1)]
+        .groupby(["date"] +ports)
+        .size()
+        .reset_index()
+        .rename(columns={0:'N'})
+        )
+    
+    beta_equal = (
+        ccm2[(ccm2[ports]!=0).all(1)]
+        .groupby(["date"] +ports)
+        .agg({'beta':'mean'})
+        .reset_index()
+        .rename(columns={'beta':'Beta'})
+        )
+    
+    beta_weighted = (
+        ccm2[(ccm2[ports]!=0).all(1)]
+        .groupby(["date"] +ports)
+        .apply(wavg, "beta", "wt")
+        .reset_index()
+        .rename(columns={0:'Beta'})
+        )
+    
+    return_equal = (
+        ccm2[(ccm2[ports]!=0).all(1)]
+        .groupby(["date"] +ports)
+        .agg({'retadj':'mean'})
+        .reset_index()
+        .rename(columns={'retadj':'Return'})
+        .assign(Return = lambda x: x['Return'] * 100)
+        )
+    
+    return format_result(count, ports), format_result(beta_equal,ports), format_result(beta_weighted,ports), format_result(return_equal,ports)
+        
+        
+    
+
+
 
 # 3x3x3 Beta x Size x Book-Market portfolio
 ports = ['beta_port_me_bm', 'me_port', 'bm_port']
-count_27 = (
-    ccm2[(ccm2[ports]!=0).all(1)]
-    .groupby(["date"] +ports)
-    .size()
-    .reset_index()
-    .rename(columns={0:'N'})
-    )
+count_27, beta_equal_27, beta_weighted_27, return_equal_27 = portfolio_tables(ports)
 
-count_27 = format_result(count_27, ports)
-
-
-
+count_27.to_csv(join(output_path, "count_27.csv"), index=False)
+beta_equal_27.to_csv(join(output_path, "beta_equal_27.csv"), index=False)
+beta_weighted_27.to_csv(join(output_path, "beta_weighted_27.csv"), index=False)
+return_equal_27.to_csv(join(output_path, "return_equal_27.csv"), index=False)
 
 # 3x3x3 x 3 FF5 portfolio 
 ports_list = [['beta_port_me_op', 'me_port', 'op_port'], ['beta_port_me_inv', 'me_port', 'inv_port'], ['bm_port', 'me_port', 'beta_port_me_bm']]
 counts = []
+beta_equals = []
+beta_weighteds = []
+return_equals = []
 for ports in ports_list:
-    count = (
-    ccm2[(ccm2[ports]!=0).all(1)]
-    .groupby(["date"] +ports)
-    .size()
-    .reset_index()
-    .rename(columns={0:'N'})
-    )
-    counts.append(format_result(count, ports))
-    
+    counts.append(portfolio_tables(ports)[0])
+    beta_equals.append(portfolio_tables(ports)[1])
+    beta_weighteds.append(portfolio_tables(ports)[2])
+    return_equals.append(portfolio_tables(ports)[3])
+
+
 count_ff5 = reduce(
     lambda left, right: pd.merge(left, right, how = 'inner', on = ['date']),
     counts
 )
 
+beta_equal_ff5 = reduce(
+    lambda left, right: pd.merge(left, right, how = 'inner', on = ['date']),
+    beta_equals
+)
+
+beta_weighted_ff5 = reduce(
+    lambda left, right: pd.merge(left, right, how = 'inner', on = ['date']),
+    beta_weighteds
+)
+
+return_equal_ff5 = reduce(
+    lambda left, right: pd.merge(left, right, how = 'inner', on = ['date']),
+    return_equals
+)
+
+
+count_ff5.to_csv(join(output_path, "count_ff5.csv"), index=False)
+beta_equal_ff5.to_csv(join(output_path, "beta_equal_ff5.csv"), index=False)
+beta_weighted_ff5.to_csv(join(output_path, "beta_weighted_ff5.csv"), index=False)
+return_equal_ff5.to_csv(join(output_path, "return_equal_ff5.csv"), index=False)
 
 # %%

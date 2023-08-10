@@ -191,6 +191,7 @@ def generate_groups(main_path, segment, beta_segment, drop_20, share_code_restri
 
     ccm["year"] = ccm["date"].dt.year
     ccm2 = pd.merge(ccm, ccm_june2, on=["permno", "permco", "year"], how="inner")
+    ccm2 = pd.merge(ccm2, betas, on=["permno", "permco", "date"], how="left")
     
     return ccm2
 
