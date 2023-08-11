@@ -74,5 +74,6 @@ One set of reasonable instructions for Windows:
 ​	  f) python3 A3_summary_statistics.py
 
 ​			i) generates summary statistics tables in the appendix and files for illustration. These files are not needed to run the estimation.
+			ii) takes about one minute on a 2021 M1 Macbook pro
 
 ​	 

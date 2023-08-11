@@ -30,6 +30,7 @@ Instructions:
         c) run RunAll.m
         
         		i) this takes about 30m on an 2021 M1 Macbook Pro
+		ii) when the parallel pool starts, you may be asked to allow Matlab to accept incoming connections. Allow this; the software should only use your local parallel pool unless you have specifically configured Matlab to do otherwise.
         
         d) run MonetaryShock.m
         
