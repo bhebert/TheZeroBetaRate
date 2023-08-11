@@ -42,7 +42,7 @@ summary_vars = ['RF', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'BAAS']
 instruments_summary = (
     instruments[summary_vars]
     .describe()
-    .set_axis(['T-bill Yield (\%, Monthly)', 'Unemployment (\%)', 'Excess Bond Premium (\%, Monthly)', 'CAPE', 'Term Spread (\%, Annual)', 'Shadow Spread (\%, Monthly)', 'Corporate Bond Spread (\%, Annual)'], axis=1)
+    .set_axis(['T-bill Yield (\%, Monthly)', 'Unemployment (\%)', 'Excess Bond Premium (\%, Annual)', 'CAPE', 'Term Spread (\%, Annual)', 'Shadow Spread (\%, Monthly)', 'Corporate Bond Spread (\%, Annual)'], axis=1)
     .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
     )
 
