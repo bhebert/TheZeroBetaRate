@@ -19,7 +19,7 @@ colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
 %% Load Data
 Instruments = readtable("../Input/Instruments.csv");
 
-Factors = readtable("../Input/Factors_Nominal.csv");
+Factors = readtable("../Input/"+opts.FactorFile);
 
 Portfolios = readtable("../Input/"+opts.AssetFile);
 
@@ -61,7 +61,7 @@ Z = table2array(Instruments(:, opts.Instruments))';
 
 
 Rf = table2array(Instruments(:, 'RF')); 
-dates = Factors{:, 'Date'};
+dates = Instruments{:, 'Date'};%used to be factors
 
 
 
