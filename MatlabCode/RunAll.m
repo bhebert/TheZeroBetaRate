@@ -57,7 +57,7 @@ opts = struct('Name','Main');
 %these sorts now make sense given fix to portfolio construction
 %which eliminated problem of empty or almost-empty buckets
 opts.AssetFile = 'FF5_plus_Industry_Portfolios_Nominal.csv';
-
+opts.FactorFile = 'Factors_Nominal.csv';
 
 opts.VaryingBeta = false;
 opts.LinearConsumption = false;
