@@ -191,6 +191,13 @@ opts.Name = 'NoCOVID';
 opts.NoCOVID = true;
 RunTest;
 
+opts = optsDefault;
+opts.Name = 'InformativeFactors';
+opts.Factors = {'MP','SMB','HML','RMW','CMA','term_spread','DEF'};
+opts.NoCOVID = true;
+opts.FactorFile = 'InformativeFactors.csv';
+RunTest;
+
 % Some split sample options. Did not make the final cut for the paper 
 % but should still run if uncommented.
 % opts = optsDefault;
