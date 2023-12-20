@@ -191,12 +191,27 @@ opts.Name = 'NoCOVID';
 opts.NoCOVID = true;
 RunTest;
 
-opts = optsDefault;
-opts.Name = 'InformativeFactors';
-opts.Factors = {'MP','SMB','HML','RMW','CMA','term_spread','DEF'};
-opts.NoCOVID = true;
-opts.FactorFile = 'InformativeFactors.csv';
-RunTest;
+%only run this if you have the informative factors data from
+% Amman, Hemauer, and Straumann, "Informative Value, Profitability, and
+% Investment Factors"
+% Note that the file from those authors neededs to be processed before use.
+% 1. Cut pre-Jan1973 data
+% 2. Convert date format to same as our factors file
+% 3. Add in term_spread and DEF from our file
+% 4. Rename MP (market) to Mkt
+% 5. Multiply the Mkt by 100
+% 6. Add back in the t-bill rate (RF from the instrument file, one lag)
+%    to the market-- the Mkt should be raw, not excess, return
+% 6a. alternatively, use our Mkt variable-- after 5+6 the two are very
+% close
+% 7. Save as .csv
+
+% opts = optsDefault;
+% opts.Name = 'InformativeFactors';
+% opts.Factors = {'Mkt','SMB','HML','RMW','CMA','term_spread','DEF'};
+% opts.NoCOVID = true;
+% opts.FactorFile = 'InformativeFactors.csv';
+% RunTest;
 
 % Some split sample options. Did not make the final cut for the paper 
 % but should still run if uncommented.
