@@ -31,6 +31,8 @@ Instructions:
         
         		i) this takes about 30m on an 2021 M1 Macbook Pro
 		ii) when the parallel pool starts, you may be asked to allow Matlab to accept incoming connections. Allow this; the software should only use your local parallel pool unless you have specifically configured Matlab to do otherwise.
+		
+		iii) OPTIONAL: If you have the factors from the "Informative Factors" paper of  Amman, Hemauer, and Straumann, you can prepare that file and uncomment the associated code in RunAll.m. See the file for details.
         
         d) run MonetaryShock.m
         
@@ -59,6 +61,8 @@ Instructions:
 	c) do MakeTables.do
 	
 		i) this will run very quickly.
+		
+		ii) OPTIONAL: if you ran the "Informative Factors" code in RunAll.m, include the "InformativeFactors" specification in the "local specs ..." near the top of the .do file
 		
 5) Inspect output
 
