@@ -50,8 +50,8 @@ rename var5 cons_g
 rename var6 zbRateNom
 rename var7 portRetNom
 
-
-gen Date = date(date,"YMD")
+gen Date = date(date,"DMY")
+//gen Date = date(date,"YMD")
 drop if Date == .
 gen month = mofd(Date)
 drop date Date
