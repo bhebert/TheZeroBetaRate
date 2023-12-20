@@ -2,7 +2,8 @@
 //make sure this lines up with the instruments used in "Main" specification
 local insts L.rf L.ump L.ebp L.tsp L2.cpi_rolling 
 
-local specs Main NoDrop20 FF3Industry LinearCons WithConsSigma1 WithConsSigma5 MktOnly FF3Only AltBAAS AltCAPE LagCons Shadow VaryingBetas NDOnly NoCOVID
+//uncomment "informative factors" if you have that data
+local specs Main NoDrop20 FF3Industry LinearCons WithConsSigma1 WithConsSigma5 MktOnly FF3Only AltBAAS AltCAPE LagCons Shadow VaryingBetas NDOnly NoCOVID //InformativeFactors
 
 local nameMain RF UMP EBP TSP CPI_Rolling
 local nameFF3Industry RF UMP EBP TSP CPI_Rolling
@@ -19,6 +20,7 @@ local nameVaryingBetas RF UMP EBP TSP CPI_Rolling
 local nameNDOnly RF UMP EBP TSP CPI_Rolling
 local nameRidge RF UMP EBP TSP CPI_Rolling
 local nameNoCOVID RF UMP EBP TSP CPI_Rolling
+local nameInformativeFactors RF UMP EBP TSP CPI_Rolling
 local nameNoDrop20 RF UMP EBP TSP CPI_Rolling
 
 tempfile temp
