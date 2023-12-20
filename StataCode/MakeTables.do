@@ -189,7 +189,7 @@ use `temp', clear
 
 
 import delimited ../Output/RRData_Main.csv, clear
-gen dt = date(date,"YMD")
+gen dt = date(date,"DMY") //used to be MDY
 gen month = mofd(dt)
 sort month
 
@@ -240,7 +240,7 @@ esttab `ests' using ../Output/RREffects.tex, not label nostar replace gaps
 esttab DTBillRR DZeroBetaRR Dp_consRR, not label nostar gaps
 
 import delimited ../Output/NSData_Main.csv, clear
-gen dt = date(date,"YMD")
+gen dt = date(date,"DMY") //used to be MDY
 gen month = mofd(dt)
 sort month
 
