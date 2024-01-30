@@ -83,7 +83,7 @@ summary_table = (
     )
 
 
-summary_table.style.to_latex(join(output_path, 'summary_table.tex'))
+summary_table.style.to_latex(join(output_path, 'summary_table.tex'), hrules=True)
 
 
 
