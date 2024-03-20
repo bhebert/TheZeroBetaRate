@@ -16,12 +16,15 @@ Instructions:
  	a) cd to "TheZeroBetaRate" directory
  	b) cd to "Raw Data"
  	c) unzip Archive.zip
+		NOTE: type the above "unzip" a terminal/console. Don't double-click. You should end up with e.g. Raw Data/Factors/ff3.xlsx, not Raw Data/Archive/Factors/ff3.xlsx.
+		If you end up with an "Archive" folder, you will need to manually move the contents out of that folder and into the Raw Data folder.
+		
  
 2) Run Python scripts to create dataset
 
 	a) See README PYTHON.md for detailed instructions
 
-3) Run MATLAB code to generate results
+3) Run MATLAB code to generate results. Required toolboxes: optimization and statistical learning
 
         a) Open MATLAB. tested with R2022a on an M1 Macbook pro and a Windows PC, known not to work on R2019b or earlier.
         
@@ -52,7 +55,7 @@ Instructions:
 	
 		i) this will run very quickly.
 		
-4) Run STATA to generate tables
+4) Run STATA to generate tables. Requires mmerge ("ssc install mmerge" if you need to install it)
 
 	a) open Stata. Tested with Stata MP 17.0 and 18.0 on an M1 Macbook Pro and a Windows PC.
 	
