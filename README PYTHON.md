@@ -40,6 +40,10 @@ One set of reasonable instructions for Windows:
 	d) Install additional (non-conda) packages
 
 		pip install wrds
+		
+	e) PROBLEM: WRDS now requires a newer version of Pandas than our code.
+	    TEMP SOLUTION: after (d), run:
+	    conda update --all
 	
 3) Run code
 
@@ -61,10 +65,18 @@ One set of reasonable instructions for Windows:
 		iii) running this takes from several up to 20m in our experience, depending on your internet bandwidth to the WRDS servers
 		iv) if you have two-factor authentication setup on your WRDS account, you may need to authorize the login (e.g. using the Duo Mobile app on your phone)
 	
+	
+	d.PROBLEM) to fix version problem, run:
+		conda deactivate
+		conda env remove --name zbenv
+		conda create --name zbenv --file ../requirements.md
+		 (or ../requirements_windows.md on Windows)
+		conda activate zbenv
 	d) python3 A2_beta_estimation.py
 	
 		i) you may get the warning "UserWarning: A worker stopped while some jobs were given to the executor." which can be disregarded. This occurs because the code tries to use all available cores to speed up this process.
 		ii) this took about 45-60m on a 2021 M1 Macbook pro, but several hours on a Ryzen 5600x Windows PC.
+	
 	
 	e) python3 00_create_data.py
 
