@@ -77,6 +77,7 @@ opts.sigma_max = 10;
 opts.NoCOVID = false;
 opts.har = 'COV';
 opts.SplitSample = false;
+opts.RandomFeatures = false;
 optsDefault = opts;
 
 %run tests expects variable named 'opts';
@@ -212,6 +213,20 @@ RunTest;
 % opts.NoCOVID = true;
 % opts.FactorFile = 'InformativeFactors.csv';
 % RunTest;
+
+%new random features procedure
+opts = optsDefault;
+opts.Name = 'RidgeRandom';
+opts.RunRidge = true;
+opts.RandomFeatures=true;
+opts.RandomC = 10;
+opts.RandomPsis = 100*[0.25 .5 1 1.5 2 2.5 3];
+opts.RandomPsics = 10*[5 10 15 18 20 25 30];
+opts.Randomgms = [0.25 0.5 1 2 4];
+%opts.Randomgms = [0.5 0.6 0.7 0.8 0.9 1];
+%opts.Randomgms = [1 1];
+RunTest;
+
 
 % Some split sample options. Did not make the final cut for the paper 
 % but should still run if uncommented.

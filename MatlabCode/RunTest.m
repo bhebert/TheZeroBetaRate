@@ -190,28 +190,46 @@ end
 %Values of Sigma to use in S-test
 sigs = [0.25:0.25:0.75,1,4/3,5/3,2,5/2,3:1:opts.sigma_max];
 
+if opts.RandomFeatures
+        ZinputOrig = Zinput;
+        Zinput = RandomFeatures(ZinputOrig,opts.RandomC,opts.Randomgms);
+        runCV = length(opts.RandomPsis) > 1;
+else
+    runCV = opts.RunRidge;
+end
 
 % code for Ridge cross-validation to select penalty psi
-if opts.RunRidge
+if runCV
 
-    psis = linspace(0,199,50);
+    if opts.RandomFeatures
+        psis = opts.RandomPsis;
+        psics = opts.RandomPsics;
+    else
+        psis = linspace(0,199,50);
+        psics = psis;
+    end
 
     Folds = 10; 
     L = length(psis);
-    results = zeros(L, 2);
+    results = zeros(L, 3);
 
     parfor i = 1:L
         psii = psis(i);
-        error = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psii,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,Folds);
-        results(i, :) = [psii,mean(error)];
+        psici = psics(i);
+        [error, errors_c] = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psii,psici,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,Folds,opts.RandomFeatures);
+        results(i, :) = [psii,sqrt(mean(error)),sqrt(mean(errors_c))];
     end
 
-    results
+    [results, psics']
 
     cfig = figure(4);
-    plot(results(:,1), sqrt(results(:,2)),'LineWidth',2);
+    hold on;
+    plot(log(results(:,1)), results(:,2),'LineWidth',2);
+    yyaxis right;
+    plot(log(psics), results(:,3),'LineWidth',2);
+    hold off;
     set(gca,'TickLabelInterpreter','latex')
-    xlabel('$\psi$', 'Interpreter','latex');
+    xlabel('$ln(\psi)$', 'Interpreter','latex');
     ylabel('Loss', 'Interpreter','latex');
     tightfig(cfig);
 
@@ -220,16 +238,27 @@ if opts.RunRidge
 
     [v,ind] = min(results(:,2));
     psi = results(ind,1);
+    [vc,indc] = min(results(:,3));
+    psic = results(indc,1);
 else
-    psi = 0;
+    if opts.RandomFeatures
+        psi=opts.RandomPsis(1);
+        psic = psi;
+    else
+        psi = 0;
+    end
 end
 
 %Estimate zero-beta rate
-
-[test, Theta, Sv, portRet3, weight, Sigma, Beta, alphas,mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psi,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor);
-
-
-[test; Sv; Theta]
+if ~opts.RandomFeatures
+    [test, Theta, Sv, portRet3, weight, Sigma, Beta, alphas,mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psi,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor);
+else
+    [Theta,portRet3,p_cons,norm] = RandomFeatureEst(Rinput, Rminput, Zinput, Rbinput,cons_gr_ann/12,inflation,iotaN, iotaM, opts.SigmaInit,opts.NLConsFactor,psi,psic);
+     assert(norm <= 10^-8)
+end
+if ~opts.RandomFeatures
+    [test; Sv; Theta]
+end
 
 K = size(Zinput,1);
 Rf = Theta(1);
@@ -238,23 +267,27 @@ sigma = Theta(end);
 
 rho = Theta(end-1);
 
-
-[Rf;gamma]
-sqrt(diag(pvar))
+if ~opts.RandomFeatures
+    [Rf;gamma]
+    sqrt(diag(pvar))
+end
 
 if ~opts.RunRidge
     [Rf;gamma] ./ sqrt(diag(pvar(1:end-1,1:end-1)))
 else
     %if Ridge, no standard errors. This matrix will be ignored.
-    pvar = eye(length([Rf;gamma])+1);
+    if ~opts.RandomFeatures
+        pvar = eye(length([Rf;gamma])+1);
+    end
 end
 
 %save re-scaled coefficient estimates and standard errors
 % new draft of paper defines gamma differently 
 % as predicting nominal zb rate not spread vs bills
 % this code patch makes the output consistent with new draft
-write(table(ZSDiag*[Rf;gamma] + [mean(Rbinput); 1; zeros(K-1,1)], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/ses_" + opts.Name + ".csv");
-
+if ~opts.RandomFeatures
+    write(table(ZSDiag*[Rf;gamma] + [mean(Rbinput); 1; zeros(K-1,1)], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/ses_" + opts.Name + ".csv");
+end
 
 zbrate = gamma'*Zinput + Rf + Rbinput; % zero-beta rate
 
@@ -266,7 +299,9 @@ mean(portRet3-zbrate)
 std(portRet3-zbrate)
 (portRet3-zbrate)*(Rminput-iotaM*zbrate)'/T
 
-([Zinput;ones(size(portRet3))]' \ (portRet3-Rbinput)')' - [gamma;Rf]'
+if ~opts.RandomFeatures
+    ([Zinput;ones(size(portRet3))]' \ (portRet3-Rbinput)')' - [gamma;Rf]'
+end
 
 %save time series
 write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate',portRet3'), "../Output/zero_beta_rate" + opts.Name + ".csv")
@@ -280,7 +315,7 @@ fitlm([zbrateReal]',cons_gr_ann/12)
 fitlm([RbinputReal]',cons_gr_ann/12)
 
 %if ridge, also use ridge for predicting consumption
-if opts.RunRidge
+if opts.RunRidge && ~opts.RandomFeatures
     %note: this runs elastic net, alpha=1 is lasso, alpha->0 is ridge
     [ba,fitinfoa] = lasso(Zinput',cons_gr_ann,'CV',10,'Alpha',0.00001,'NumLambda',100000,'LambdaRatio',0.00000001);
     fitinfoa
@@ -288,17 +323,22 @@ if opts.RunRidge
     p_cons = Zinput' * ba(:,fitinfoa.IndexMinMSE) + fitinfoa.Intercept(fitinfoa.IndexMinMSE);
 
 else
-    cbetas = [Zinput;ones(1,T)]' \ cons_gr_ann;
-    p_cons = cbetas' * [Zinput;ones(1,T)];
-
+    if opts.RandomFeatures
+        %cbetas = ridge(cons_gr_ann,Zinput',psi,0);
+        %p_cons = cbetas(1) + Zinput'*cbetas(2:end);
+    else
+        cbetas = [Zinput;ones(1,T)]' \ cons_gr_ann;
+        p_cons = cbetas' * [Zinput;ones(1,T)];
+    end
 end
 
-
-fitlm(Zinput',portRet3 - inflation*100)
-fitlm(Zinput',Rminput(1,:) - inflation*100)
+if ~opts.RandomFeatures
+    fitlm(Zinput',portRet3 - inflation*100)
+    fitlm(Zinput',Rminput(1,:) - inflation*100)
+end
 
 %generate graph to compare ridge and non-ridge
-if opts.RunRidge
+if opts.RunRidge && ~opts.RandomFeatures
 
     [~, Theta0] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, 0,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor);
     Rf0 = Theta0(1);
