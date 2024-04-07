@@ -33,7 +33,7 @@ function [Theta,portRet3,p_cons,norm,weight,cbetas] = RandomFeatureEst(Rinput, R
     
     cbetas = Imatc * Zinput * (cons_gr-mean(cons_gr));
     cmean = mean(cons_gr) - mean(cbetas'*Zinput);
-    p_cons = cmean + cbetas'*Zinput;
+    p_cons = 12*(cmean + cbetas'*Zinput);
     cbetas = [cmean; cbetas];
     Theta = [Rf;gamma; -.02/12; sigma];
 

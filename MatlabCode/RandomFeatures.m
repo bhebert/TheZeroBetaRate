@@ -2,7 +2,7 @@ function [ZinputR] = RandomFeatures(Zinput,c,gms)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
-rng('twister');
+rng(12302018);
 
 L = size(Zinput,1);
 T = size(Zinput,2);

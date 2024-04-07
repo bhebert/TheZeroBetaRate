@@ -219,15 +219,21 @@ opts = optsDefault;
 opts.Name = 'RidgeRandom';
 opts.RunRidge = true;
 opts.RandomFeatures=true;
-opts.RandomC = 4;
-opts.RandomPsis = [0.25 .5 1 1.5 2 2.5 3];
-opts.RandomPsics = [5 10 15 18 20 25 30];
-opts.Randomgms = [0.25 0.5 1 2 4];
-opts.Instruments = {'RF','UMP','EBP','TSP','CPI_rolling','shadow_spread','DP_ratio','CAPE','BAAS'};
+opts.RandomC = 10;
+opts.RandomPsis = 5*[0.1 0.25 .5 1  2 5 10 25 50 100 500 1000 10000];
+opts.RandomPsics =  10*[0.1 0.25 .5 1  2 5 10 25 50 100 500 1000 10000];
+opts.Randomgms = [1/2 1/2];
+opts.Instruments = {'RF','UMP','EBP','TSP','CPI_rolling'};
 %opts.Randomgms = [0.5 0.6 0.7 0.8 0.9 1];
+opts.NoCOVID = true;
 %opts.Randomgms = [1 1];
 RunTest;
 
+opts = optsDefault;
+opts.Name = 'RidgePreCovid';
+opts.RunRidge = true;
+opts.NoCOVID = true;
+RunTest;
 
 % Some split sample options. Did not make the final cut for the paper 
 % but should still run if uncommented.

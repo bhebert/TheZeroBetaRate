@@ -211,22 +211,22 @@ if runCV
 
     Folds = 10; 
     L = length(psis);
-    results = zeros(L, 3);
+    results = zeros(L, 4);
 
     parfor i = 1:L
         psii = psis(i);
         psici = psics(i);
         [error, errors_c] = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psii,psici,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,Folds,opts.RandomFeatures);
-        results(i, :) = [psii,sqrt(mean(error)),sqrt(mean(errors_c))];
+        results(i, :) = [log(psii),sqrt(mean(error)),sqrt(mean(errors_c)),log(psici)];
     end
 
-    [results, psics']
+    results
 
     cfig = figure(4);
     hold on;
-    plot(log(results(:,1)), results(:,2),'LineWidth',2);
+    plot(results(:,1), results(:,2),'LineWidth',2);
     yyaxis right;
-    plot(log(psics), results(:,3),'LineWidth',2);
+    plot(results(:,4), results(:,3),'LineWidth',2);
     hold off;
     set(gca,'TickLabelInterpreter','latex')
     xlabel('$ln(\psi)$', 'Interpreter','latex');
@@ -237,9 +237,9 @@ if runCV
     print(cfig, '-dpng', "../Output/PsiGraph_"+opts.Name+".png");
 
     [v,ind] = min(results(:,2));
-    psi = results(ind,1);
+    psi = exp(results(ind,1));
     [vc,indc] = min(results(:,3));
-    psic = results(indc,1);
+    psic = exp(results(indc,4));
 else
     if opts.RandomFeatures
         psi=opts.RandomPsis(1);

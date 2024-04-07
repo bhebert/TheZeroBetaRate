@@ -21,6 +21,7 @@ for i = 1:Folds
         p_cons = cbetas(1) + cbetas(2:end)'*Zinput(:,test_idx);
     else
         [~,Theta1,~,~,weight] = InstrumentGMMWrapperConc(Rinput(:,train_idx), Rminput(:,train_idx), Zinput(:,train_idx), Rbinput(:, train_idx), iotaN, iotaM, ConsG(train_idx),inflation(train_idx),Rfex(train_idx),psi,sig,asset,har,NLConsFactor);
+        p_cons = ConsG(test_idx)';
     end
 
     Rf = Theta1(1);
