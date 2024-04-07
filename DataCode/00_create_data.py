@@ -247,6 +247,7 @@ ICE_15_plus = (
     .assign(Date = lambda x: pd.to_datetime(x['Date']))
     .set_index('Date')
     .resample('M').last()
+    .assign(ICE_15 = lambda x: x['ICE_15'].ffill())
     .assign(ICE_15_ret = lambda x: x['ICE_15'].pct_change())
     .reset_index() 
     .assign(Date = lambda x: x['Date'] + MonthEnd(0)) 

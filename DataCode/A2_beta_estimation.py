@@ -133,7 +133,11 @@ def beta_estimation(permno):
         # need at least 24 months of obs to do estimation
         if len(est_df) < 24:
             #betas = betas.append({'permno':permno, 'date':current_dt, 'beta':np.nan}, ignore_index=True)
-            outputs = pd.concat([outputs, pd.DataFrame.from_records([{'permno':permno, 'permco':firm_code, 'date':current_dt, 'beta':np.nan}])], ignore_index=True)
+            
+            if outputs.empty:
+                outputs = pd.DataFrame.from_records([{'permno':permno, 'permco':firm_code, 'date':current_dt, 'beta':np.nan}])
+            else:
+                outputs = pd.concat([outputs, pd.DataFrame.from_records([{'permno':permno, 'permco':firm_code, 'date':current_dt, 'beta':np.nan}])], ignore_index=True)
             continue
         
         # One factor model        
@@ -141,7 +145,10 @@ def beta_estimation(permno):
         result = smf.ols(formula='eret ~ mktrf', data = est_df).fit()
         beta = result.params['mktrf']
     
-        outputs = pd.concat([outputs, pd.DataFrame.from_records([{'permno':permno, 'permco':firm_code, 'date':current_dt, 'beta':beta}])], ignore_index=True)
+        if outputs.empty:
+            outputs = pd.DataFrame.from_records([{'permno':permno, 'permco':firm_code, 'date':current_dt, 'beta':beta}])
+        else:
+            outputs = pd.concat([outputs, pd.DataFrame.from_records([{'permno':permno, 'permco':firm_code, 'date':current_dt, 'beta':beta}])], ignore_index=True)
         
         
     return outputs
@@ -156,6 +163,7 @@ with tqdm_joblib(tqdm(desc="Beta Estimation", total=len(codes))) as progress_bar
     results = Parallel(n_jobs=8, verbose=0)([delayed(beta_estimation)(code) for code in codes])
 
 # unpack the results
+results = [result for result in results if not result.empty]
 output = pd.concat(results, ignore_index=True)
     
 # output = output.rename(columns={0:'permno', 1:'date', 2:'beta'})

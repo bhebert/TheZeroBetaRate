@@ -298,6 +298,7 @@ def DP_ratio(main_path):
         
     output_df = pd.concat(outs, ignore_index=True)
     output_df.columns = ['Date', 'DP_ratio']
+    output_df = output_df.assign(Date = lambda x: pd.to_datetime(x['Date']) + MonthEnd(0))
     
     return output_df
 
