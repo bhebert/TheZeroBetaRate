@@ -191,7 +191,7 @@ def generate_shadow_spread(main_path):
     yc_q = (
         yc
         .groupby('last_thursday')[new_var].mean()
-        .resample('M').mean()
+        .resample('ME').mean()
         .reset_index()
         .rename(columns={'last_thursday':'Date'})
         )
@@ -210,7 +210,7 @@ def generate_shadow_spread(main_path):
     TB3M_q = (
         TB3M
         .groupby('last_thursday')['t3m'].mean()
-        .resample('M').mean()
+        .resample('ME').mean()
         .reset_index()
         .rename(columns={'last_thursday':'Date'})
         )
@@ -236,7 +236,7 @@ def generate_MS(main_path):
         .assign(Date = lambda x: pd.to_datetime(x['fomc']) + MonthEnd(0))
         .drop(columns = ['fomc'])
         .set_index(['Date'])
-        .asfreq(freq='1M', fill_value=0)
+        .asfreq(freq='1ME', fill_value=0)
         .reset_index()
     )
     
@@ -246,7 +246,7 @@ def generate_MS(main_path):
         .assign(Date = lambda x: pd.to_datetime(x['date'] + MonthEnd(0))) 
         .drop(columns = ['date'])
         .set_index(['Date'])
-        .asfreq(freq='1M', fill_value=0)
+        .asfreq(freq='1ME', fill_value=0)
         .reset_index()
     )
 

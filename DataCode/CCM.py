@@ -66,7 +66,7 @@ def generate_CCM(main_path):
 
     # # deal with gaps in the time series
     comp = comp.set_index('ddate')
-    comp = comp.groupby('gvkey').resample('Y').last()
+    comp = comp.groupby('gvkey').resample('YE').last()
     comp = comp.drop(['gvkey'], axis=1).reset_index()
 
 
