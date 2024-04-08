@@ -39,7 +39,7 @@ One set of reasonable instructions for Windows:
 
 	d) Install additional (non-conda) packages
 
-		pip install wrds
+		pip install wrds==3.2.0 openpyxl==3.1.2
 		
 	e) PROBLEM: WRDS now requires a newer version of Pandas than our code.
 	    TEMP SOLUTION: after (d), run:
