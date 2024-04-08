@@ -78,7 +78,7 @@ cons_summary = (
 summary_table = (
     pd.concat([instruments_summary, inflation_summary, cons_summary], axis=1)
     .rename(columns={'log_cg':'Consumption Growth (\%, Monthly)', 'CPI_rolling':'Rolling Inflation (\%, Monthly)'})
-    .iloc[1:].applymap('{:.3f}'.format)
+    .iloc[1:].map('{:.3f}'.format)
     .T
     )
 
@@ -177,7 +177,7 @@ def portfolio_tables(ports):
     beta_weighted = (
         ccm2[(ccm2[ports]!=0).all(1)]
         .groupby(["date"] +ports)
-        .apply(wavg, "beta", "wt")
+        .apply(wavg, "beta", "wt", include_groups=False)
         .reset_index()
         .rename(columns={0:'Beta'})
         )
