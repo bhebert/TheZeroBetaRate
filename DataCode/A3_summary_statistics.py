@@ -42,8 +42,8 @@ summary_vars = ['RF', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'BAAS']
 instruments_summary = (
     instruments[summary_vars]
     .describe()
-    .set_axis(['T-bill Yield (\%, Monthly)', 'Unemployment (\%)', 'Excess Bond Premium (\%, Annual)', 'CAPE', 'Term Spread (\%, Annual)', 'Shadow Spread (\%, Monthly)', 'Corporate Bond Spread (\%, Annual)'], axis=1)
-    .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
+    .set_axis([r'T-bill Yield (\%, Monthly)', r'Unemployment (\%)', r'Excess Bond Premium (\%, Annual)', r'CAPE', r'Term Spread (\%, Annual)', r'Shadow Spread (\%, Monthly)', r'Corporate Bond Spread (\%, Annual)'], axis=1)
+    .set_axis(['Count', 'Mean', 'SD', 'Min', r'25\%', r'50\%', r'75\%', 'Max'], axis=0)
     )
 
 ######################################################
@@ -53,7 +53,7 @@ inflation_summary = (
     instruments.query("Date >= '1973-01-01' and Date <= '2020-10-31'")
     .loc[:, ['CPI_rolling']]
     .describe()
-    .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
+    .set_axis(['Count', 'Mean', 'SD', 'Min', r'25\%', r'50\%', r'75\%', 'Max'], axis=0)
 )
 
 
@@ -71,13 +71,13 @@ jw_m = (
 cons_summary = (
     jw_m['log_cg']
     .describe()
-    .set_axis(['Count', 'Mean', 'SD', 'Min', '25\%', '50\%', '75\%', 'Max'], axis=0)
+    .set_axis(['Count', 'Mean', 'SD', 'Min', r'25\%', r'50\%', r'75\%', 'Max'], axis=0)
     )
 
 
 summary_table = (
     pd.concat([instruments_summary, inflation_summary, cons_summary], axis=1)
-    .rename(columns={'log_cg':'Consumption Growth (\%, Monthly)', 'CPI_rolling':'Rolling Inflation (\%, Monthly)'})
+    .rename(columns={'log_cg':r'Consumption Growth (\%, Monthly)', 'CPI_rolling':r'Rolling Inflation (\%, Monthly)'})
     .iloc[1:].map('{:.3f}'.format)
     .T
     )
