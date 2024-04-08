@@ -28,7 +28,7 @@ One set of reasonable instructions for Windows:
 
 	b) create a virtual environment:
 		for m1 Mac OS X:
-		conda create --name zbenv --file requirements.md
+		conda env create -f requirements.yaml
 
 		for windows/x86:
 		conda create --name zbenv --file requirements_windows.md
@@ -40,7 +40,7 @@ One set of reasonable instructions for Windows:
 	d) Install additional (non-conda) packages
 
 		pip install wrds==3.2.0 openpyxl==3.1.2
-		
+	
 	e) PROBLEM: WRDS now requires a newer version of Pandas than our code.
 	    TEMP SOLUTION: after (d), run:
 	    conda update --all
@@ -86,6 +86,6 @@ One set of reasonable instructions for Windows:
 ​	  f) python3 A3_summary_statistics.py
 
 ​			i) generates summary statistics tables in the appendix and files for illustration. These files are not needed to run the estimation.
-			ii) takes about one minute on a 2021 M1 Macbook pro
+​			ii) takes about one minute on a 2021 M1 Macbook pro
 
 ​	 
