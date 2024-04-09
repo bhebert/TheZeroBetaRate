@@ -40,7 +40,7 @@ Instructions:
         d) run MonetaryShock.m
         
         		i) this will run very quickly.
-		ii) This will generate at Matlab warning about renaming column headers that can be ignored.
+		ii) This will generate Matlab warnings about renaming column headers and extra legend entries that can be ignored.
 		
 	e) run EquityAnalysis.m
 		
