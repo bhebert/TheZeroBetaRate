@@ -9,16 +9,18 @@ One set of reasonable instructions for Mac OS X:
 
 	a) install homebrew
 	
-	b) install anaconda 2022.10 with homebrew. i.e.
+	b) install anaconda (tested with 2022.10) with homebrew. i.e.
 		i) brew install --cask anaconda
 		ii) add appropriate path to .zshrc in home directory, then restart terminal. E.g.  export PATH="/opt/homebrew/anaconda3/bin:$PATH"
 	
 	c) fix permission on .conda file: (substitute $USER for your username)
 		sudo chown -R $USER ~/.conda
 
+	d) update packages: conda update --all
+
 One set of reasonable instructions for Windows: 
 
-	a) install Anaconda3-2022.10-Windows-x86_64.exe
+	a) install Anaconda3-2024.02-Windows-x86_64.exe
 	
 	b) start "Anaconda Prompt (anaconda3)"
 
@@ -31,7 +33,7 @@ One set of reasonable instructions for Windows:
 		conda env create -f requirements.yaml
 
 		for windows/x86:
-		conda create --name zbenv --file requirements_windows.md
+		conda env create -f requirements_windows.yaml
 	
 	c) activate virtual environment
 	
@@ -41,9 +43,6 @@ One set of reasonable instructions for Windows:
 
 		pip install wrds==3.2.0 openpyxl==3.1.2
 	
-	e) PROBLEM: WRDS now requires a newer version of Pandas than our code.
-	    TEMP SOLUTION: after (d), run:
-	    conda update --all
 	
 3) Run code
 
@@ -65,13 +64,6 @@ One set of reasonable instructions for Windows:
 		iii) running this takes from several up to 20m in our experience, depending on your internet bandwidth to the WRDS servers
 		iv) if you have two-factor authentication setup on your WRDS account, you may need to authorize the login (e.g. using the Duo Mobile app on your phone)
 	
-	
-	d.PROBLEM) to fix version problem, run:
-		conda deactivate
-		conda env remove --name zbenv
-		conda create --name zbenv --file ../requirements.md
-		 (or ../requirements_windows.md on Windows)
-		conda activate zbenv
 	d) python3 A2_beta_estimation.py
 	
 		i) you may get the warning "UserWarning: A worker stopped while some jobs were given to the executor." which can be disregarded. This occurs because the code tries to use all available cores to speed up this process.
