@@ -59,8 +59,8 @@ Instructions:
 
 	a) open Stata. Tested with Stata MP 17.0 and 18.0 on an M1 Macbook Pro and a Windows PC.
 	
-		i) depending on your Matlab and Stata versions, the dates in the intermediate .csv files might be "DMY" or "MDY" format
-		   If you get Stata errors, trying changing the "DMY" formats to "MDY" in the Stata .do file
+		i) depending on your Matlab and Stata versions and Mac/Windows, the dates in the intermediate .csv files might be "DMY" or "MDY" format
+		   Try the "DMY" format on Mac and the "MDY" on Windows (lines 55-59 of MakeTables.do), or inspect ../Output/zero_beta_rateMain.csv to see what the format is 
 	
 	b) cd to TheZeroBetaRate/StataCode
 	

@@ -52,8 +52,12 @@ rename var5 cons_g
 rename var6 zbRateNom
 rename var7 portRetNom
 
+//Works on our Mac:
 gen Date = date(date,"DMY")
+
+//Works on our Windows:
 //gen Date = date(date,"YMD")
+
 drop if Date == .
 gen month = mofd(Date)
 drop date Date
