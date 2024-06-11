@@ -285,14 +285,17 @@ if opts.RunRidge
     ba(:,fitinfoa.IndexMinMSE)
     p_cons = Zinput' * ba(:,fitinfoa.IndexMinMSE) + fitinfoa.Intercept(fitinfoa.IndexMinMSE);
 
+    %save time series
+    write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate',portRet3',p_cons/12), "../Output/zero_beta_rate" + opts.Name + ".csv")
 else
     cbetas = [Zinput;ones(1,T)]' \ cons_gr_ann;
     p_cons = cbetas' * [Zinput;ones(1,T)];
 
+    %save time series
+    write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate',portRet3',p_cons'/12), "../Output/zero_beta_rate" + opts.Name + ".csv")
 end
 
-%save time series
-write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate',portRet3',p_cons'/12), "../Output/zero_beta_rate" + opts.Name + ".csv")
+
 
 
 fitlm(Zinput',portRet3 - inflation*100)
