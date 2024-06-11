@@ -29,8 +29,8 @@ dependencies:
   - brotlipy=0.7.0
   - bzip2=1.0.8
   - c-ares=1.28.1
-  - ca-certificates=2024.2.2
-  - certifi=2024.2.2
+  - ca-certificates=2024.3.11
+  - certifi=2024.6.2
   - cffi=1.16.0
   - charset-normalizer=3.3.2
   - colorama=0.4.6
@@ -94,6 +94,7 @@ dependencies:
   - six=1.16.0
   - snappy=1.1.10
   - sqlite=3.45.2
+  - statsmodels=0.14.1
   - tk=8.6.13
   - tqdm=4.66.2
   - tzdata=2024a
