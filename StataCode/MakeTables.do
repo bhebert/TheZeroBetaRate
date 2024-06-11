@@ -53,10 +53,10 @@ rename var6 zbRateNom
 rename var7 portRetNom
 
 //Works on our Mac:
-gen Date = date(date,"DMY")
+//gen Date = date(date,"DMY")
 
 //Works on our Windows:
-//gen Date = date(date,"YMD")
+gen Date = date(date,"YMD")
 
 drop if Date == .
 gen month = mofd(Date)
@@ -103,6 +103,23 @@ label var portRetReal "Real Z.B. Port. Ret"
 
 save `temp', replace
 
+//new code to merge in mkt return
+import delimited "../Input/Factors_Nominal.csv", clear
+
+keep date mkt
+gen Date = date(date,"YMD")
+gen month = mofd(Date)
+drop date Date
+format month %tm
+order month
+sort month
+
+mmerge month using `temp', unmatched(using)
+drop _merge
+sort month
+
+save `temp', replace
+
 import delimited "../Output/ses_Main.csv", clear
 mkmat var1, matrix(b_test)
 mkmat var2*, matrix(V_test)
@@ -127,6 +144,10 @@ local eN = e(N)
 eststo simple_preg
 estadd scalar F_p = Ftail(e(df_m), e(df_r), e(F))
 
+//adding mkt specification for comparison
+reg mkt ins_*, robust
+eststo simple_mkt
+estadd scalar F_p = Ftail(e(df_m), e(df_r), e(F))
 
 matrix rownames b_test = _cons `names'
 matrix rownames V_test = _cons `names'
@@ -150,11 +171,11 @@ eststo gmm_preg
 estadd scalar F = `gmm_wald'
 estadd scalar F_p = `pval'
 
-esttab gmm_preg simple_preg, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") 
+esttab gmm_preg simple_preg simple_mkt, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") 
 
-esttab gmm_preg simple_preg using ../Output/GMMReg.csv, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") replace
+esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.csv, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") replace
 
-esttab gmm_preg simple_preg using ../Output/GMMReg.tex, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)") replace
+esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.tex, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") replace
 
 
 
