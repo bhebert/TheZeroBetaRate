@@ -184,6 +184,24 @@ esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.tex, scalars("F Wa
 local ests
 foreach spec in `specs' {
 	disp "spec: `spec'"
+	
+	import delimited "../Output/zero_beta_rate`spec'.csv", clear
+
+
+	rename var2 exprfRateReal`spec'
+	rename var3 zbRateReal`spec'
+	rename var6 zbRateNom`spec'
+	rename var8 p_cons`spec'
+	
+	//gen spread`spec' = zbRateReal`spec' - exprfRateReal`spec'
+	
+	su zbRateReal`spec'
+	local mean`spec' = `r(mean)'
+	local sd`spec' = `r(sd)'
+	
+	corr zbRateReal`spec' p_cons`spec'
+	local rho`spec' = `r(rho)'
+	
 	import delimited "../Output/ses_`spec'.csv", clear
 	mkmat var1, matrix(b_`spec')
 	mkmat var2*, matrix(V_`spec')
@@ -200,15 +218,20 @@ foreach spec in `specs' {
 	else {
 		ereturn post b_`spec'
 	}
+	
+	estadd scalar AnnMean = 12*`mean`spec''
+	estadd scalar AnnSD = 12*`sd`spec''
+	estadd scalar Corr = `rho`spec''
+	
 	disp "post"
 	eststo gmm_`spec'
 	disp "stored"
 	local ests `ests' gmm_`spec'
 }
 
-esttab `ests', se label depvars nostar mtitles(`specs') noobs
+esttab `ests', scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs
 	
-esttab `ests' using ../Output/Robustness.tex, se label depvars nostar mtitles(`specs') noobs replace
+esttab `ests' using ../Output/Robustness.tex, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs replace
 	
 use `temp', clear
 
