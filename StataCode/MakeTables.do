@@ -157,7 +157,17 @@ matrix b_test = b_test'
 matrix list b_test
 matrix list V_test
 
-matrix bNC = b_test[1,2...]
+matrix nullh = J(1,`n_ins',0)
+matrix colnames nullh = `names'
+
+matrix list nullh
+
+
+matrix nullh[1,colnumb(nullh,"ins_Lrf")] = 1
+
+matrix list nullh
+
+matrix bNC = b_test[1,2...] - nullh
 matrix VNC = V_test[2...,2...]
 
 matrix temp = bNC * invsym(VNC) * bNC'
