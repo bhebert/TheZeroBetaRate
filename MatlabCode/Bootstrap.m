@@ -1,8 +1,11 @@
 
-reps = 10;
+reps = 5000;
 
 close all;
 addpath("../ExternalCode/");
+
+%use fixed random number seed for reproducibility
+rng(31416,'twister');
 
 load("../Output/MainRun_Main.mat");
 
@@ -86,25 +89,29 @@ end
 
 wald = gamma' * inv(pvar(2:end-1,2:end-1)) * gamma;
 
+pw = sum(walds>wald)/reps;
+
 cfig=figure(1);
 colororder({colors_list{2},colors_list{1}});
 histogram(walds,'Normalization','pdf');
 ylim([0,0.2]);
 title('Bootstrap PDF of Wald Statistic under null of ZB=Rf+Cons.')
-xline(wald, 'k-',{'Point Estimate'},'HandleVisibility','off');
+xline(wald, 'k-',{'Point Estimate p='+sprintf("%0.4f",pw)},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapWald.png");
 
+ps = sum(svs<=Sv)/reps;
+pt = sum(svs<=thresh)/reps;
 
 cfig=figure(2);
 colororder({colors_list{2},colors_list{1}});
-histogram(svs,'Normalization','pdf','BinWidth',thresh/2);
+histogram(svs,'Normalization','pdf','BinWidth',thresh/4);
 ylim([0,0.2]);
 xlim([0,50]);
 title('Bootstrap PDF of S-stat under null of ZB=Rf+Cons.')
-xline(Sv, 'k-',{'Point Estimate'},'HandleVisibility','off');
-xline(thresh, 'k-',{'Euler Rejection Threshold'},'HandleVisibility','off');
+xline(Sv, 'k-',{'Point Estimate p='+sprintf("%0.4f",ps)},'HandleVisibility','off');
+xline(thresh, 'k-',{'Euler Rejection Threshold p='+sprintf("%0.4f",pt)},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapSstat.png");
