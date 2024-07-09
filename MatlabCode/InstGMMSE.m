@@ -1,3 +1,5 @@
+%add in 'jac' as third output argument if using testJacobian to validate
+%otherwise, don't, as it slows performance
 function [pvar,mvar] = InstGMMSE(Theta,Beta,alphas, R, Rm, Z, Rb, iotaN, iotaM, ConsG,inflation,weight,har,sig,NLConsFactor)
 
     K = size(Z, 1);
