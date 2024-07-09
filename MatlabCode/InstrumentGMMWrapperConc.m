@@ -66,12 +66,27 @@ if psi == 0
     % the jacobian with respect to the discount rate can be explicitly 
     % computed for these cases
     if strcmp(asset,'RF') || strcmp(asset,'Mkt')
+        
         Om = Wopt(cmoments,har)/T;
         e1 = [1;zeros(K,1)];
-        mat = eye(size(Om)) - e1 * (e1+mmoments(Nm:end))';
-        mvar = mat' * Om * mat;
+
+        % can analytically compute jacobian in this case
+        % the moment errors are scaled by 100 for numerical reasons
+        jacRF = -100*(e1+mmoments(Nm:end)/100);
+
+        %Wmat in this case is e1 * e1'
+        % general formula: GWGiGW = (jac'*Wmat*jac) \ (jac' * Wmat);   
+        % in this case, 
+        GWGiGW = e1' / jacRF(1);
+        
+        %the usual variance formula for parameters, not actually used in
+        %anything
+        pvar = GWGiGW * Om * (GWGiGW)';
+
+        %the usual GMM moment variance formula
+        %the first moment has no variance due to exact identification, omit
+        mvar = (eye(size(Om)) - jacRF*GWGiGW) * Om * (eye(size(Om)) - jacRF*GWGiGW)'; 
         mvar = mvar(2:end,2:end);
-        pvar = Om(1,1);
     else
 
         [pvar,mvar] = InstGMMSE([Theta1;sig],Beta,alphas, Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,weight,har,sig,NLConsFactor);
