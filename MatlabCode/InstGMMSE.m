@@ -49,7 +49,7 @@ function [pvar,mvar] = InstGMMSE(Theta,Beta,alphas, R, Rm, Z, Rb, iotaN, iotaM, 
     %the usual GMM moment variance formula
     mvar = 1/T * (eye(Nm) - jac*GWGiGW) * Omega * (eye(Nm) - jac*GWGiGW)'; 
 
-    %these are the only non-zero parts
+    %these are the consumption Euler parts
     mvar = mvar(Nm-K+1:end,Nm-K+1:end);
 
     %only care about uncertainty with respect to non-alpha/beta parameters
