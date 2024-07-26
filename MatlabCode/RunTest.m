@@ -202,7 +202,7 @@ if opts.RunRidge
 
     parfor i = 1:L
         psii = psis(i);
-        error = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psii,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,Folds);
+        error = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psii,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType,Folds);
         results(i, :) = [psii,mean(error)];
     end
 
@@ -226,7 +226,7 @@ end
 
 %Estimate zero-beta rate
 
-[test, Theta, Sv, portRet3, weight, Sigma, Beta, alphas,mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psi,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor);
+[test, Theta, Sv, portRet3, weight, Sigma, Beta, alphas,mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psi,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
 
 
 [test; Sv; Theta]
@@ -304,7 +304,7 @@ fitlm(Zinput',Rminput(1,:) - inflation*100)
 %generate graph to compare ridge and non-ridge
 if opts.RunRidge
 
-    [~, Theta0] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, 0,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor);
+    [~, Theta0] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, 0,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
     Rf0 = Theta0(1);
     gamma0 = reshape(Theta0(2:1+K), K, 1);
 
@@ -452,9 +452,9 @@ threshs = zeros(size(sigs));
 
 
 parfor i = 1:length(sigs)
-    [ti,~,svi,~, ~, ~, ~, ~,~, ~,~,threshi] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'ZB',opts.har,opts.NLConsFactor);
-    [~,~,sviRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'RF',opts.har,opts.NLConsFactor);
-    [~,~,sviMkt] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor);
+    [ti,~,svi,~, ~, ~, ~, ~,~, ~,~,threshi] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
+    [~,~,sviRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'RF',opts.har,opts.NLConsFactor,opts.SigmaType);
+    [~,~,sviMkt] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor,opts.SigmaType);
     tests(i) = ti;
     Svs(i) = svi;
     threshs(i)=threshi;

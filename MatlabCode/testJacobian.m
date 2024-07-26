@@ -24,7 +24,7 @@ max(diffj,[],"all")
 
 %test jacobian for risk-free rate 
 
-[~,ThetaRF,sviRF,~, ~, ~, ~, ~, mmomentsRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,opts.SigmaInit,'RF',opts.har,opts.NLConsFactor);
+[~,ThetaRF,sviRF,~, ~, ~, ~, ~, mmomentsRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,opts.SigmaInit,'RF',opts.har,opts.NLConsFactor,opts.SigmaType);
 
  funcRF = @(x) InstMomentsConc([x;opts.SigmaInit], ... %extract thetas
      [], ... %extract alphas

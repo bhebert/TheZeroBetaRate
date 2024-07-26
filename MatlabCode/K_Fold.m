@@ -1,4 +1,4 @@
-function [errors] = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,psi,sig,asset,har,NLConsFactor,Folds)
+function [errors] = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,psi,sig,asset,har,NLConsFactor,SigmaType,Folds)
 
 N = size(Rinput, 1); T = size(Rinput, 2); M = size(Rminput, 1); K = size(Zinput, 1);
 
@@ -16,7 +16,7 @@ for i = 1:Folds
     end
     train_idx = indx(~ismember(indx, test_idx));
 
-    [~,Theta1,~,~,weight] = InstrumentGMMWrapperConc(Rinput(:,train_idx), Rminput(:,train_idx), Zinput(:,train_idx), Rbinput(:, train_idx), iotaN, iotaM, ConsG(train_idx),inflation(train_idx),Rfex(train_idx),psi,sig,asset,har,NLConsFactor);
+    [~,Theta1,~,~,weight] = InstrumentGMMWrapperConc(Rinput(:,train_idx), Rminput(:,train_idx), Zinput(:,train_idx), Rbinput(:, train_idx), iotaN, iotaM, ConsG(train_idx),inflation(train_idx),Rfex(train_idx),psi,sig,asset,har,NLConsFactor,SigmaType);
 
 
     Rf = Theta1(1);
