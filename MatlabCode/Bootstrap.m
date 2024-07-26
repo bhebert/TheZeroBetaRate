@@ -1,13 +1,13 @@
 clear;
 
-reps = 50;
+reps = 1000;
 
 % covids controls how bootstrap deals with 2020
-% covids = 0: use pre-covid specification, sigma=10
-% covids = 1: bootstrap from pre-covid, then add 2020 to dataset, sigma=5
-% covids = 2: bootstrap from sample that includes covid, sigma=5
-covids = 0;
-corr_target = 0.25;
+% covids = 0: use pre-covid specification
+% covids = 1: bootstrap from pre-covid, then add 2020 to dataset
+% covids = 2: bootstrap from sample that includes covid
+covids = 2;
+corr_target = 0.175;
 use_ridge = 1;
 
 close all;
@@ -284,7 +284,7 @@ colororder({colors_list{2},colors_list{1}});
 histogram(walds2,'Normalization','pdf');
 ylim([0,0.2]);
 title('Bootstrap PDF of Wald Statistic under alt. hypothesis')
-xline(wald, 'k-',{'Point Estimate p='+sprintf("%0.4f",pw2)},'HandleVisibility','off');
+xline(wald, 'k-',{'Point Estimate'},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapWald_alt-"+sprintf("%d",covids)+".png");
@@ -386,7 +386,7 @@ function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     cF2=mdl_sample2.ModelFitVsNullModel.Fstat;
 
     % reconstruct zero-beta rate under null of zbrate = rf + cons
-    [~, Theta_sample, ~, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample] = InstrumentGMMWrapperConc(Rinput_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,testSigma,'ZB',opts.har,opts.NLConsFactor);
+    [~, Theta_sample, ~, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample] = InstrumentGMMWrapperConc(Rinput_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,testSigma,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
 
     gamma_sample = reshape(Theta_sample(2:1+K), K, 1);
     wald = gamma_sample' * inv(pvar_sample(2:end-1,2:end-1)) * gamma_sample;
@@ -395,7 +395,7 @@ function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     sv2 = zeros(1,Nsigs);
     for k = 1:Nsigs
     
-        [~, Theta_sample_k, Sv_sample, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample_k] = InstrumentGMMWrapperConc(Rinput2_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,sigs2(k),'ZB',opts.har,opts.NLConsFactor);
+        [~, Theta_sample_k, Sv_sample, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample_k] = InstrumentGMMWrapperConc(Rinput2_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,sigs2(k),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
         sv2(k) = Sv_sample;
 
         if sigs2(k) == testSigma
