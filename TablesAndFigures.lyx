@@ -308,7 +308,7 @@ input{Output/GMMReg.tex}
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -405,7 +405,7 @@ status open
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -501,7 +501,7 @@ status open
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -542,7 +542,7 @@ name "fig:stests"
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -639,7 +639,7 @@ status open
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -727,7 +727,7 @@ input{Output/Data Output/summary_table.tex}
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -770,7 +770,7 @@ name "fig:exp-cg-vs-bond"
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -817,7 +817,7 @@ input{Output/RREffects.tex}
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \align center
@@ -863,7 +863,7 @@ input{Output/NSEffects.tex}
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -919,14 +919,14 @@ status open
 
 
 \backslash
-begin{sidewaystable}[!htbp]
+begin{table}[!htbp]
 \end_layout
 
 \begin_layout Plain Layout
 
 
 \backslash
-caption{Predicting the Zero-Beta Rate by Specification} 
+caption{Estimates of the Zero-Beta Rate with Alternative Data} 
 \backslash
 label{tab:robustness}
 \end_layout
@@ -939,7 +939,7 @@ resizebox{1
 \backslash
 textwidth}{!}{
 \backslash
-input{Output/Robustness.tex}} 
+input{Output/Robustness_AltData.tex}} 
 \end_layout
 
 \begin_layout Plain Layout
@@ -953,7 +953,7 @@ vspace{1em}
 
 
 \backslash
-end{sidewaystable}
+end{table}
 \end_layout
 
 \end_inset
@@ -969,11 +969,173 @@ end{sidewaystable}
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{table}[!htbp]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Estimates of the Zero-Beta Rate with Alternative Factors} 
+\backslash
+label{tab:robustness}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+resizebox{1
+\backslash
+textwidth}{!}{
+\backslash
+input{Output/Robustness_AltFactors.tex}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1em}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{table}[!htbp]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Estimates of the Zero-Beta Rate with Alternative Instruments} 
+\backslash
+label{tab:robustness}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+resizebox{1
+\backslash
+textwidth}{!}{
+\backslash
+input{Output/Robustness_AltInstruments.tex}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1em}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{table}[!htbp]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Estimates of the Zero-Beta Rate with Alternative Portfolios} 
+\backslash
+label{tab:robustness}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+resizebox{1
+\backslash
+textwidth}{!}{
+\backslash
+input{Output/Robustness_AltPorts.tex}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1em}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
 \begin_inset Float figure
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard

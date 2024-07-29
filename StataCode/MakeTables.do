@@ -3,7 +3,15 @@
 local insts L.rf L.ump L.ebp L.tsp L2.cpi_rolling 
 
 //uncomment "informative factors" if you have that data
-local specs Main NoDrop20 FF3Industry LinearCons WithConsSigma1 WithConsSigma5 MktOnly FF3Only AltBAAS AltCAPE LagCons Shadow VaryingBetas NDOnly NoCOVID //InformativeFactors
+local allspecs AltData AltFactors AltInstruments AltPorts
+
+local AltData Main NoDrop20 FF3Industry NDOnly NoCOVID
+local AltFactors Main LinearCons WithConsSigma1 WithConsSigma5 MktOnly FF3Only VaryingBetas //InformativeFactors
+local AltInstruments Main AltBAAS AltCAPE LagCons Shadow
+local AltPorts Main CovSample CovPCA CovI
+
+//old
+//local specs Main NoDrop20 FF3Industry LinearCons WithConsSigma1 WithConsSigma5 MktOnly FF3Only AltBAAS AltCAPE LagCons Shadow VaryingBetas NDOnly NoCOVID //InformativeFactors
 
 local nameMain RF UMP EBP TSP CPI_Rolling
 local nameFF3Industry RF UMP EBP TSP CPI_Rolling
@@ -22,6 +30,9 @@ local nameRidge RF UMP EBP TSP CPI_Rolling
 local nameNoCOVID RF UMP EBP TSP CPI_Rolling
 local nameInformativeFactors RF UMP EBP TSP CPI_Rolling
 local nameNoDrop20 RF UMP EBP TSP CPI_Rolling
+local nameCovSample RF UMP EBP TSP CPI_Rolling
+local nameCovPCA RF UMP EBP TSP CPI_Rolling
+local nameCovI RF UMP EBP TSP CPI_Rolling
 
 tempfile temp
 
@@ -53,10 +64,10 @@ rename var6 zbRateNom
 rename var7 portRetNom
 
 //Works on our Mac:
-//gen Date = date(date,"DMY")
+gen Date = date(date,"DMY")
 
 //Works on our Windows:
-gen Date = date(date,"YMD")
+//gen Date = date(date,"YMD")
 
 drop if Date == .
 gen month = mofd(Date)
@@ -189,7 +200,12 @@ esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.tex, scalars("F Wa
 
 
 
+foreach specgroup in `allspecs' {
+disp "group: `specgroup'"
 
+local specs ``specgroup''
+
+disp "specs: `specs'"
 
 local ests
 foreach spec in `specs' {
@@ -201,6 +217,7 @@ foreach spec in `specs' {
 	rename var2 exprfRateReal`spec'
 	rename var3 zbRateReal`spec'
 	rename var6 zbRateNom`spec'
+	rename var7 portRetNom`spec'
 	rename var8 p_cons`spec'
 	
 	//gen spread`spec' = zbRateReal`spec' - exprfRateReal`spec'
@@ -208,6 +225,9 @@ foreach spec in `specs' {
 	su zbRateReal`spec'
 	local mean`spec' = `r(mean)'
 	local sd`spec' = `r(sd)'
+	
+	su portRetNom`spec'
+	local sd_port`spec' = `r(sd)'
 	
 	corr zbRateReal`spec' p_cons`spec'
 	local rho`spec' = `r(rho)'
@@ -232,6 +252,7 @@ foreach spec in `specs' {
 	estadd scalar AnnMean = 12*`mean`spec''
 	estadd scalar AnnSD = 12*`sd`spec''
 	estadd scalar Corr = `rho`spec''
+	estadd scalar AnnPortSD = sqrt(12)*`sd_port`spec''
 	
 	disp "post"
 	eststo gmm_`spec'
@@ -239,9 +260,11 @@ foreach spec in `specs' {
 	local ests `ests' gmm_`spec'
 }
 
-esttab `ests', scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs
+esttab `ests', scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "AnnPortSD SD of ZB Portfolio Return, Annualized" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs
 	
-esttab `ests' using ../Output/Robustness.tex, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs replace
+esttab `ests' using ../Output/Robustness_`specgroup'.tex, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "AnnPortSD SD of ZB Portfolio Return, Annualized" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs replace
+	
+}
 	
 use `temp', clear
 
