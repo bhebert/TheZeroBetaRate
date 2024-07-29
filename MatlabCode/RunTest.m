@@ -445,21 +445,27 @@ end
 if ~opts.RunRidge
 
 Svs = zeros(size(sigs));
-SvsRF = zeros(size(sigs));
-SvsMkt = zeros(size(sigs));
 tests = zeros(size(sigs));
 threshs = zeros(size(sigs));
 
+if strcmp(opts.Name,'Main')
+    SvsRF = zeros(size(sigs));
+    SvsMkt = zeros(size(sigs));
+end
 
 parfor i = 1:length(sigs)
     [ti,~,svi,~, ~, ~, ~, ~,~, ~,~,threshi] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
-    [~,~,sviRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'RF',opts.har,opts.NLConsFactor,opts.SigmaType);
-    [~,~,sviMkt] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor,opts.SigmaType);
     tests(i) = ti;
     Svs(i) = svi;
     threshs(i)=threshi;
-    SvsRF(i)=sviRF;
-    SvsMkt(i) = sviMkt;
+
+    if strcmp(opts.Name,'Main')
+        [~,~,sviRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'RF',opts.har,opts.NLConsFactor,opts.SigmaType);
+        [~,~,sviMkt] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor,opts.SigmaType);
+
+        SvsRF(i)=sviRF;
+        SvsMkt(i) = sviMkt;
+    end
 end
 
 sigs(tests==1)
@@ -469,17 +475,17 @@ isigs = 1./sigs;
 cfig=figure(3);
 hold on;
 plot(isigs,log(Svs),'-','LineWidth',2,'Color',colors_list{1});
-plot(isigs,log(SvsRF),'-.','LineWidth',2,'Color',colors_list{2});
-plot(isigs,log(SvsMkt),'--','LineWidth',2,'Color',colors_list{3});
+%plot(isigs,log(SvsRF),'-.','LineWidth',2,'Color',colors_list{2});
+%plot(isigs,log(SvsMkt),'--','LineWidth',2,'Color',colors_list{3});
 plot(isigs,log(threshs),'k:','LineWidth',1.5);
 set(gca,'TickLabelInterpreter','latex')
-legend('Zero-Beta','T-Bill','Market','Threshold','Interpreter','Latex');
+%legend('Zero-Beta','T-Bill','Market','Threshold','Interpreter','Latex');
+legend('Zero-Beta','Threshold','Interpreter','Latex');
 ylabel('log(S-stat)','Interpreter','Latex');
 xlabel('IES $(1/\sigma)$','Interpreter','Latex');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/Stest_" + opts.Name + ".png");
-
 
 end
 
@@ -512,7 +518,18 @@ if strcmp(opts.Name,'Main')
     set(cfig,'PaperOrientation','landscape');
     print(cfig, '-dpng', "../Output/BondvCons_"+opts.Name+".png");
     
-    
+    cfig=figure(6);
+    hold on;
+    plot(isigs,log(SvsRF),'-.','LineWidth',2,'Color',colors_list{2});
+    plot(isigs,log(SvsMkt),'--','LineWidth',2,'Color',colors_list{3});
+    plot(isigs,log(threshs),'k:','LineWidth',1.5);
+    set(gca,'TickLabelInterpreter','latex')
+    legend('T-Bill','Market','Threshold','Interpreter','Latex');
+    ylabel('log(S-stat)','Interpreter','Latex');
+    xlabel('IES $(1/\sigma)$','Interpreter','Latex');
+    tightfig(cfig);
+    set(cfig,'PaperOrientation','landscape');
+    print(cfig, '-dpng', "../Output/Stest_MktRF.png");
 end
     
 clear cfig ans;

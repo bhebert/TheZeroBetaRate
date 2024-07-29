@@ -77,6 +77,14 @@ opts.sigma_max = 10;
 opts.NoCOVID = false;
 opts.har = 'COV';
 opts.SplitSample = false;
+
+opts.SigmaType = 'LW'; %options are 'LW', 'I', 'Diag', and 'Sample'
+%options controlling the matrix used to form zero-beta portfolio
+%LW: use min var. with regularized Ledoit and Wolf covariance matrix (default)
+%I: use zb portfolio as close as possible to equal-weighted
+%Diag: use min var. ZB portfolio implied by factor model
+%Sample: use min var. with sample covariance matrix (not recommended)
+
 optsDefault = opts;
 
 %run tests expects variable named 'opts';
@@ -189,6 +197,26 @@ RunTest;
 opts = optsDefault;
 opts.Name = 'NoCOVID';
 opts.NoCOVID = true;
+RunTest;
+
+opts = optsDefault;
+opts.Name = 'CovSample';
+opts.SigmaType = 'Sample';
+RunTest;
+
+opts = optsDefault;
+opts.Name = 'CovI';
+opts.SigmaType = 'I';
+RunTest;
+
+opts = optsDefault;
+opts.Name = 'CovDiag';
+opts.SigmaType = 'Diag';
+RunTest;
+
+opts = optsDefault;
+opts.Name = 'CovPCA';
+opts.SigmaType = 'PCA';
 RunTest;
 
 %only run this if you have the informative factors data from
