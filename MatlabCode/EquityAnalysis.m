@@ -1,4 +1,5 @@
 close all;
+clear;
 
 %0: with CAPE
 %1: CAPE, but gamma from Main
@@ -91,6 +92,8 @@ ts_tbill = Zinput'*gvec_tbill;
 std(ts,1)
 
 cape_series = table2array(Instruments(2:end-1,"CAPE"));
+
+save("../Output/EquityAnalysis_"+ opts.Name +".mat");
 
 cfig=figure;
 hold on;
