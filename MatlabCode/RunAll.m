@@ -179,6 +179,13 @@ opts.Instruments = {'RF','UMP','EBP','TSP','CPI_rolling','shadow_spread'};
 RunTest;
 
 opts = optsDefault;
+opts.Name = 'AltCPIRidge';
+opts.RunRidge = true;
+opts.Instruments = {'RF','UMP','EBP','TSP','CPI'};
+RunTest;
+
+
+opts = optsDefault;
 opts.Name = 'VaryingBetas';
 opts.VaryingBeta = true;
 RunTest;
@@ -192,6 +199,12 @@ opts = optsDefault;
 opts.Name = 'Ridge';
 opts.RunRidge = true;
 
+RunTest;
+
+opts = optsDefault;
+opts.Name = 'RidgeNoCOVID';
+opts.RunRidge = true;
+opts.NoCOVID = true;
 RunTest;
 
 opts = optsDefault;
