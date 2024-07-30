@@ -137,12 +137,33 @@ mkmat var2*, matrix(V_test)
 
 use `temp', clear
 
-gen spread = portRetReal - exprfRateReal
-label var spread "Convenience Spread"
+
 
 //changed to portfolio return instead of spread to be consistent with
 //change in definition of gamma in paper
+//gen spread = portRetReal - exprfRateReal
+//label var spread "Spread"
+
+
 reg portRetNom ins_*, robust
+
+//check construction
+predict zbrateTest, xb
+gen errs = zbRateNom - zbrateTest
+su errs
+
+gen resids = portRetNom - zbRateNom
+
+su resids
+
+local residSD = `r(sd)'
+su portRetNom
+
+local portRetSD = `r(sd)'
+
+local gmmR2 = 1 - (`residSD'*`residSD') / (`portRetSD'*`portRetSD')
+
+
 
 local n_ins = e(df_m)
 
@@ -191,12 +212,13 @@ ereturn post b_test V_test, obs(`eN')
 eststo gmm_preg
 estadd scalar F = `gmm_wald'
 estadd scalar F_p = `pval'
+estadd scalar r2 = `gmmR2'
 
-esttab gmm_preg simple_preg simple_mkt, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") 
+esttab gmm_preg simple_preg simple_mkt, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") r2
 
-esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.csv, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") replace
+esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.csv, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") r2 replace
 
-esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.tex, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") replace
+esttab gmm_preg simple_preg simple_mkt using ../Output/GMMReg.tex, scalars("F Wald/F" "F_p p-value" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "Mkt") r2 replace
 
 
 
@@ -229,6 +251,12 @@ foreach spec in `specs' {
 	su portRetNom`spec'
 	local sd_port`spec' = `r(sd)'
 	
+	gen resids`spec' = portRetNom`spec' - zbRateNom`spec'
+	su resids`spec'
+	local sd_resid`spec' = `r(sd)'
+	
+	local gmmR2`spec' = 1 - (`sd_resid`spec''*`sd_resid`spec'') / (`sd_port`spec''*`sd_port`spec'')
+	
 	corr zbRateReal`spec' p_cons`spec'
 	local rho`spec' = `r(rho)'
 	
@@ -253,6 +281,7 @@ foreach spec in `specs' {
 	estadd scalar AnnSD = 12*`sd`spec''
 	estadd scalar Corr = `rho`spec''
 	estadd scalar AnnPortSD = sqrt(12)*`sd_port`spec''
+	estadd scalar r2 = `gmmR2`spec''
 	
 	disp "post"
 	eststo gmm_`spec'
@@ -260,9 +289,9 @@ foreach spec in `specs' {
 	local ests `ests' gmm_`spec'
 }
 
-esttab `ests', scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "AnnPortSD SD of ZB Portfolio Return, Annualized" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs
+esttab `ests', scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs r2
 	
-esttab `ests' using ../Output/Robustness_`specgroup'.tex, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "AnnPortSD SD of ZB Portfolio Return, Annualized" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs replace
+esttab `ests' using ../Output/Robustness_`specgroup'.tex, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Corr Corr. of Real ZB Rate and Exp. Cons. Gr.") sfmt("%6.0g") se label depvars nostar mtitles(`specs') noobs replace r2
 	
 }
 	
