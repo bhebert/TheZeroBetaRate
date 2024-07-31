@@ -52,9 +52,11 @@ else
     %compute return of portfolio
     portRet = weight * Hmat * R; 
 
-
+    % these two lines produce essentially identical results 
+    % that will be exactly identical if consSDF is included as a factor
+    % the paper is written with the zbrate in the moment condition, so that's what we use
     conserr = 100*(consSDF.*(1+zbrate/100)-1);
-
+    %conserr = 100*(consSDF.*(1+portRet/100)-1);
 
     
 
