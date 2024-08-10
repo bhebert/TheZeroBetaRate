@@ -37,12 +37,12 @@ if not os.path.exists(output_path):
 # Other Instruments
 ######################################################
 instruments = pd.read_csv(join(input_path, "Instruments.csv")).query("Date >= '1973-02-01' and Date <= '2020-11-30'")
-summary_vars = ['RF', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'BAAS']
+summary_vars = ['RF', 'UMP', 'SAHM', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'BAAS']
 
 instruments_summary = (
     instruments[summary_vars]
     .describe()
-    .set_axis([r'T-bill Yield (\%, Monthly)', r'Unemployment (\%)', r'Excess Bond Premium (\%, Annual)', r'CAPE', r'Term Spread (\%, Annual)', r'Shadow Spread (\%, Monthly)', r'Corporate Bond Spread (\%, Annual)'], axis=1)
+    .set_axis([r'T-bill Yield (\%, Monthly)', r'Unemployment (\%)', r'Sahm Rate (\%)', r'Excess Bond Premium (\%, Annual)', r'CAPE', r'Term Spread (\%, Annual)', r'Shadow Spread (\%, Monthly)', r'Corporate Bond Spread (\%, Annual)'], axis=1)
     .set_axis(['Count', 'Mean', 'SD', 'Min', r'25\%', r'50\%', r'75\%', 'Max'], axis=0)
     )
 
@@ -86,6 +86,61 @@ summary_table = (
 summary_table.style.to_latex(join(output_path, 'summary_table.tex'), hrules=True)
 
 
+
+
+
+
+######################################################
+# Other Instruments
+######################################################
+instruments = pd.read_csv(join(input_path, "Instruments.csv")).query("Date >= '1973-02-01' and Date <= '2019-11-30'")
+summary_vars = ['RF', 'UMP', 'SAHM', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'BAAS']
+
+instruments_summary = (
+    instruments[summary_vars]
+    .describe()
+    .set_axis([r'T-bill Yield (\%, Monthly)', r'Unemployment (\%)', r'Sahm Rate (\%)', r'Excess Bond Premium (\%, Annual)', r'CAPE', r'Term Spread (\%, Annual)', r'Shadow Spread (\%, Monthly)', r'Corporate Bond Spread (\%, Annual)'], axis=1)
+    .set_axis(['Count', 'Mean', 'SD', 'Min', r'25\%', r'50\%', r'75\%', 'Max'], axis=0)
+    )
+
+######################################################
+# Rolling Inflation 
+######################################################
+inflation_summary = (
+    instruments.query("Date >= '1973-01-01' and Date <= '2019-10-31'")
+    .loc[:, ['CPI_rolling']]
+    .describe()
+    .set_axis(['Count', 'Mean', 'SD', 'Min', r'25\%', r'50\%', r'75\%', 'Max'], axis=0)
+)
+
+
+
+######################################################
+# Consumption
+######################################################
+jw_m = pd.read_csv(join(input_path, "Consumption", "jw_m.csv"))
+jw_m = (
+    jw_m
+    .assign(log_cg = lambda x: 100*np.log(1 + x['cg_nd_sv_r_pc']/100) )
+    .query("date >= '1973-03-31' and date <= '2019-12-31'")
+)
+
+cons_summary = (
+    jw_m['log_cg']
+    .describe()
+    .set_axis(['Count', 'Mean', 'SD', 'Min', r'25\%', r'50\%', r'75\%', 'Max'], axis=0)
+    )
+
+
+summary_table = (
+    pd.concat([instruments_summary, inflation_summary, cons_summary], axis=1)
+    .rename(columns={'log_cg':r'Consumption Growth (\%, Monthly)', 'CPI_rolling':r'Rolling Inflation (\%, Monthly)'})
+    .iloc[1:].map('{:.3f}'.format)
+    .T
+    )
+
+
+summary_table.style.to_latex(join(output_path, 'summary_table_precovid.tex'), hrules=True)
 
 
 
