@@ -136,8 +136,16 @@ UMP = (
     pd.read_csv("Raw Data/Instruments/UNRATE.csv")
     .set_axis(['Date', 'UMP'], axis = 1)
     .assign(Date = lambda x: pd.to_datetime(x['Date']) + MonthEnd(0))
+    # .assign(UMP_rolling = lambda x: x['UMP'].rolling(3).mean())
+    # .assign(UMP_rolling_min = lambda x: x['UMP_rolling'].rolling(12).min())
+    # .assign(Sahm = lambda x: x['UMP_rolling'] -  x['UMP_rolling_min'])
     )
 
+SAHM = (
+    pd.read_csv("Raw Data/Instruments/SAHMREALTIME.csv")
+    .set_axis(['Date', 'SAHM'], axis = 1)
+    .assign(Date = lambda x: pd.to_datetime(x['Date']) + MonthEnd(0))
+)
 
 from auxiliary_functions import generate_shadow_spread
 generate_shadow_spread(main_path)
@@ -175,7 +183,7 @@ from auxiliary_functions import generate_value_spread
 
 # value_spread = generate_value_spread(main_path)
 
-to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread, DP]
+to_merge = [CPI, UMP, EBP, CAPE, TSP, BAA, AAA, shadow_spread, DP, SAHM]
 
 instruments = RF
 
@@ -184,11 +192,11 @@ for df in to_merge:
 
 instruments = (
     instruments
-    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread', 'DP_ratio']]
+    .loc[:, ['Date', 'RF', 'CPI', 'UMP', 'SAHM', 'EBP', 'CAPE', 'TSP', 'BAA', 'AAA', 'CPI_rolling', 'shadow_spread', 'DP_ratio']]
     # .assign(BAAS = lambda x: x['BAA'] - x['TSP'] - x['RF']*12)
     .assign(BAAS = lambda x: x['BAA'] - x['AAA'])
     .drop(columns=['BAA', 'AAA'])
-    .dropna(subset=['RF', 'CPI', 'UMP', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'DP_ratio'])
+    .dropna(subset=['RF', 'CPI', 'UMP', 'SAHM', 'EBP', 'CAPE', 'TSP', 'shadow_spread', 'DP_ratio'])
     )
 
 
