@@ -1,13 +1,8 @@
 clear;
 
+%for testing
 reps = 1000;
 
-% covids controls how bootstrap deals with 2020
-% covids = 0: use pre-covid specification
-% covids = 1: bootstrap from pre-covid, then add 2020 to dataset
-% covids = 2: bootstrap from sample that includes covid
-covids = 2;
-corr_target = 0.175;
 use_ridge = 1;
 
 close all;
@@ -16,33 +11,36 @@ addpath("../ExternalCode/");
 %use fixed random number seed for reproducibility
 rng(12302018,'twister');
 
-if covids > 0
-    load("../Output/MainRun_Main.mat");
-    Tmax = find(dts2>datetime(2019,12,31),1)-1;
-    testSigma = opts.SigmaInit;
-else
-    load("../Output/MainRun_NoCOVID.mat");
-    Tmax = T;
-    testSigma = opts.SigmaInit;
-end
+load("../Output/MainRun_Main.mat");
+testSigma = 8; %opts.SigmaInit;
+
+
+
 
 sigs2 = sigs;
-if opts.sigma_max <= 25
-    sigs2 = [sigs2, opts.sigma_max+2:2:25];
-    isigs2 = 1 ./ sigs2;
-else
-    sigs2 = sigs;
-    isigs2 = 1 ./ sigs2;
-end
+isigs2 = 1 ./ sigs2;
+% if opts.sigma_max <= 25
+%     sigs2 = [sigs2, opts.sigma_max+2:2:25];
+%     isigs2 = 1 ./ sigs2;
+% else
+%     sigs2 = sigs;
+%     isigs2 = 1 ./ sigs2;
+% end
+
+%the code shifts the Instruments array for CPI, so don't use this
+%cpi_full = table2array(Instruments(:, 'CPI')); 
+cpi_full = cpi;
 
 
-cpi_full = table2array(Instruments(:, 'CPI')); 
-
+%time series of VAR state variables (factors, instruments, inflation)
 RmZ = [Rm(:,2:T+2); Z(:,2:T+2); cpi_full(2:T+2)'];
 
-Phi=([RmZ(:,1:T)',ones(T,1)] \ RmZ(:,2:T+1)');
+%run regression excluding covid
+Phi=([RmZ(:,1:Tmax)',ones(Tmax,1)] \ RmZ(:,2:Tmax+1)');
 
+%construct residuals for full and NC samples
 epsRmZ =RmZ(:,2:T+1) - Phi'*[RmZ(:,1:T)',ones(T,1)]';
+epsRmZNC =RmZ(:,2:Tmax+1) - Phi'*[RmZ(:,1:Tmax)',ones(Tmax,1)]';
 
 NRmZ = size(epsRmZ,1);
 Nf = size(Rm,1);
@@ -54,113 +52,147 @@ X = Rinput - iotaN*Rbinput; % excess returns of the portfolios
 Xm = Rminput - iotaM*Rbinput; % excess returns of the factors
 Xv = [Xm;ones(1,T)]';
 
-BetaFull = Xv \ X';
+%compute betas from no-covid sample
+BetaFull = Xv(1:Tmax,:) \ X(:,1:Tmax)';
 
+%construct return residuals w/ and w/o covid
 epsR = X - BetaFull'*Xv';
+epsRNC = epsR(:,1:Tmax);
 
-%need to compute before changing gamma
+%compute wald statistics
+%need to compute before changing gamma (if ridge gamma is used)
 wald = gamma' * inv(pvar(2:end-1,2:end-1)) * gamma;
+waldNC = gammaNC' * inv(pvarNC(2:end-1,2:end-1)) * gammaNC;
 
 if use_ridge == 1
-    if covids > 0
-        load("../Output/MainRun_Ridge.mat","ba","fitinfoa","zbrateReal","p_cons","gamma");
-    else
-        load("../Output/MainRun_RidgeNoCOVID.mat","ba","fitinfoa","zbrateReal","p_cons","gamma");
-    end
-    cbetas = [ba(:,fitinfoa.IndexMinMSE); fitinfoa.Intercept(fitinfoa.IndexMinMSE) ]
-    p_cons = p_cons';
+
+    load("../Output/MainRun_Ridge.mat","baNC","fitinfoaNC","zbrateRealNC","p_consNC","gammaNC","RbinputRealNC");
+    
+    %overwrite consumption betas
+    cbetasNC = [baNC(:,fitinfoaNC.IndexMinMSE); fitinfoaNC.Intercept(fitinfoaNC.IndexMinMSE) ]
+    p_consNC = p_consNC';
 end
+
+%choose correlation target
+corr_target = corr(RbinputRealNC',p_consNC');
 
 % epsC: residuals at point estimate
 % epsC2: residuals if IID
-epsC = cons_gr_ann' - cbetas'*[Zinput;ones(1,T)];
+epsC = cons_gr_ann' - cbetasNC'*[Zinput;ones(1,T)];
+epsCNC = epsC(1:Tmax);
 
-meanConsGr = mean(cons_gr_ann);
+meanConsGr = mean(cons_gr_annNC);
 epsC2 = cons_gr_ann' - meanConsGr*ones(1,T);
-
+epsC2NC = epsC2(1:Tmax);
 
 %analysis under null of reduced correlation equation
 
 %idea: gamma is as close a possible to point estimate with correlation
 % equal to empirical real T-bill/consumption correlation
 % reminder: in code, gamma is spread, not level (different from paper)
-% also reminder: beta_inf is pre-normalization, and predicting -pi not pi
-SigZ = Zinput * Zinput'/(T-1);
-gamma_zbreal = gamma+ [1/ZSDiag(2,2); zeros(K-1,1)] + inv(ZSDiag(2:end,2:end))*beta_inf(1:end-1)*100;
-gammaf = @(lam) inv((eye(K)-lam(1)*SigZ))*( gamma_zbreal + lam(2)*SigZ*cbetas(1:end-1));
-%target = corr(RbinputReal',p_cons') * sqrt(gamma_zbreal'*SigZ*gamma_zbreal) * sqrt(cbetas(1:end-1)'*SigZ*cbetas(1:end-1));
-target = corr_target * sqrt(gamma_zbreal'*SigZ*gamma_zbreal) * sqrt(cbetas(1:end-1)'*SigZ*cbetas(1:end-1));
-consfunc = @(lam) [gammaf(lam)'*SigZ*gammaf(lam) - gamma_zbreal'*SigZ*gamma_zbreal, gammaf(lam)'*SigZ*cbetas(1:end-1) - target];
+% also reminder: beta_inf is pre-normalization, and predicting (approx.) -pi not pi
+SigZ = ZinputNC * ZinputNC'/(Tmax-1);
 
-lamsol = fsolve(consfunc,[0,0]);
+%gamma for real zb rate
+gamma_zbreal = gammaNC+ [1/ZSDiagNC(2,2); zeros(K-1,1)] + inv(ZSDiagNC(2:end,2:end))*beta_infNC(1:end-1)*100;
 
-meanZbReal = mean(zbrateReal);
-zbImpliedReal = [ones(1,T);Zinput]' * [meanZbReal; gammaf(lamsol)];
-zbImplied = zbImpliedReal' - 100*(mean(exp_inf) - 1) - (Zinput'*inv(ZSDiag(2:end,2:end))*beta_inf(1:end-1)*100)';
+%first-order condition of the minimization problem, gamma (zb real) as a function of
+%multipliers lam(1) and lam(2)
+gammaf = @(lam) inv((eye(K)-lam(1)*SigZ))*( gamma_zbreal + lam(2)*SigZ*cbetasNC(1:end-1));
+
+%covariance target
+target = corr_target * sqrt(gamma_zbreal'*SigZ*gamma_zbreal) * sqrt(cbetasNC(1:end-1)'*SigZ*cbetasNC(1:end-1));
+
+%constraints in the minimization problem: match variance of real zb rate
+%and targeted covariance with consumption
+consfunc = @(lam) [gammaf(lam)'*SigZ*gammaf(lam) - gamma_zbreal'*SigZ*gamma_zbreal, gammaf(lam)'*SigZ*cbetasNC(1:end-1) - target];
+
+%solve for multipliers
+[lamsol,~,flag] = fsolve(consfunc,[0,0]);
+
+assert(flag > 0,"Failed to solve for adjusted gamma parameters");
+
+%reconstruct zb rate from rotated parameters
+%note that the parameters are estimated on the NC sample
+%but the reconstructed series has the full sample length
+%because of this, we need to create ZinputFS, which is the NC Zinput + out
+%of sample
+ZinputFS = ZSDiagNC(2:end,2:end)*(Z(:, 2:end-1) - mean(Z(:,2:1+Tmax),2));
+meanZbReal = mean(zbrateRealNC);
+zbImpliedReal = [ones(1,T);ZinputFS]' * [meanZbReal; gammaf(lamsol)];
+zbImplied = zbImpliedReal' - 100*(mean(exp_infNC) - 1) - (ZinputFS'*inv(ZSDiagNC(2:end,2:end))*beta_infNC(1:end-1)*100)';
 
 %check
 disp('targeted corr, std')
 %corr(RbinputReal',p_cons')
 corr_target
-std(zbrateReal)
+std(zbrateRealNC)
 disp('calibration: ')
-corr(zbImpliedReal,p_cons')
-std(zbImpliedReal)
+corr(zbImpliedReal(1:Tmax),p_consNC')
+std(zbImpliedReal(1:Tmax))
 
 % run regressions under alternative hypothesis zero-beta rate
 X2 = Rinput - iotaN*zbImplied; % excess returns of the portfolios
 Xm2 = Rminput - iotaM*zbImplied; % excess returns of the factors
 Xv2 = [Xm2;ones(1,T)]';
 
-BetaFull2 = Xv2 \ X2';
+BetaFull2 = Xv2(1:Tmax,:) \ X2(:,1:Tmax)';
 
 epsR2 = X2 - BetaFull2'*Xv2';
+epsR2NC = epsR2(:,1:Tmax);
 
 
 
 eps = [epsRmZ; epsR; epsC; epsC2; epsR2];
+epsNC = [epsRmZNC; epsRNC; epsCNC; epsC2NC; epsR2NC];
 
-walds = zeros(reps,1);
-walds2 = zeros(reps,1);
+walds = zeros(2*reps,1);
+walds2 = zeros(2*reps,1);
+
+
 
 Nsigs = length(sigs2);
-svs2 = zeros(reps,Nsigs);
+svs2 = zeros(2*reps,Nsigs);
 
-cFs = zeros(reps,1);
-cFs2 = zeros(reps,1);
+
+cFs = zeros(2*reps,1);
+cFs2 = zeros(2*reps,1);
 
 %some summary stats to check the bootstrap is working
-meansRmZ = zeros(NRmZ,reps);
-sdsRmZ = zeros(NRmZ,reps);
-meansCons = zeros(2,reps);
-sdsCons = zeros(2,reps);
+meansRmZ = zeros(NRmZ,2*reps);
+sdsRmZ = zeros(NRmZ,2*reps);
+meansCons = zeros(2,2*reps);
+sdsCons = zeros(2,2*reps);
 
-meansR = zeros(Nr,reps);
-sdsR = zeros(Nr,reps);
+meansR = zeros(Nr,2*reps);
+sdsR = zeros(Nr,2*reps);
 
-meansR2 = zeros(Nr,reps);
-sdsR2 = zeros(Nr,reps);
+meansR2 = zeros(Nr,2*reps);
+sdsR2 = zeros(Nr,2*reps);
 
 ppool = gcp;
-fevals(1:reps) = parallel.FevalFuture;
+fevals(1:2*reps) = parallel.FevalFuture;
 
-fhandle = @(ind) runSample (eps, T, Tmax, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
-    meanConsGr, meanZbReal, lamsol, exp_inf, beta_inf, BetaFull2, ...
-    testSigma, covids, sigs2, Nsigs, Nr, RmZ, Nf, cbetas, gammaf, ZSDiag, K);
+fhandle = @(ind) runSample (eps, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+    meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
+    testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K);
+
+fhandleNC = @(ind) runSample (epsNC, Tmax, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+    meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
+    testSigma, sigs2, Nsigs, Nr, RmZ(:,1:Tmax+1), Nf, cbetasNC, gammaf, ZSDiagNC, K);
+
+%test a function call
+%fhandleNC(0)
+
+fprintf("Done with test")
 
 for idx = 1:reps
     fevals(idx) = parfeval(ppool,fhandle,13,idx);
+    fevals(idx+reps) = parfeval(ppool,fhandleNC,13,idx);
 end
 
-% hfig = waitbar(0,'Waiting...');
-% 
-% updateWaitbar = @(~) waitbar(mean({fevals.State} == "finished"),hfig);
-% 
-% updateWaitbarFutures = afterEach(fevals,updateWaitbar,0);
-% afterAll(fevals,@(~) delete(hfig),0);
-
 tic;
-for idx = 1:reps
+for idx = 1:2*reps
     [i,waldi, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
      sdCons, meanR, sdR, meanR2, sdR2] = fetchNext(fevals);
 
@@ -211,126 +243,226 @@ end
 
 %print some checks
 disp('mean and sd errors of Rm, Z, inflation')
-mean(meansRmZ,2)-mean(RmZ,2)
-mean(sdsRmZ,2) - std(RmZ,0,2)
+mean(meansRmZ(:,reps+1:end),2)-mean(RmZ(:,2:Tmax+1),2)
+mean(sdsRmZ(:,reps+1:end),2) - std(RmZ(:,2:Tmax+1),0,2)
 
 disp('mean and sd errors of consumption growth')
-mean(meansCons,2) - mean(cons_gr_ann)
-mean(sdsCons,2) - std(cons_gr_ann)
+mean(meansCons(:,reps+1:end),2) - mean(cons_gr_annNC)
+mean(sdsCons(:,reps+1:end),2) - std(cons_gr_annNC)
 
+clear fevals;
+save("../Output/BootstrapData.mat");
 
-save("../Output/BootstrapData-"+sprintf("%d",covids)+".mat");
-
-pw = sum(walds>wald)/reps;
+pw = sum(walds(1:reps)>wald)/reps;
 
 cfig=figure(1);
 colororder({colors_list{2},colors_list{1}});
-histogram(walds,'Normalization','pdf');
+histogram(walds(1:reps),'Normalization','pdf');
 ylim([0,0.2]);
+xlim([0, 40]);
 title('Bootstrap PDF of Wald Statistic under null of ZB=Rf+Cons.')
 xline(wald, 'k-',{'Point Estimate p='+sprintf("%0.4f",pw)},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapWald-"+sprintf("%d",covids)+".png");
+print(cfig, '-dpng', "../Output/BootstrapWald.png");
 
-mdl=fitlm(Zinput',cons_gr_ann);
+
+pwNC = sum(walds(reps+1:end)>waldNC)/reps;
 
 cfig=figure(2);
 colororder({colors_list{2},colors_list{1}});
-histogram(cFs,'Normalization','pdf');
-title('Bootstrap PDF of F Statistic under null of Cons. Unpredictable')
-xline(mdl.ModelFitVsNullModel.Fstat, 'k-',{'Point Estimate p='+sprintf("%0.4f",mdl.ModelFitVsNullModel.Pvalue)},'HandleVisibility','off');
+hold on;
+histogram(walds(reps+1:end),'Normalization','pdf');
+ylim([0,0.2]);
+xlim([0, 40]);
+title('Bootstrap PDF of Wald Statistic under null of ZB=Rf+Cons.')
+xline(wald, 'k-',{'Point Estimate p='+sprintf("%0.4f",pwNC)},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapF-"+sprintf("%d",covids)+".png");
+print(cfig, '-dpng', "../Output/BootstrapWaldNC.png");
 
-ps2 = sum(svs2(:,sigs2==testSigma)>Svs(sigs2==testSigma))/reps;
-pt2 = sum(svs2(:,sigs2==testSigma)>thresh)/reps;
+
+%get the F effective
+Zcov = cov(Zinput',0);
+[coeffcov,~,coeff] = hac(Zinput',cons_gr_ann,Type="HC",Display="off");
+cF = coeff(2:end)'*Zcov*coeff(2:end)/trace(coeffcov(2:end,2:end)*Zcov);
+
+ZcovNC = cov(ZinputNC',0);
+[coeffcovNC,~,coeffNC] = hac(ZinputNC',cons_gr_annNC,Type="HC",Display="off");
+cFNC = coeffNC(2:end)'*ZcovNC*coeffNC(2:end)/trace(coeffcovNC(2:end,2:end)*ZcovNC);
+
+pF = sum(cFs(1:reps)>cF)/reps;
+pFNC = sum(cFs(reps+1:end)>cFNC)/reps;
+
+%standard F stat
+%mdl=fitlm(Zinput',cons_gr_ann);
+%cF = mdl.ModelFitVsNullModel.Fstat;
+
+pvNames = ["Wald","WaldNC","F-eff","F-effNC"];
+pvals = [pw,pwNC,pF,pFNC];
+
+writetable(table(pvNames',pvals'),"../Output/BootstrapPvals.csv");
 
 cfig=figure(3);
 colororder({colors_list{2},colors_list{1}});
-histogram(svs2(:,sigs2==testSigma),'Normalization','pdf','BinWidth',thresh/4);
-title('Bootstrap PDF of S-stat under alt. hypothesis of low correlation')
-xline(Svs(sigs2==testSigma), 'k-',{'Point Estimate p='+sprintf("%0.4f",ps2)},'HandleVisibility','off');
-xline(thresh, 'k-',{'Euler Rejection Threshold p='+sprintf("%0.4f",pt2)},'HandleVisibility','off');
+histogram(cFs(1:reps),'Normalization','pdf');
+title('Bootstrap PDF of F Statistic under null of Cons. Unpredictable')
+xline(cF, 'k-',{'Point Estimate p='+sprintf("%0.4f",pF)},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapSstat2-"+sprintf("%d",covids)+".png");
+print(cfig, '-dpng', "../Output/BootstrapF.png");
 
 cfig=figure(4);
 colororder({colors_list{2},colors_list{1}});
+histogram(cFs(reps+1:end),'Normalization','pdf');
+title('Bootstrap PDF of F Statistic under null of Cons. Unpredictable')
+xline(cFNC, 'k-',{'Point Estimate p='+sprintf("%0.4f",pFNC)},'HandleVisibility','off');
+tightfig(cfig);
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/BootstrapFNC.png");
 
+
+ps2 = sum(svs2(1:reps,sigs2==testSigma)>Svs(sigs2==testSigma))/reps;
+pt2 = sum(svs2(1:reps,sigs2==testSigma)>thresh)/reps;
+
+cfig=figure(5);
+colororder({colors_list{2},colors_list{1}});
+histogram(svs2(1:reps,sigs2==testSigma),'Normalization','pdf','BinWidth',thresh/4);
+title('Bootstrap PDF of S-stat under alt. hypothesis of low correlation')
+xline(Svs(sigs2==testSigma), 'k-',{'Point Estimate p='+sprintf("%0.4f",ps2)},'HandleVisibility','off');
+%xline(thresh, 'k-',{'Euler Rejection Threshold p='+sprintf("%0.4f",pt2)},'HandleVisibility','off');
+tightfig(cfig);
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/BootstrapSstat2.png");
+
+ps2NC = sum(svs2(reps+1:end,sigs2==testSigma)>Svs(sigs2==testSigma))/reps;
+pt2NC = sum(svs2(reps+1:end,sigs2==testSigma)>thresh)/reps;
+
+cfig=figure(6);
+colororder({colors_list{2},colors_list{1}});
+histogram(svs2(reps+1:end,sigs2==testSigma),'Normalization','pdf','BinWidth',thresh/4);
+title('Bootstrap PDF of S-stat under alt. hypothesis of low correlation')
+xline(Svs(sigs2==testSigma), 'k-',{'Point Estimate p='+sprintf("%0.4f",ps2NC)},'HandleVisibility','off');
+%xline(thresh, 'k-',{'Euler Rejection Threshold p='+sprintf("%0.4f",pt2NC)},'HandleVisibility','off');
+tightfig(cfig);
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/BootstrapSstat2NC.png");
+
+
+%these two graphs are diagnostic, to check that the bootstrap produces
+%reasonable degrees of predictability 
+cfig=figure(7);
+colororder({colors_list{2},colors_list{1}});
+histogram(walds2(reps+1:end),'Normalization','pdf');
+ylim([0,0.2]);
+title('Bootstrap PDF of Wald Statistic under alt. hypothesis')
+xline(waldNC, 'k-',{'Point Estimate'},'HandleVisibility','off');
+tightfig(cfig);
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/BootstrapWald_alt.png");
+
+cfig=figure(8);
+colororder({colors_list{2},colors_list{1}});
+histogram(cFs2(reps+1:end),'Normalization','pdf');
+title('Bootstrap PDF of F Statistic under alt. hypothesis')
+xline(cFNC, 'k-',{'Point Estimate'},'HandleVisibility','off');
+tightfig(cfig);
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/BootstrapF_alt.png");
+
+ps2 = sum(svs2(1:reps,:)>Svs)/reps;
+ps2NC = sum(svs2(reps+1:end,:)>Svs)/reps;
+
+pv_alt = sum(svs2(1:reps,:)>mean(thresh),1)/reps;
+pv_altNC = sum(svs2(reps+1:end,:)>mean(thresh),1)/reps;
+%pv_point = sum(svs2>Svs,1)/reps;
+
+cfig=figure(9);
+colororder({colors_list{2},colors_list{1}});
+title('Bootstrap of S-stat rejection prob. under alt. hypothesis of low correlation')
+hold on;
+plot(isigs2,pv_alt,'-.','LineWidth',2,'Color',colors_list{1});
+plot(isigs2,pv_altNC,'-','LineWidth',2,'Color',colors_list{2});
+xscale log;
+xticks([min(isigs2) 1/5 1/2 1 max(isigs2)]);
+set(gca,'XMinorTick','Off');
+hold off;
+xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
+ylabel('Prob. of S-stat > 95% threshold')
+ylim([0,1.1]);
+tightfig(cfig);
+legend('Incl. 2020','Excl. 2020');
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/BootstrapPower.png");
+
+cfig=figure(10);
+colororder({colors_list{2},colors_list{1}});
 
 xconf = [isigs2 isigs2(end:-1:1)] ;         
-yconf = [log(prctile(svs2,95,1)) log(prctile(svs2(:,end:-1:1),5,1))];
+yconf = [log(prctile(svs2(1:reps,:),95,1)) log(prctile(svs2(1:reps,end:-1:1),5,1))];
 p = fill(xconf,yconf,'c');
 
 hold on;
 title('Bootstrap of S-stat under alt. hypothesis of low correlation')
 plot(isigs,log(Svs),'-.','LineWidth',2,'Color',colors_list{1});
-plot(isigs2,log(mean(svs2,1)),'-','LineWidth',2,'Color',colors_list{2});
+plot(isigs2,log(mean(svs2(1:reps,:),1)),'-','LineWidth',2,'Color',colors_list{2});
 %plot(isigs,log(prctile(svs2,5,1)),'--','LineWidth',2,'Color',colors_list{2});
 %plot(isigs,log(prctile(svs2,95,1)),'--','LineWidth',2,'Color',colors_list{2});
 plot(isigs,log(threshs),'k:','LineWidth',1.5);
+xscale log;
+xticks([min(isigs2) 1/5 1/2 1 max(isigs2)]);
+set(gca,'XMinorTick','Off');
 hold off;
+legend('5-95% Bootstrap Dist.','Sample S-stat','Bootstrap Mean','Threshold','Interpreter','Latex');
+ylabel('log(S-stat)','Interpreter','Latex');
+xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapSstat-"+sprintf("%d",covids)+".png");
+print(cfig, '-dpng', "../Output/BootstrapSstat.png");
 
-pw2 = sum(walds2>wald)/reps;
-
-cfig=figure(5);
+cfig=figure(11);
 colororder({colors_list{2},colors_list{1}});
-histogram(walds2,'Normalization','pdf');
-ylim([0,0.2]);
-title('Bootstrap PDF of Wald Statistic under alt. hypothesis')
-xline(wald, 'k-',{'Point Estimate'},'HandleVisibility','off');
+
+xconf = [isigs2 isigs2(end:-1:1)] ;         
+yconf = [log(prctile(svs2(reps+1:end,:),95,1)) log(prctile(svs2(reps+1:end,end:-1:1),5,1))];
+p = fill(xconf,yconf,'c');
+
+hold on;
+title('Bootstrap of S-stat under alt. hypothesis of low correlation')
+plot(isigs,log(Svs),'-.','LineWidth',2,'Color',colors_list{1});
+plot(isigs2,log(mean(svs2(reps+1:end,:),1)),'-','LineWidth',2,'Color',colors_list{2});
+%plot(isigs,log(prctile(svs2,5,1)),'--','LineWidth',2,'Color',colors_list{2});
+%plot(isigs,log(prctile(svs2,95,1)),'--','LineWidth',2,'Color',colors_list{2});
+plot(isigs,log(threshs),'k:','LineWidth',1.5);
+xscale log;
+xticks([min(isigs2) 1/5 1/2 1 max(isigs2)]);
+set(gca,'XMinorTick','Off');
+hold off;
+legend('5-95% Bootstrap Dist.','Sample S-stat','Bootstrap Mean','Threshold','Interpreter','Latex');
+ylabel('log(S-stat)','Interpreter','Latex');
+xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapWald_alt-"+sprintf("%d",covids)+".png");
-
-cfig=figure(6);
-colororder({colors_list{2},colors_list{1}});
-histogram(cFs2,'Normalization','pdf');
-title('Bootstrap PDF of F Statistic under alt. hypothesis')
-xline(mdl.ModelFitVsNullModel.Fstat, 'k-',{'Point Estimate'},'HandleVisibility','off');
-tightfig(cfig);
-set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapF_alt-"+sprintf("%d",covids)+".png");
-
-pv_alt = sum(svs2>mean(thresh),1)/reps;
-%pv_point = sum(svs2>Svs,1)/reps;
-
-cfig=figure(7);
-title('Bootstrap of S-stat rejecting prob. under alt. hypothesis of low correlation')
-plot(isigs2,pv_alt,'-.','LineWidth',2,'Color',colors_list{1});
-ylim([0,1]);
-tightfig(cfig);
-set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapPower-"+sprintf("%d",covids)+".png");
+print(cfig, '-dpng', "../Output/BootstrapSstatNC.png");
 
 
 function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     sdCons, meanR, sdR, meanR2, sdR2] = ...
-    runSample (eps, T, Tmax, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
-    meanConsGr, meanZbReal, lamsol, exp_inf, beta_inf, BetaFull2, ...
-    testSigma, covids, sigs2, Nsigs, Nr, RmZ, Nf, cbetas, gammaf, ZSDiag, K)
+    runSample (eps, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+    meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
+    testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K)
 
- %draw new epsilons with replacement
-    if covids == 1
-        eps_sample = eps;
-        eps_sample(:,1:Tmax) = datasample(eps(:,1:Tmax),Tmax,2);
-    else
-        eps_sample = datasample(eps,T,2);
-    end
-
-    %reconstruct time series
-    %unpack residuals
-    epsRmZ_sample = eps_sample(1:NRmZ,:);
-    epsR_sample = eps_sample(NRmZ+1:NRmZ+Nr,:);
-    epsC_sample = eps_sample(NRmZ+Nr+1,:);
-    epsC2_sample = eps_sample(NRmZ+Nr+2,:);
-    epsR2_sample = eps_sample(NRmZ+Nr+3:end,:);
+     %draw new epsilons with replacement
+     eps_sample = datasample(eps,T,2);
+    
+    
+     %reconstruct time series
+     %unpack residuals
+     epsRmZ_sample = eps_sample(1:NRmZ,:);
+     epsR_sample = eps_sample(NRmZ+1:NRmZ+Nr,:);
+     epsC_sample = eps_sample(NRmZ+Nr+1,:);
+     epsC2_sample = eps_sample(NRmZ+Nr+2,:);
+     epsR2_sample = eps_sample(NRmZ+Nr+3:end,:);
 
     %run VAR forward
     RmZ_sample = zeros(size(RmZ));
@@ -362,14 +494,14 @@ function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     ZSDiag_sample(2:end,2:end) = diag(1./Zscales_sample);
     Zinput_sample = normalize(Z_sample')';
     
-    cons_gr_ann_sample = epsC_sample + cbetas'*[Zinput_sample;ones(1,T)];
+    cons_gr_ann_sample = epsC_sample + cbetasNC'*[Zinput_sample;ones(1,T)];
     cons_gr_ann_sample2 = epsC2_sample+meanConsGr*ones(1,T);
 
     cons_gr_ann_sample = cons_gr_ann_sample';
     cons_gr_ann_sample2 = cons_gr_ann_sample2';
 
     zbImpliedReal_sample = [ones(1,T);Zinput_sample]' * [meanZbReal; gammaf(lamsol)];
-    zbImplied_sample = zbImpliedReal_sample' - 100*(mean(exp_inf) - 1) - (Zinput_sample'*inv(ZSDiag(2:end,2:end))*beta_inf(1:end-1)*100)';
+    zbImplied_sample = zbImpliedReal_sample' - 100*(mean(exp_infNC) - 1) - (Zinput_sample'*inv(ZSDiagNC(2:end,2:end))*beta_infNC(1:end-1)*100)';
     
     Xm2_sample = Rminput_sample - iotaM*zbImplied_sample; % excess returns of the factors
     Xv2_sample = [Xm2_sample;ones(1,T)]';
@@ -379,11 +511,24 @@ function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     Rinput2_sample = X2_sample + iotaN*zbImplied_sample;
 
     %construct F-stat to test consumption
-    mdl_sample=fitlm(Zinput_sample',cons_gr_ann_sample2);
-    cF=mdl_sample.ModelFitVsNullModel.Fstat;
+    %remember that sample2 for cons_gr is the IID assumption
+    %while sample is the point estimate. this is why the code below
+    % looks like it "switches" 1 and 2
 
-    mdl_sample2=fitlm(Zinput_sample',cons_gr_ann_sample);
-    cF2=mdl_sample2.ModelFitVsNullModel.Fstat;
+    %non-robust F
+    %mdl_sample=fitlm(Zinput_sample',cons_gr_ann_sample2);
+    %cF=mdl_sample.ModelFitVsNullModel.Fstat;
+
+    %mdl_sample2=fitlm(Zinput_sample',cons_gr_ann_sample);
+    %cF2=mdl_sample2.ModelFitVsNullModel.Fstat;
+
+    %effective F with robust std. errors
+    Zcov = cov(Zinput_sample',0);
+    [coeffcov,~,coeff] = hac(Zinput_sample',cons_gr_ann_sample2,Type="HC",Display="off");
+    cF = coeff(2:end)'*Zcov*coeff(2:end)/trace(coeffcov(2:end,2:end)*Zcov);
+
+    [coeffcov2,~,coeff2] = hac(Zinput_sample',cons_gr_ann_sample,Type="HC",Display="off");
+    cF2 = coeff2(2:end)'*Zcov*coeff2(2:end)/trace(coeffcov2(2:end,2:end)*Zcov);
 
     % reconstruct zero-beta rate under null of zbrate = rf + cons
     [~, Theta_sample, ~, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample] = InstrumentGMMWrapperConc(Rinput_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,testSigma,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
