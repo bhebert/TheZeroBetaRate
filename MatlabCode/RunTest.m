@@ -120,60 +120,69 @@ dts = dates(2:end-1)';
 dts2 = dates(3:end)';
 
 
-% code to truncate sample
-if opts.NoCOVID || opts.SplitSample
+% code to construct No-Covid (NC) inputs
+Tmax = find(dts2>datetime(2019,12,31),1)-1;
 
-    if opts.NoCOVID
-        Tmax = find(dts2>datetime(2019,12,31),1)-1;
-    else
-        Tmax = find(dts2>datetime(opts.SplitYear,12,31),1)-1;
-    end
-    dtsFull = dates(2:end-1)';
-    Zfull = Zinput;
-    Rbinputfull = Rbinput;
-    Rfull = Rinput;
-    cons_full = cons_gr_ann;
+RinputNC = Rinput(:,1:Tmax);  
+ZinputNC = Zinput(:,1:Tmax);
+RminputNC = Rminput(:,1:Tmax);
+RbinputNC = Rbinput(1:Tmax);
+dtsNC = dts(1:Tmax);
+dts2NC = dts2(1:Tmax);
+cpiNC = cpi(1:Tmax+2);
+cons_gr_annNC = cons_gr_ann(1:Tmax);
+inflationNC = inflation(1:Tmax);
+inf_factorNC = inf_factor(1:Tmax);
+RfexNC = Rfex(1:Tmax);
 
+%this will effectively run everything twice, which is inefficient
+%but causes only a minor delay
+if opts.Pre2020Only
 
-    Rinput = Rinput(:,1:Tmax);  
-    Zinput = Zinput(:,1:Tmax);
-    Rminput = Rminput(:,1:Tmax);
-    Rbinput = Rbinput(1:Tmax);
-    dts = dts(1:Tmax);
-    dts2 = dts(1:Tmax);
-    cpi = cpi(1:Tmax+2);
-    cons_gr_ann = cons_gr_ann(1:Tmax);
-    inflation = inflation(1:Tmax);
-    inf_factor = inf_factor(1:Tmax);
-    Rfex = Rfex(1:Tmax);
-    T=Tmax;
+    Rinput = RinputNC;  
+    Zinput = ZinputNC;
+    Rminput = RminputNC;
+    Rbinput = RbinputNC;
+    dts = dtsNC;
+    dts2 = dts2NC;
+    cpi = cpiNC;
+    cons_gr_ann = cons_gr_annNC;
+    inflation = inflationNC;
+    inf_factor = inf_factorNC;
+    Rfex = RfexNC;
+
+    T = Tmax;
 end
-
 
 
 %predict the inflation factor
 beta_inf = [Zinput',ones(size(cpi(1:end-2)))] \ inf_factor;
 exp_inf =  [Zinput',ones(size(cpi(1:end-2)))] * beta_inf;
 
+%NC version
+beta_infNC = [ZinputNC',ones(size(cpiNC(1:end-2)))] \ inf_factorNC;
+exp_infNC =  [ZinputNC',ones(size(cpiNC(1:end-2)))] * beta_infNC;
+
 
 %expected real return on the Treasury bill
 RbinputReal = 100*(Rbinput/100 + exp_inf' - 1);
+
+%NC version
+RbinputRealNC = 100*(RbinputNC/100 + exp_infNC' - 1);
 
 %normalized inputs to unit variance
 Zinput_pre = Zinput';
 Zscales = std(Zinput');
 ZSDiag = eye(length(Zscales)+1);
 ZSDiag(2:end,2:end) = diag(1./Zscales);
-
-if opts.SplitSample
-    Zfull = Zfull - mean(Zinput,2);
-    Zfull = ZSDiag(2:end,2:end)*Zfull; 
-end
-
-
 Zinput = normalize(Zinput')';   % standardize the Z input variables.
 
-
+%NC version
+Zinput_preNC = ZinputNC';
+ZscalesNC = std(ZinputNC');
+ZSDiagNC = eye(length(ZscalesNC)+1);
+ZSDiagNC(2:end,2:end) = diag(1./ZscalesNC);
+ZinputNC = normalize(ZinputNC')';   % standardize the Z input variables.
 
 
 %code to interact factors and Z
@@ -183,12 +192,21 @@ if opts.VaryingBeta
     RZ2 = reshape(Rm2 .* Z2,T,[]);
     RminputZ = [Rminput;RZ2'];
     Rminput = RminputZ;
+
+    Rm2NC = permute(repmat(RminputNC,[1,1,size(ZinputNC,1)]),[2,1,3]);
+    Z2NC = permute(repmat(ZinputNC,1,1,size(RminputNC,1)),[2,3,1]);
+    RZ2NC = reshape(Rm2NC .* Z2NC,Tmax,[]);
+    RminputZNC = [RminputNC;RZ2NC'];
+    RminputNC = RminputZNC;
+
+    %same for NC and full sample
     iotaM = repmat(iotaM,1+size(Zinput,1),1);
+
 end
 
 
 %Values of Sigma to use in S-test
-sigs = [0.25:0.25:0.75,1,4/3,5/3,2,5/2,3:1:opts.sigma_max];
+sigs = [0.1,0.25:0.25:0.75,1,4/3,5/3,2,5/2,3:1:opts.sigma_max];
 
 
 % code for Ridge cross-validation to select penalty psi
@@ -199,16 +217,18 @@ if opts.RunRidge
     Folds = 10; 
     L = length(psis);
     results = zeros(L, 2);
+    resultsNC = zeros(L, 2);
 
     parfor i = 1:L
         psii = psis(i);
         error = K_Fold(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, psii,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType,Folds);
         results(i, :) = [psii,mean(error)];
+
+        errorNC = K_Fold(RinputNC, RminputNC, ZinputNC, RbinputNC, iotaN, iotaM, cons_gr_annNC/12, inflationNC, RfexNC, psii,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType,Folds);
+        resultsNC(i, :) = [psii,mean(errorNC)];
     end
 
-    results
-
-    cfig = figure(4);
+    cfig = figure(6);
     plot(results(:,1), sqrt(results(:,2)),'LineWidth',2);
     set(gca,'TickLabelInterpreter','latex')
     xlabel('$\psi$', 'Interpreter','latex');
@@ -218,10 +238,24 @@ if opts.RunRidge
     set(cfig,'PaperOrientation','landscape');
     print(cfig, '-dpng', "../Output/PsiGraph_"+opts.Name+".png");
 
+    cfig = figure(7);
+    plot(resultsNC(:,1), sqrt(resultsNC(:,2)),'LineWidth',2);
+    set(gca,'TickLabelInterpreter','latex')
+    xlabel('$\psi$', 'Interpreter','latex');
+    ylabel('Loss', 'Interpreter','latex');
+    tightfig(cfig);
+
+    set(cfig,'PaperOrientation','landscape');
+    print(cfig, '-dpng', "../Output/PsiGraph_"+opts.Name+"NC.png");
+
     [v,ind] = min(results(:,2));
     psi = results(ind,1);
+
+    [vNC,indNC] = min(resultsNC(:,2));
+    psiNC = results(indNC,1);
 else
     psi = 0;
+    psiNC = 0;
 end
 
 %Estimate zero-beta rate
@@ -242,11 +276,20 @@ rho = Theta(end-1);
 [Rf;gamma]
 sqrt(diag(pvar))
 
+%run the no-covid results
+[~, ThetaNC, ~, portRet3NC, weightNC, ~, ~, ~,~,~,~,threshNC,~,pvarNC] = ...
+    InstrumentGMMWrapperConc(RinputNC, RminputNC, ZinputNC, RbinputNC, iotaN, iotaM, cons_gr_annNC/12, inflationNC, ...
+    RfexNC, psi,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
+
+RfNC = ThetaNC(1);
+gammaNC = reshape(ThetaNC(2:1+K), K, 1);
+
 if ~opts.RunRidge
     [Rf;gamma] ./ sqrt(diag(pvar(1:end-1,1:end-1)))
 else
     %if Ridge, no standard errors. This matrix will be ignored.
     pvar = eye(length([Rf;gamma])+1);
+    pvarNC = pvar;
 end
 
 %save re-scaled coefficient estimates and standard errors
@@ -255,20 +298,37 @@ end
 % this code patch makes the output consistent with new draft
 write(table(ZSDiag*[Rf;gamma] + [mean(Rbinput); 1; zeros(K-1,1)], ZSDiag*pvar(1:end-1,1:end-1)*ZSDiag), "../Output/ses_" + opts.Name + ".csv");
 
+write(table(ZSDiagNC*[RfNC;gammaNC] + [mean(RbinputNC); 1; zeros(K-1,1)], ZSDiagNC*pvarNC(1:end-1,1:end-1)*ZSDiagNC), "../Output/ses_" + opts.Name + "NC.csv");
+
 
 zbrate = gamma'*Zinput + Rf + Rbinput; % zero-beta rate
+zbrateNC = gammaNC'*ZinputNC + RfNC + RbinputNC; % zero-beta rate
 
 %change here: missing factor of 100
 zbrateReal = zbrate + 100*(exp_inf' - 1);
+zbrateRealNC = zbrateNC + 100*(exp_infNC' - 1);
 
 %check that the mean and covariances make sense
+disp("checks, should all be near zero (except for Ridge)")
 mean(portRet3-zbrate)
-std(portRet3-zbrate)
+
 (portRet3-zbrate)*(Rminput-iotaM*zbrate)'/T
 
 ([Zinput;ones(size(portRet3))]' \ (portRet3-Rbinput)')' - [gamma;Rf]'
 
+%same checks for NC
+disp("NC checks, should all be near zero (except for Ridge)")
+mean(portRet3NC-zbrateNC)
+(portRet3NC-zbrateNC)*(RminputNC-iotaM*zbrateNC)'/Tmax
 
+([ZinputNC;ones(size(portRet3NC))]' \ (portRet3NC-RbinputNC)')' - [gammaNC;RfNC]'
+
+%print surprise standard deviations
+disp("standard deviations")
+std(portRet3-zbrate)
+std(portRet3NC-zbrateNC)
+
+%these are some diagnostic outputs, not used in the paper
 % regression with both variables
 fitlm([RbinputReal;zbrateReal]',cons_gr_ann/12)
 
@@ -285,23 +345,35 @@ if opts.RunRidge
     ba(:,fitinfoa.IndexMinMSE)
     p_cons = Zinput' * ba(:,fitinfoa.IndexMinMSE) + fitinfoa.Intercept(fitinfoa.IndexMinMSE);
 
+    [baNC,fitinfoaNC] = lasso(ZinputNC',cons_gr_annNC,'CV',10,'Alpha',0.00001,'NumLambda',100000,'LambdaRatio',0.00000001);
+    fitinfoaNC
+    baNC(:,fitinfoaNC.IndexMinMSE)
+    p_consNC = ZinputNC' * baNC(:,fitinfoaNC.IndexMinMSE) + fitinfoaNC.Intercept(fitinfoaNC.IndexMinMSE);
+
     %save time series
     write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate',portRet3',p_cons/12), "../Output/zero_beta_rate" + opts.Name + ".csv")
+    write(table(dts2NC', RbinputRealNC', zbrateRealNC', portRet3NC' - inflationNC'*100, cons_gr_annNC/12,zbrateNC',portRet3NC',p_consNC/12), "../Output/zero_beta_rate" + opts.Name + "NC.csv")
 else
+
+    %OLS regressions
     cbetas = [Zinput;ones(1,T)]' \ cons_gr_ann;
     p_cons = cbetas' * [Zinput;ones(1,T)];
+    
+    cbetasNC = [ZinputNC;ones(1,Tmax)]' \ cons_gr_annNC;
+    p_consNC = cbetasNC' * [ZinputNC;ones(1,Tmax)];
+
 
     %save time series
     write(table(dts2', RbinputReal', zbrateReal', portRet3' - inflation'*100, cons_gr_ann/12,zbrate',portRet3',p_cons'/12), "../Output/zero_beta_rate" + opts.Name + ".csv")
+    write(table(dts2NC', RbinputRealNC', zbrateRealNC', portRet3NC' - inflationNC'*100, cons_gr_annNC/12,zbrateNC',portRet3NC',p_consNC'/12), "../Output/zero_beta_rate" + opts.Name + "NC.csv")
 end
 
-
-
-
+%some more diagonostic output, not used in paper
 fitlm(Zinput',portRet3 - inflation*100)
 fitlm(Zinput',Rminput(1,:) - inflation*100)
 
 %generate graph to compare ridge and non-ridge
+%graph not used in paper, didn't bother to make NC version
 if opts.RunRidge
 
     [~, Theta0] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation, Rfex, 0,opts.SigmaInit,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
@@ -310,7 +382,7 @@ if opts.RunRidge
 
     zbrate0 = gamma0'*Zinput + Rf0 + Rbinput; % zero-beta rate
 
-    cfig=figure(3);
+    cfig=figure(5);
     colororder({colors_list{1},colors_list{2},colors_list{3},colors_list{4}});
     hold on
     plot(dts, zbrate*12, '-', 'DisplayName', 'Zero-Beta Rate (Ridge)','LineWidth',2,'Color',colors_list{1});
@@ -325,7 +397,7 @@ if opts.RunRidge
     print(cfig, '-dpng', "../Output/NominalRates_"+opts.Name+".png");
 end
 
-% plot the results.
+% plot the zb results.
 cfig=figure(1);
 colororder({colors_list{1},colors_list{2}});
 hold on
@@ -354,7 +426,7 @@ set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/ZBvCons_"+opts.Name+".png");
 
 
-% plot the results.
+% plot the t-bill results.
 cfig=figure(2);
 colororder({colors_list{1},colors_list{2}});
 hold on
@@ -378,67 +450,60 @@ tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/TBillvCons_"+opts.Name+".png");
 
+% plot the zb NC results.
+cfig=figure(3);
+colororder({colors_list{1},colors_list{2}});
+hold on
+yyaxis left;
+plot(dtsNC, zbrateRealNC*12, '-.','LineWidth',2,'Color',colors_list{1});
+set(gca,'TickLabelInterpreter','latex')
+ylabel('Annualized Rate (mean +/- 4 s.d.)','Interpreter','Latex')
 
-if opts.SplitSample
+ylim(mean(zbrateRealNC'*12)+4*std(zbrateRealNC'*12)*[-1,1]);
 
-    if opts.RunRidge
-        p_cons_full = Zfull' * ba(:,fitinfoa.IndexMinMSE) + fitinfoa.Intercept(fitinfoa.IndexMinMSE);
-        p_cons_full = p_cons_full';
-    else
-        p_cons_full = cbetas' * [Zfull;ones(1,size(Zfull,2))];
-    end
-
-    exp_inf_full =  [Zfull',ones(size(Zfull,2),1)] * beta_inf;
-
-    zbratefull = gamma'*Zfull + Rf + Rbinputfull; % zero-beta rate
-
-    %change here: missing factor of 100
-    zbrateRealFull = zbratefull + 100*(exp_inf_full' - 1);
-
-    % plot the results.
-    cfig=figure(5);
-    colororder({colors_list{1},colors_list{2}});
-    hold on
-  
- 
-
-    yyaxis left;
-    p1=plot(dtsFull, zbrateRealFull*12, '-.','LineWidth',2,'Color',colors_list{1});
-    set(gca,'TickLabelInterpreter','latex');
-    ylabel('Annualized Rate (mean +/- 6 s.d.)','Interpreter','Latex')
-    
-    ylim(mean(zbrateReal'*12)+6*std(zbrateReal'*12)*[-1,1]);
-
-    yyaxis right;
-    
-    
-    ylim(mean(p_cons')+6*std(p_cons')*[-1,1]);
-    ylabel('$\bf{E}[$Cons. Growth$]$ (mean +/- 6 s.d.)','Interpreter','Latex');
-    p2=plot(dtsFull, p_cons_full, '-','LineWidth',2,'Color',colors_list{2});
-    hold off
-    yline(mean(p_cons'), 'k-','HandleVisibility','off');
-    
-    xline(dtsFull(Tmax),'k-','HandleVisibility','off');
-    
+yyaxis right;
 
 
-    legend({'Real Zero-Beta Rate','$\bf{E}[$Cons. Growth$]$'},'Interpreter','Latex');
-
-    %this code makes the zero-beta rate dashed line go on top
-    ax = gca;
-    p1.ZData = ones(length(p1.YData),1);
-    p2.ZData = zeros(length(p1.YData),1);
-    ax.SortMethod = 'depth';
-    clear p1 p2 ax;
-
-    tightfig(cfig);
-    
-    set(cfig,'PaperOrientation','landscape');
-    print(cfig, '-dpng', "../Output/ZBvCons_"+opts.Name+"_OOS.png");
+ylim(mean(p_consNC')+4*std(p_consNC')*[-1,1]);
+ylabel('$\bf{E}[$Cons. Growth$]$ (mean +/- 4 s.d.)','Interpreter','Latex');
+plot(dtsNC, p_consNC, '-','LineWidth',2,'Color',colors_list{2})
+hold off
+yline(mean(p_consNC'), 'k-','HandleVisibility','off');
 
 
-    
-end
+legend({'Real Zero-Beta Rate','$\bf{E}[$Cons. Growth$]$'},'Interpreter','Latex');
+
+tightfig(cfig);
+
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/ZBvCons_"+opts.Name+"NC.png");
+
+
+% plot the tbill NC results.
+cfig=figure(4);
+colororder({colors_list{1},colors_list{2}});
+hold on
+yyaxis left;
+
+plot(dtsNC, RbinputRealNC*12, '--','LineWidth',2,'Color',colors_list{1});
+set(gca,'TickLabelInterpreter','latex')
+
+ylabel('Annualized Rate (mean +/- 4 s.d.)','Interpreter','Latex');
+ylim(mean(RbinputRealNC'*12)+4*std(RbinputRealNC'*12)*[-1,1]);
+yyaxis right;
+ylim(mean(p_consNC')+4*std(p_consNC')*[-1,1]);
+ylabel('$\bf{E}[$Cons. Growth$]$ (mean +/- 4 s.d.)','Interpreter','Latex');
+plot(dtsNC, p_consNC, '-','LineWidth',2,'Color',colors_list{2})
+hold off
+yline(mean(p_consNC'), 'k-','HandleVisibility','off');
+
+legend({'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$'},'Interpreter','Latex');
+
+tightfig(cfig);
+set(cfig,'PaperOrientation','landscape');
+print(cfig, '-dpng', "../Output/TBillvCons_"+opts.Name+"NC.png");
+
+
 
 
 %can't run GMM tests with ridge
@@ -448,9 +513,16 @@ Svs = zeros(size(sigs));
 tests = zeros(size(sigs));
 threshs = zeros(size(sigs));
 
+SvsNC = zeros(size(sigs));
+testsNC = zeros(size(sigs));
+threshsNC = zeros(size(sigs));
+
 if strcmp(opts.Name,'Main')
     SvsRF = zeros(size(sigs));
     SvsMkt = zeros(size(sigs));
+
+    SvsRFNC = zeros(size(sigs));
+    SvsMktNC = zeros(size(sigs));
 end
 
 parfor i = 1:length(sigs)
@@ -459,37 +531,61 @@ parfor i = 1:length(sigs)
     Svs(i) = svi;
     threshs(i)=threshi;
 
+    [tiNC,~,sviNC,~, ~, ~, ~, ~,~, ~,~,threshiNC] = InstrumentGMMWrapperConc(RinputNC, RminputNC, ZinputNC, RbinputNC, iotaN, iotaM, cons_gr_annNC/12, inflationNC,RfexNC,0,sigs(i),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
+    testsNC(i) = tiNC;
+    SvsNC(i) = sviNC;
+    threshsNC(i)=threshiNC;
+
     if strcmp(opts.Name,'Main')
         [~,~,sviRF] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'RF',opts.har,opts.NLConsFactor,opts.SigmaType);
         [~,~,sviMkt] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor,opts.SigmaType);
 
         SvsRF(i)=sviRF;
         SvsMkt(i) = sviMkt;
+
+        [~,~,sviRFNC] = InstrumentGMMWrapperConc(RinputNC, RminputNC, ZinputNC, RbinputNC, iotaN, iotaM, cons_gr_annNC/12, inflationNC,RfexNC,0,sigs(i),'RF',opts.har,opts.NLConsFactor,opts.SigmaType);
+        [~,~,sviMktNC] = InstrumentGMMWrapperConc(RinputNC, RminputNC, ZinputNC, RbinputNC, iotaN, iotaM, cons_gr_annNC/12, inflationNC,RfexNC,0,sigs(i),'Mkt',opts.har,opts.NLConsFactor,opts.SigmaType);
+
+        SvsRFNC(i)=sviRFNC;
+        SvsMktNC(i) = sviMktNC;
     end
 end
 
 sigs(tests==1)
-
+sigs(testsNC==1)
 isigs = 1./sigs;
 
-cfig=figure(3);
+%verify that thresholds are identical
+threshs
+threshsNC
+
+cfig=figure(5);
 hold on;
-plot(isigs,log(Svs),'-','LineWidth',2,'Color',colors_list{1});
-%plot(isigs,log(SvsRF),'-.','LineWidth',2,'Color',colors_list{2});
-%plot(isigs,log(SvsMkt),'--','LineWidth',2,'Color',colors_list{3});
+if ~opts.Pre2020Only
+    plot(isigs,log(Svs),'--','LineWidth',2,'Color',colors_list{1});
+end
+plot(isigs,log(SvsNC),'-','LineWidth',2,'Color',colors_list{1});
 plot(isigs,log(threshs),'k:','LineWidth',1.5);
+xscale log;
+xticks([min(isigs) 1/5 1/2 1 max(isigs)]);
+set(gca,'XMinorTick','Off');
 set(gca,'TickLabelInterpreter','latex')
 %legend('Zero-Beta','T-Bill','Market','Threshold','Interpreter','Latex');
-legend('Zero-Beta','Threshold','Interpreter','Latex');
+if opts.Pre2020Only
+    legend('Zero-Beta (Excl. 2020)','Threshold','Interpreter','Latex');
+else
+    legend('Zero-Beta (Incl. 2020)','Zero-Beta (Excl. 2020)','Threshold','Interpreter','Latex');
+end
 ylabel('log(S-stat)','Interpreter','Latex');
-xlabel('IES $(1/\sigma)$','Interpreter','Latex');
+xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
+hold off;
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/Stest_" + opts.Name + ".png");
 
 end
 
-%placebo figure, only in main analysis
+%some extra figures, only in the Main specification
 if strcmp(opts.Name,'Main')
 
 
@@ -497,9 +593,12 @@ if strcmp(opts.Name,'Main')
     %fix factor of 100 here as well
     p_bond = bond_betas' * [Zinput;ones(1,T)] + 100*(exp_inf' - 1);
     
+    %NC version
+    bond_betasNC = [ZinputNC;ones(1,Tmax)]' \ (RminputNC(6,:)+RbinputNC)';
+    p_bondNC = bond_betasNC' * [ZinputNC;ones(1,Tmax)] + 100*(exp_infNC' - 1);
 
     
-    cfig=figure(5);
+    cfig=figure(6);
     colororder({colors_list{1},colors_list{2}});
     hold on
     yyaxis left;
@@ -517,19 +616,107 @@ if strcmp(opts.Name,'Main')
     tightfig(cfig);
     set(cfig,'PaperOrientation','landscape');
     print(cfig, '-dpng', "../Output/BondvCons_"+opts.Name+".png");
-    
-    cfig=figure(6);
+   
+    cfig=figure(7);
+    colororder({colors_list{1},colors_list{2}});
+    hold on
+    yyaxis left;
+
+    plot(dtsNC, p_bondNC*12, '-.', 'DisplayName', 'Exp. Real Tsy Bond Ret.','LineWidth',2,'Color',colors_list{1});
+    ylabel('Annualized Rate (mean +/- 4 s.d.)')
+    ylim(mean(p_bondNC'*12)+4*std(p_bondNC'*12)*[-1,1]);
+    yyaxis right;
+    ylim(mean(p_consNC')+4*std(p_consNC')*[-1,1]);
+    ylabel('Expect Cons. Growth (mean +/- 4 s.d.)');
+    plot(dtsNC, p_consNC, '--', 'DisplayName', 'Exp. Cons. Gr.','LineWidth',2,'Color',colors_list{2})
+    hold off
+    yline(mean(p_consNC'), 'k-','HandleVisibility','off');
+    legend('show')
+    tightfig(cfig);
+    set(cfig,'PaperOrientation','landscape');
+    print(cfig, '-dpng', "../Output/BondvCons_"+opts.Name+"NC.png");
+
+
+    cfig=figure(8);
     hold on;
-    plot(isigs,log(SvsRF),'-.','LineWidth',2,'Color',colors_list{2});
-    plot(isigs,log(SvsMkt),'--','LineWidth',2,'Color',colors_list{3});
+    %plot(isigs,log(SvsRF),'-.','LineWidth',2,'Color',colors_list{2});
+    %plot(isigs,log(SvsMkt),'.','LineWidth',2,'Color',colors_list{3});
+    plot(isigs,log(SvsRFNC),'-','LineWidth',2,'Color',colors_list{2});
+    plot(isigs,log(SvsMktNC),'--','LineWidth',2,'Color',colors_list{3});
     plot(isigs,log(threshs),'k:','LineWidth',1.5);
+    xscale log;
+    xticks([min(isigs) 1/5 1/2 1 max(isigs)]);
+    set(gca,'XMinorTick','Off');
     set(gca,'TickLabelInterpreter','latex')
     legend('T-Bill','Market','Threshold','Interpreter','Latex');
+    %legend('T-Bill','Market','T-Bill (Pre-2020)','Market (Pre-2020)','Threshold','Interpreter','Latex');
     ylabel('log(S-stat)','Interpreter','Latex');
-    xlabel('IES $(1/\sigma)$','Interpreter','Latex');
+    xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
     tightfig(cfig);
     set(cfig,'PaperOrientation','landscape');
     print(cfig, '-dpng', "../Output/Stest_MktRF.png");
+
+
+    %consumption regression robust to outliers
+    [b,stats]=robustfit(Zinput',cons_gr_ann);
+    cbetasRob = zeros(size(b));
+    cbetasRob(end)=b(1);
+    cbetasRob(1:end-1)=b(2:end);
+    p_consRob = cbetasRob' * [Zinput;ones(1,T)];
+
+    % plot the robust cons zb results.
+    cfig=figure(9);
+    colororder({colors_list{1},colors_list{2}});
+    hold on
+    yyaxis left;
+    plot(dts, zbrateReal*12, '-.','LineWidth',2,'Color',colors_list{1});
+    set(gca,'TickLabelInterpreter','latex')
+    ylabel('Annualized Rate (mean +/- 4 s.d.)','Interpreter','Latex')
+    
+    ylim(mean(zbrateReal'*12)+4*std(zbrateReal'*12)*[-1,1]);
+    
+    yyaxis right;
+    
+    
+    ylim(mean(p_consRob')+4*std(p_consRob')*[-1,1]);
+    ylabel('$\bf{E}[$Cons. Growth$]$ (mean +/- 4 s.d.)','Interpreter','Latex');
+    plot(dts, p_consRob, '-','LineWidth',2,'Color',colors_list{2})
+    hold off
+    yline(mean(p_consRob'), 'k-','HandleVisibility','off');
+    
+    
+    legend({'Real Zero-Beta Rate','$\bf{E}[$Cons. Growth$]$ (robust)'},'Interpreter','Latex');
+    
+    tightfig(cfig);
+    
+    set(cfig,'PaperOrientation','landscape');
+    print(cfig, '-dpng', "../Output/ZBvCons_"+opts.Name+"Robust.png");
+    
+    
+    % plot the t-bill results.
+    cfig=figure(10);
+    colororder({colors_list{1},colors_list{2}});
+    hold on
+    yyaxis left;
+    
+    plot(dts, RbinputReal*12, '--','LineWidth',2,'Color',colors_list{1});
+    set(gca,'TickLabelInterpreter','latex')
+    
+    ylabel('Annualized Rate (mean +/- 4 s.d.)','Interpreter','Latex');
+    ylim(mean(RbinputReal'*12)+4*std(RbinputReal'*12)*[-1,1]);
+    yyaxis right;
+    ylim(mean(p_consRob')+4*std(p_consRob')*[-1,1]);
+    ylabel('$\bf{E}[$Cons. Growth$]$ (mean +/- 4 s.d.)','Interpreter','Latex');
+    plot(dts, p_consRob, '-','LineWidth',2,'Color',colors_list{2})
+    hold off
+    yline(mean(p_consRob'), 'k-','HandleVisibility','off');
+    
+    legend({'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$ (robust)'},'Interpreter','Latex');
+    
+    tightfig(cfig);
+    set(cfig,'PaperOrientation','landscape');
+    print(cfig, '-dpng', "../Output/TBillvCons_"+opts.Name+"Robust.png");
+
 end
     
 clear cfig ans;

@@ -74,9 +74,14 @@ opts.ConsumptionVar = 'JW';
 opts.RunRidge = false;
 opts.GenSEs = true;
 opts.sigma_max = 10;
-opts.NoCOVID = false;
+
 opts.har = 'COV';
-opts.SplitSample = false;
+
+%deprecated options
+%opts.NoCOVID = false;
+%opts.SplitSample = false;
+
+opts.Pre2020Only = false;
 
 opts.SigmaType = 'LW'; %options are 'LW', 'I', 'Diag', and 'Sample'
 %options controlling the matrix used to form zero-beta portfolio
@@ -144,6 +149,13 @@ opts.NLConsFactor = true;
 RunTest;
 
 opts = optsDefault;
+opts.Name = 'WithConsSigma10';
+opts.SigmaInit = 10;
+opts.LinearConsumption = false;
+opts.NLConsFactor = true;
+RunTest;
+
+opts = optsDefault;
 opts.Name = 'MktOnly';
 opts.Factors = {'Mkt'};
 RunTest;
@@ -201,16 +213,16 @@ opts.RunRidge = true;
 
 RunTest;
 
-opts = optsDefault;
-opts.Name = 'RidgeNoCOVID';
-opts.RunRidge = true;
-opts.NoCOVID = true;
-RunTest;
+% opts = optsDefault;
+% opts.Name = 'RidgeNoCOVID';
+% opts.RunRidge = true;
+% opts.NoCOVID = true;
+% RunTest;
 
-opts = optsDefault;
-opts.Name = 'NoCOVID';
-opts.NoCOVID = true;
-RunTest;
+% opts = optsDefault;
+% opts.Name = 'NoCOVID';
+% opts.NoCOVID = true;
+% RunTest;
 
 opts = optsDefault;
 opts.Name = 'CovSample';
@@ -238,21 +250,22 @@ RunTest;
 % Note that the file from those authors neededs to be processed before use.
 % 1. Cut pre-Jan1973 data
 % 2. Convert date format to same as our factors file
-% 3. Add in term_spread and DEF from our file
-% 4. Rename MP (market) to Mkt
+% 3. Add in term_spread and DEF from our file (don't forget to trim 2020)
+% 4. Rename MP (market) to Mkt and remove * from other names
 % 5. Multiply the Mkt by 100
 % 6. Add back in the t-bill rate (RF from the instrument file, one lag)
 %    to the market-- the Mkt should be raw, not excess, return
+%    don't worry about the Jan1973 entry, it won't be used
 % 6a. alternatively, use our Mkt variable-- after 5+6 the two are very
 % close
 % 7. Save as .csv
 
-% opts = optsDefault;
-% opts.Name = 'InformativeFactors';
-% opts.Factors = {'Mkt','SMB','HML','RMW','CMA','term_spread','DEF'};
-% opts.NoCOVID = true;
-% opts.FactorFile = 'InformativeFactors.csv';
-% RunTest;
+opts = optsDefault;
+opts.Name = 'InfFactors';
+opts.Factors = {'Mkt','SMB','HML','RMW','CMA','term_spread','DEF'};
+opts.Pre2020Only = true;
+opts.FactorFile = 'InformativeFactors.csv';
+RunTest;
 
 
 
