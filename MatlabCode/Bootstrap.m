@@ -336,14 +336,14 @@ tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapSstat2.png");
 
-ps2NC = sum(svs2(reps+1:end,sigs2==testSigma)>Svs(sigs2==testSigma))/reps;
+ps2NC = sum(svs2(reps+1:end,sigs2==testSigma)>SvsNC(sigs2==testSigma))/reps;
 pt2NC = sum(svs2(reps+1:end,sigs2==testSigma)>thresh)/reps;
 
 cfig=figure(6);
 colororder({colors_list{2},colors_list{1}});
 histogram(svs2(reps+1:end,sigs2==testSigma),'Normalization','pdf','BinWidth',thresh/4);
 title('Bootstrap PDF of S-stat under alt. hypothesis of low correlation')
-xline(Svs(sigs2==testSigma), 'k-',{'Point Estimate p='+sprintf("%0.4f",ps2NC)},'HandleVisibility','off');
+xline(SvsNC(sigs2==testSigma), 'k-',{'Point Estimate p='+sprintf("%0.4f",ps2NC)},'HandleVisibility','off');
 %xline(thresh, 'k-',{'Euler Rejection Threshold p='+sprintf("%0.4f",pt2NC)},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
@@ -430,7 +430,7 @@ p = fill(xconf,yconf,'c');
 
 hold on;
 title('Bootstrap of S-stat under alt. hypothesis of low correlation')
-plot(isigs,log(Svs),'-.','LineWidth',2,'Color',colors_list{1});
+plot(isigs,log(SvsNC),'-.','LineWidth',2,'Color',colors_list{1});
 plot(isigs2,log(mean(svs2(reps+1:end,:),1)),'-','LineWidth',2,'Color',colors_list{2});
 %plot(isigs,log(prctile(svs2,5,1)),'--','LineWidth',2,'Color',colors_list{2});
 %plot(isigs,log(prctile(svs2,95,1)),'--','LineWidth',2,'Color',colors_list{2});
