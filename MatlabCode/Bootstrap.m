@@ -98,7 +98,8 @@ gamma_zbreal = gammaNC+ [1/ZSDiagNC(2,2); zeros(K-1,1)] + inv(ZSDiagNC(2:end,2:e
 
 %first-order condition of the minimization problem, gamma (zb real) as a function of
 %multipliers lam(1) and lam(2)
-gammaf = @(lam) inv((eye(K)-lam(1)*SigZ))*( gamma_zbreal + lam(2)*SigZ*cbetasNC(1:end-1));
+%updated FOC under new norm
+gammaf = @(lam) 1/(1-lam(1))*( gamma_zbreal + lam(2)*cbetasNC(1:end-1));
 
 %covariance target
 target = corr_target * sqrt(gamma_zbreal'*SigZ*gamma_zbreal) * sqrt(cbetasNC(1:end-1)'*SigZ*cbetasNC(1:end-1));
