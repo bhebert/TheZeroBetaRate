@@ -11,7 +11,7 @@ local allspecs AltData AltFactors AltInstruments AltPorts
 
 local AltData Main NoDrop20 FF3Industry NDOnly Ridge
 local AltFactors Main LinearCons WithConsSigma1 WithConsSigma5 WithConsSigma10 MktOnly FF3Only VaryingBetas InfFactors
-local AltInstruments Main AltBAAS AltCAPE LagCons Shadow
+local AltInstruments Main AltBAAS AltCAPE LagCons Shadow AltCPI AltSahm
 local AltPorts Main CovSample CovPCA CovI
 
 //old

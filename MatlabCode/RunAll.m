@@ -181,6 +181,11 @@ opts.Instruments = {'RF','UMP','EBP','DP_ratio','CAPE', 'TSP','CPI_rolling'};
 RunTest;
 
 opts = optsDefault;
+opts.Name = 'AltSahm';
+opts.Instruments = {'RF','SAHMREALTIME','EBP', 'TSP','CPI_rolling'};
+RunTest;
+
+opts = optsDefault;
 opts.Name = 'LagCons';
 opts.LaggedCons = true;
 RunTest;
@@ -191,8 +196,7 @@ opts.Instruments = {'RF','UMP','EBP','TSP','CPI_rolling','shadow_spread'};
 RunTest;
 
 opts = optsDefault;
-opts.Name = 'AltCPIRidge';
-opts.RunRidge = true;
+opts.Name = 'AltCPI';
 opts.Instruments = {'RF','UMP','EBP','TSP','CPI'};
 RunTest;
 
