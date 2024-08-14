@@ -60,7 +60,7 @@ One set of reasonable instructions for Windows:
 
 	c) python3 A1_CCM_download.py 
 		i) on this first run, you may be asked to create a ".pgpass" file. the program will work regardless of whether you do this, but doing so will eliminate the need to enter a password each time.
-		ii) on the first run, or if you didn't create a .pgpass, you will need to enter your WRDS password.
+		ii) on the first run, or if you didn't create a .pgpass, you will need to enter your WRDS password. Note that no characters will appear as you type your password, but if you type the correct password and hit enter/return it will work.
 		iii) running this takes from several up to 20m in our experience, depending on your internet bandwidth to the WRDS servers
 		iv) if you have two-factor authentication setup on your WRDS account, you may need to authorize the login (e.g. using the Duo Mobile app on your phone)
 	
