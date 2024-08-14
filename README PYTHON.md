@@ -51,6 +51,7 @@ One set of reasonable instructions for Windows:
 	b) edit path_variables.md to set:
 		i) main_path to the "TheZeroBetaRate" directory. For example,
 			 main_path: "/Users/bhebert/Documents/GitHub/TheZeroBetaRate"
+   			*use the full path, not a relative path (e.g. not ~/Documents/GitHub/TheZeroBetaRate)
 		ii) your WRDS username (in quotes)
 		
 		iii) (optional) if using git/github, and you don't want this file to be tracked as a change, after these edits, use this command line:
