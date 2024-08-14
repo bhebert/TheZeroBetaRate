@@ -182,7 +182,7 @@ RunTest;
 
 opts = optsDefault;
 opts.Name = 'AltSahm';
-opts.Instruments = {'RF','SAHMREALTIME','EBP', 'TSP','CPI_rolling'};
+opts.Instruments = {'RF','SAHM','EBP', 'TSP','CPI_rolling'};
 RunTest;
 
 opts = optsDefault;
