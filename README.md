@@ -26,7 +26,7 @@ Instructions:
 
 3) Run MATLAB code to generate results. Required toolboxes: optimization and statistical learning
 
-        a) Open MATLAB. tested with R2022a on an M1 Macbook pro and a Windows PC, known not to work on R2019b or earlier.
+        a) Open MATLAB. Requires R2023b or later due to use of 'xscale' command in plots.
         
         b) cd to TheZeroBetaRate/MatlabCode
         
@@ -55,12 +55,12 @@ Instructions:
 	
 		i) this will run very quickly.
 		
-4) Run STATA to generate tables. Requires mmerge ("ssc install mmerge" if you need to install it)
+4) Run STATA to generate tables. Requires mmerge, robreg, moremata, estout ("ssc install ..." if you need to install them)
 
 	a) open Stata. Tested with Stata MP 17.0 and 18.0 on an M1 Macbook Pro and a Windows PC.
 	
 		i) depending on your Matlab and Stata versions and Mac/Windows, the dates in the intermediate .csv files might be "DMY" or "MDY" format
-		   Try the "DMY" format on Mac and the "MDY" on Windows (lines 55-59 of MakeTables.do), or inspect ../Output/zero_beta_rateMain.csv to see what the format is 
+		   Try the "DMY" format on Mac and the "MDY" on Windows (lines 3-4 of MakeTables.do), or inspect ../Output/zero_beta_rateMain.csv to see what the format is 
 	
 	b) cd to TheZeroBetaRate/StataCode
 	
@@ -68,7 +68,7 @@ Instructions:
 	
 		i) this will run very quickly.
 		
-		ii) OPTIONAL: if you ran the "Informative Factors" code in RunAll.m, include the "InformativeFactors" specification in the "local specs ..." near the top of the .do file
+		ii) OPTIONAL: if you ran the "Informative Factors" code in RunAll.m, include the "InfFactors" specification in the "local AltFactors ..." near the top of the .do file
 		
 5) Inspect output
 
