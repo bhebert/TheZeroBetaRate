@@ -3,7 +3,7 @@ clear;
 %for testing
 reps = 1000;
 
-use_ridge = 1;
+use_ridge = 0;
 
 close all;
 addpath("../ExternalCode/");
@@ -374,25 +374,30 @@ print(cfig, '-dpng', "../Output/BootstrapF_alt.png");
 ps2 = sum(svs2(1:reps,:)>Svs)/reps;
 ps2NC = sum(svs2(reps+1:end,:)>Svs)/reps;
 
+pv_alt99 = sum(svs2(1:reps,:)>mean(chi2inv(0.99,5)),1)/reps;
+pv_altNC99 = sum(svs2(reps+1:end,:)>mean(chi2inv(0.99,5)),1)/reps;
+
 pv_alt = sum(svs2(1:reps,:)>mean(thresh),1)/reps;
 pv_altNC = sum(svs2(reps+1:end,:)>mean(thresh),1)/reps;
 %pv_point = sum(svs2>Svs,1)/reps;
 
 cfig=figure(9);
 colororder({colors_list{2},colors_list{1}});
-title('Bootstrap of S-stat rejection prob. under alt. hypothesis of low correlation')
+title('Bootstrap of S-stat rejection prob. under alt. hypothesis of corr='+sprintf("%0.2f",corr_target));
 hold on;
 plot(isigs2,pv_alt,'-.','LineWidth',2,'Color',colors_list{1});
 plot(isigs2,pv_altNC,'-','LineWidth',2,'Color',colors_list{2});
+plot(isigs2,pv_alt99,'.','LineWidth',2,'Color',colors_list{1});
+plot(isigs2,pv_altNC99,'--','LineWidth',2,'Color',colors_list{2});
 xscale log;
 xticks([min(isigs2) 1/5 1/2 1 max(isigs2)]);
 set(gca,'XMinorTick','Off');
 hold off;
 xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
-ylabel('Prob. of S-stat > 95% threshold')
+ylabel('Prob. of S-stat > Threshold')
 ylim([0,1.1]);
 tightfig(cfig);
-legend('Incl. 2020','Excl. 2020');
+legend('95%, Incl. 2020','95%, Excl. 2020','99%, Incl. 2020','99%, Excl. 2020');
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapPower.png");
 
