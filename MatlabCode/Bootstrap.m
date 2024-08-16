@@ -336,15 +336,15 @@ tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapSstat2.png");
 
-ps2NC = sum(svs2(reps+1:end,sigs2==testSigma)>SvsNC(sigs2==testSigma))/reps;
-pt2NC = sum(svs2(reps+1:end,sigs2==testSigma)>thresh)/reps;
+ps2NC_test = sum(svs2(reps+1:end,sigs2==testSigma)>SvsNC(sigs2==testSigma))/reps;
+pt2NC_test = sum(svs2(reps+1:end,sigs2==testSigma)>thresh)/reps;
 
 cfig=figure(6);
 colororder({colors_list{2},colors_list{1}});
 histogram(svs2(reps+1:end,sigs2==testSigma),'Normalization','pdf','BinWidth',thresh/4);
 title('Bootstrap PDF of S-stat under alt. hypothesis of low correlation')
-xline(SvsNC(sigs2==testSigma), 'k-',{'Point Estimate p='+sprintf("%0.4f",ps2NC)},'HandleVisibility','off');
-%xline(thresh, 'k-',{'Euler Rejection Threshold p='+sprintf("%0.4f",pt2NC)},'HandleVisibility','off');
+xline(SvsNC(sigs2==testSigma), 'k-',{'Point Estimate p='+sprintf("%0.4f",ps2NC_test)},'HandleVisibility','off');
+%xline(thresh, 'k-',{'Euler Rejection Threshold p='+sprintf("%0.4f",pt2NC_test)},'HandleVisibility','off');
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapSstat2NC.png");
@@ -372,7 +372,7 @@ set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapF_alt.png");
 
 ps2 = sum(svs2(1:reps,:)>Svs)/reps;
-ps2NC = sum(svs2(reps+1:end,:)>Svs)/reps;
+ps2NC = sum(svs2(reps+1:end,:)>SvsNC)/reps;
 
 pv_alt99 = sum(svs2(1:reps,:)>mean(chi2inv(0.99,5)),1)/reps;
 pv_altNC99 = sum(svs2(reps+1:end,:)>mean(chi2inv(0.99,5)),1)/reps;
