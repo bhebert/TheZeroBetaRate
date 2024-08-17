@@ -1,6 +1,7 @@
 
 clear;
 close all;
+addpath("../ExternalCode/");
 load("../Output/BootstrapData.mat");
 
 pw = sum(walds(1:reps)>wald)/reps;
