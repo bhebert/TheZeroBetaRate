@@ -26,7 +26,7 @@ Instructions:
 
 3) Run MATLAB code to generate results. Required toolboxes: optimization and statistical learning
 
-        a) Open MATLAB. tested with R2022a on an M1 Macbook pro and a Windows PC, known not to work on R2019b or earlier.
+        a) Open MATLAB. Requires R2023b or later due to use of 'xscale' command in plots.
         
         b) cd to TheZeroBetaRate/MatlabCode
         
@@ -49,18 +49,27 @@ Instructions:
 		iii) the numbers quoted in the text are called "sdnpv" and "sdnpv_tbill"
 		iii) one number quoted in the text is generated from running the script with "spec=2" and results but no specific numbers from "spec=1" are mentioned in the text
 		
-	f) cd to TheZeroBetaRate/Model
+	f) close and re-open matlab, then run Bootstrap.m
 	
-	g) run monetary_shock_model.m
+		i) for unknown reasons, this can "hang" if you don't close and re-open matlab
+		ii) this takes roughly 3-6 minutes per bootstrap rep per core. So 1000 reps on a single-core machine will take about 3 days. A 10-core machine will take about 7 hours, and a 48 core machine will take under 90 minutes.
+		iii) consider setting up the parallel pool first, to use the correct number of cores available. E.g. "parpool(48);" followed by "run Bootstrap.m". Otherwise, it will use the matlab default, which may be fewer cores than are available on your machine.
+		
+	g) run BootstrapGraphs.m
+		i) this will run quickly
+		
+	h) cd to TheZeroBetaRate/Model
+	
+	i) run monetary_shock_model.m
 	
 		i) this will run very quickly.
 		
-4) Run STATA to generate tables. Requires mmerge ("ssc install mmerge" if you need to install it)
+4) Run STATA to generate tables. Requires mmerge, robreg, moremata, estout ("ssc install ..." if you need to install them)
 
 	a) open Stata. Tested with Stata MP 17.0 and 18.0 on an M1 Macbook Pro and a Windows PC.
 	
 		i) depending on your Matlab and Stata versions and Mac/Windows, the dates in the intermediate .csv files might be "DMY" or "MDY" format
-		   Try the "DMY" format on Mac and the "MDY" on Windows (lines 55-59 of MakeTables.do), or inspect ../Output/zero_beta_rateMain.csv to see what the format is 
+		   Try the "DMY" format on Mac and the "MDY" on Windows (lines 3-4 of MakeTables.do), or inspect ../Output/zero_beta_rateMain.csv to see what the format is 
 	
 	b) cd to TheZeroBetaRate/StataCode
 	
@@ -68,7 +77,7 @@ Instructions:
 	
 		i) this will run very quickly.
 		
-		ii) OPTIONAL: if you ran the "Informative Factors" code in RunAll.m, include the "InformativeFactors" specification in the "local specs ..." near the top of the .do file
+		ii) OPTIONAL: if you ran the "Informative Factors" code in RunAll.m, include the "InfFactors" specification in the "local AltFactors ..." near the top of the .do file
 		
 5) Inspect output
 

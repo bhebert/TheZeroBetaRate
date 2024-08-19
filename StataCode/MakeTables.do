@@ -27,6 +27,8 @@ local nameMktOnly RF UMP EBP TSP CPI_Rolling
 local nameFF3Only RF UMP EBP TSP CPI_Rolling
 local nameAltBAAS RF UMP TSP CPI_Rolling BAAS
 local nameAltCAPE RF UMP EBP CAPE TSP CPI_Rolling
+local nameAltSahm RF SAHM_RT EBP TSP CPI_Rolling
+local nameAltCPI RF UMP EBP TSP LagCPI
 local nameLagCons RF UMP EBP TSP CPI_Rolling LagCons
 local nameShadow RF UMP EBP TSP CPI_Rolling ShadowSpread
 local nameVaryingBetas RF UMP EBP TSP CPI_Rolling
