@@ -27,7 +27,8 @@ else
 end
 
 
-options_min = optimoptions('fminunc', 'Display','off', 'MaxIterations', 1000,  'MaxFunctionEvaluations', 1e6,'OptimalityTolerance', 10^-8);
+%options_min = optimoptions('fminunc', 'Display','iter', 'MaxIterations', 1000,  'MaxFunctionEvaluations', 1e6,'OptimalityTolerance', 10^-8,'StepTolerance',10^-14,'FunctionTolerance',10^-10);
+options_min = optimoptions('fmincon', 'Display','off', 'MaxIterations', 10000,  'MaxFunctionEvaluations', 1e6,'OptimalityTolerance', 10^-8,'StepTolerance',10^-14,'FunctionTolerance',10^-10);
 
 
 
@@ -35,7 +36,8 @@ options_min = optimoptions('fminunc', 'Display','off', 'MaxIterations', 1000,  '
 % GMM (psi>0: with ridge penalty)
 f1 = @(Theta) InstrumentGMMConcOpt([Theta;sig], Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor,SigmaType) + psi * sum(Theta(2:end-2).^2); 
 
-[Theta1, ~]  = fminunc(f1, Theta0_init, options_min);
+%[Theta1, ~]  = fminunc(f1, Theta0_init, options_min);
+[Theta1, ~]  = fmincon(f1, Theta0_init, [],[],[],[], -inf*ones(size(Theta0_init)),inf*ones(size(Theta0_init)),[], options_min);
 
 Theta1_final = [Theta1;sig];
 
