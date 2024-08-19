@@ -9,8 +9,9 @@ function [test, Theta1_final, Sv, portRet, weight, Sigma, Beta, alphas, mmoments
 
 N = size(Rinput, 1); T = size(Rinput, 2); K = size(Zinput, 1);
 
-%an initial discount rate of about -2%/yr, reflecting idiosyncratic risk
-rho_init = -.02/12;
+
+%a better guess for rho_init
+rho_init = (0.08 - sig*0.015)/12;
 
 if strcmp(asset,'RF') || strcmp(asset,'Mkt')
     Theta0_init = [rho_init];
