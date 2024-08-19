@@ -9,7 +9,7 @@ if strcmp(asset,'ZB')
     sigma = Theta(end);
     [Beta, Sigma, alphas] = BetaSigma(R, Rm, Z, Rb, ConsG, inflation,iotaN, iotaM, Rfcons, gamma, sigma,NLConsFactor,SigmaType);
     weight =  PortfolioWeight(Beta,Sigma,iotaN);
-    Nm = size(Z,1) + 1;
+    Nm = size(Z,1) + 2; %1;
 else
     alphas = [];
     Beta = [];
