@@ -9,19 +9,31 @@ colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
 %flag for including contemporaneous result
 %0: don't use contemporaneous (WP version)
 %1: include comptemporaneous (suggested by referee)
-use_0 = 0;
+use_0 = 1;
+
+%flag for using specification with lagCPI
+use_lagcpi = false; %false: main text true: appendix
+
 
 Nlags = 12;
 
 %% Load data
-load("../Output/MainRun_Ridge.mat");
-%Zadj = gamma .* Zinput;
+
+if use_lagcpi
+    load("../Output/MainRun_AltCPI.mat");
+    ext='_altcpi';
+else
+    load("../Output/MainRun_Main.mat");
+    ext='';
+end
+%
+
 
 %fix due to redefinition of gamma in paper
-Zadj = (gamma + [1/ZSDiag(2,2); zeros(K-1,1)]) .* Zinput;
+Zadj = (gammaNC + [1/ZSDiagNC(2,2); zeros(K-1,1)]) .* ZinputNC;
 
-p_cons = p_cons';
-ZBR = table(dts', zbrateReal', RbinputReal',Zadj',p_cons',zbrate');
+
+ZBR = table(dtsNC', zbrateRealNC', RbinputRealNC',Zadj',p_consNC',zbrateNC');
 % ZBR = table(dts, riskfree', Rf(1:end-1)*12);
 ZBR = renamevars(ZBR, ["Var1", "Var2", "Var3","Var5","Var6"], ["Date", "ZBR", "RF","PCons","ZBN"]);
 
@@ -71,25 +83,27 @@ for l = 0:Nlags-1+use_0
     reg_results(1+l, 3, 3) = CIs(2,2); 
 end
 
+testSigma = 10;
+
 figure(1);
 % zero beta rate
 
 hold on
 
-plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 1))/5, '-','LineWidth',2,'Color',colors_list{1})
+plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 1))/testSigma, '-','LineWidth',2,'Color',colors_list{1})
 plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 2)), '-.','LineWidth',2,'Color',colors_list{3})
 plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 3)), '--','LineWidth',2,'Color',colors_list{2})
 
 set(gca,'TickLabelInterpreter','latex')
-legend('Real Zero-Beta Rate /5','$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
+legend('Real Zero-Beta Rate /'+sprintf("%d",testSigma),'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
 
 hold off
 yline(0, 'k-','HandleVisibility','off');
 xlabel('Months after Shock','Interpreter','latex')
 ylabel('Percent','Interpreter','latex')
 title("Effects of the Romer-Romer Shock",'Interpreter','latex')
-ylim([-6,3])
-saveas(gcf, "../Output/local_projection_rr.png")
+ylim([-6,4])
+saveas(gcf, "../Output/local_projection_rr"+ext+".png")
 
 % Local Projections With NS
 REGDT = table2array(DT2(:, 2:end));
@@ -129,12 +143,12 @@ figure(2)
 
 
 hold on
-plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 1))/5, '-', 'LineWidth',2,'Color',colors_list{1})
+plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 1))/testSigma, '-', 'LineWidth',2,'Color',colors_list{1})
 plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 2)), '-.', 'LineWidth',2,'Color',colors_list{3})
 plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 3)), '--', 'LineWidth',2,'Color',colors_list{2})
-ylim([-6,3])
+ylim([-6,4])
 set(gca,'TickLabelInterpreter','latex')
-legend('Real Zero-Beta Rate /5','$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
+legend('Real Zero-Beta Rate /'+sprintf("%d",testSigma),'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
 
 yline(0, 'k-','HandleVisibility','off');
 hold off
@@ -143,6 +157,6 @@ ylabel('Percent','Interpreter','latex')
 title("Effects of the Nakamura-Steinsson Shock",'Interpreter','latex')
 
 
-saveas(gcf, "../Output/local_projection_ns.png")
+saveas(gcf, "../Output/local_projection_ns"+ext+".png")
 
 
