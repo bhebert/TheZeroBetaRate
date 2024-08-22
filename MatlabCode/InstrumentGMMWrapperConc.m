@@ -11,10 +11,12 @@ N = size(Rinput, 1); T = size(Rinput, 2); K = size(Zinput, 1);
 
 
 %a better guess for rho_init
-rho_init = (0.08 - sig*0.015)/12;
+rho_init = (0.08 - sig*0.01)/12;
 
 if strcmp(asset,'RF') || strcmp(asset,'Mkt')
     Theta0_init = [rho_init];
+    %these upper and lower bounds correspond to +/- 25%/year
+    %and are not binding
     ub = 0.02;
     lb = -ub;
     TypX = 0.01;
@@ -40,7 +42,10 @@ else
         Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
         Theta0_init = [Theta0; rho_init];
     else
-        Theta0_init = ThetaInit(1:end-1);
+        %initialize using the RF/gamma parameter passed in
+        %but not rho, because the passed in parameter was likely
+        %computed with a different sigma
+        Theta0_init = [ThetaInit(1:end-2); rho_init];
     end
 
     %bounds at large values to avoid singular matrices
@@ -94,6 +99,8 @@ if (psi==0 && obj>10^-6) || flag < 1
 
     obj
     Theta1
+    sig
+    flag
     error('Numerical algorithm did not converge');
 end
 
