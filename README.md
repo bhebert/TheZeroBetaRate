@@ -32,10 +32,10 @@ Instructions:
         
         c) run RunAll.m
         
-        		i) this takes about 30m on an 2021 M1 Macbook Pro
+        		i) this takes about 2 hours on an 2021 M1 Macbook Pro
 		ii) when the parallel pool starts, you may be asked to allow Matlab to accept incoming connections. Allow this; the software should only use your local parallel pool unless you have specifically configured Matlab to do otherwise.
 		
-		iii) OPTIONAL: If you have the factors from the "Informative Factors" paper of  Amman, Hemauer, and Straumann, you can prepare that file and uncomment the associated code in RunAll.m. See the file for details.
+		iii) OPTIONAL: If you have the factors from the "Informative Factors" paper of  Amman, Hemauer, and Straumann, you can prepare that file and uncomment the associated code in RunAll.m. See the bottom of RunAll.m for details.
         
         d) run MonetaryShock.m
         
