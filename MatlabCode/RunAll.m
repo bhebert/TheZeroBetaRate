@@ -176,6 +176,13 @@ opts.Instruments = {'RF','UMP','EBP','CAPE','TSP','CPI_rolling'};
 RunTest;
 
 opts = optsDefault;
+opts.Name = 'AltCAPERidge';
+opts.Instruments = {'RF','UMP','EBP','CAPE','TSP','CPI_rolling'};
+opts.RunRidge = true;
+RunTest;
+
+
+opts = optsDefault;
 opts.Name = 'AltDP';
 opts.Instruments = {'RF','UMP','EBP','DP_ratio','CAPE', 'TSP','CPI_rolling'};
 RunTest;
@@ -216,17 +223,6 @@ opts.Name = 'Ridge';
 opts.RunRidge = true;
 
 RunTest;
-
-% opts = optsDefault;
-% opts.Name = 'RidgeNoCOVID';
-% opts.RunRidge = true;
-% opts.NoCOVID = true;
-% RunTest;
-
-% opts = optsDefault;
-% opts.Name = 'NoCOVID';
-% opts.NoCOVID = true;
-% RunTest;
 
 opts = optsDefault;
 opts.Name = 'CovSample';
