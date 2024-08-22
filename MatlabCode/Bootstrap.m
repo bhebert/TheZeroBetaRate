@@ -1,6 +1,5 @@
 clear;
 
-%for testing
 reps = 1000;
 
 use_ridge = 0;
@@ -147,8 +146,9 @@ epsR2NC = epsR2(:,1:Tmax);
 eps = [epsRmZ; epsR; epsC; epsC2; epsR2];
 epsNC = [epsRmZNC; epsRNC; epsCNC; epsC2NC; epsR2NC];
 
-walds = zeros(2*reps,1);
-walds2 = zeros(2*reps,1);
+%initialize these to a negative number to detect estimation failures
+walds = -ones(2*reps,1);
+walds2 = -ones(2*reps,1);
 
 
 
@@ -251,9 +251,15 @@ disp('mean and sd errors of consumption growth')
 mean(meansCons(:,reps+1:end),2) - mean(cons_gr_annNC)
 mean(sdsCons(:,reps+1:end),2) - std(cons_gr_annNC)
 
+disp('print lowest wald statistics-- should be non-negative')
+minWald = min(walds)
+minWald2 = min(walds2)
+
+
 clear fevals;
 save("../Output/BootstrapData.mat");
 
+assert(minWald >= 0 && minWald2 >= 0, "One or more replication failed!");
 
 
 
