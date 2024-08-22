@@ -24,7 +24,7 @@ Instructions:
 
 	a) See README PYTHON.md for detailed instructions
 
-3) Run MATLAB code to generate results. Required toolboxes: optimization and statistical learning
+3) Run MATLAB code to generate results. Required toolboxes: optimization, global optimization, and statistical learning
 
         a) Open MATLAB. Requires R2023b or later due to use of 'xscale' command in plots.
         
