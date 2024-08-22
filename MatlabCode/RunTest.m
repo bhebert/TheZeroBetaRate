@@ -526,12 +526,12 @@ if strcmp(opts.Name,'Main')
 end
 
 parfor i = 1:length(sigs)
-    [ti,~,svi,~, ~, ~, ~, ~,~, ~,~,threshi] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
+    [ti,~,svi,~, ~, ~, ~, ~,~, ~,~,threshi] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, cons_gr_ann/12, inflation,Rfex,0,sigs(i),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType,Theta);
     tests(i) = ti;
     Svs(i) = svi;
     threshs(i)=threshi;
 
-    [tiNC,~,sviNC,~, ~, ~, ~, ~,~, ~,~,threshiNC] = InstrumentGMMWrapperConc(RinputNC, RminputNC, ZinputNC, RbinputNC, iotaN, iotaM, cons_gr_annNC/12, inflationNC,RfexNC,0,sigs(i),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
+    [tiNC,~,sviNC,~, ~, ~, ~, ~,~, ~,~,threshiNC] = InstrumentGMMWrapperConc(RinputNC, RminputNC, ZinputNC, RbinputNC, iotaN, iotaM, cons_gr_annNC/12, inflationNC,RfexNC,0,sigs(i),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType,ThetaNC);
     testsNC(i) = tiNC;
     SvsNC(i) = sviNC;
     threshsNC(i)=threshiNC;

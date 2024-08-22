@@ -52,10 +52,11 @@ options_min = optimoptions('fmincon', 'Display','off', 'MaxIterations', 100000, 
 f1 = @(Theta) InstrumentGMMConcOpt([Theta;sig], Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,asset,NLConsFactor,SigmaType) + psi * sum(Theta(2:end-2).^2); 
 
 %[Theta1, ~]  = fminunc(f1, Theta0_init, options_min);
-[Theta1, obj]  = fmincon(f1, Theta0_init, [],[],[],[], lb,ub,[], options_min);
+[Theta1, obj, flag]  = fmincon(f1, Theta0_init, [],[],[],[], lb,ub,[], options_min);
 
-
-while (obj > 10^-6 && cnt < 6)
+%objective will not be zero if running ridge, so can't use objective to
+%detect error
+while (psi == 0 && obj > 10^-6 && cnt < 6)
     %try again
     %use fixed seed
     rng(12302018,'twister');
@@ -84,7 +85,7 @@ while (obj > 10^-6 && cnt < 6)
     
 end
 
-if obj>10^-6
+if (psi==0 && obj>10^-6) || flag < 1
 
     obj
     Theta1
