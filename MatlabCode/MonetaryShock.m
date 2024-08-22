@@ -12,8 +12,9 @@ colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
 use_0 = 1;
 
 %flag for using specification with lagCPI
-use_lagcpi = true; %false: main text true: appendix
+use_lagcpi = false; %false: main text true: appendix
 
+testSigma = 7.5;
 
 Nlags = 12;
 
@@ -83,7 +84,7 @@ for l = 0:Nlags-1+use_0
     reg_results(1+l, 3, 3) = CIs(2,2); 
 end
 
-testSigma = 7.5;
+
 
 figure(1);
 % zero beta rate
