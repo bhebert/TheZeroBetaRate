@@ -12,7 +12,7 @@ colors_list = {'#e41a1c','#377eb8', '#4daf4a','#984ea3','#ff7f00'};
 use_0 = 1;
 
 %flag for using specification with lagCPI
-use_lagcpi = false; %false: main text true: appendix
+use_lagcpi = true; %false: main text true: appendix
 
 
 Nlags = 12;
@@ -83,7 +83,7 @@ for l = 0:Nlags-1+use_0
     reg_results(1+l, 3, 3) = CIs(2,2); 
 end
 
-testSigma = 10;
+testSigma = 7.5;
 
 figure(1);
 % zero beta rate
@@ -95,7 +95,7 @@ plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 2)), '-.','LineWidth',2,'Color',c
 plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 3)), '--','LineWidth',2,'Color',colors_list{2})
 
 set(gca,'TickLabelInterpreter','latex')
-legend('Real Zero-Beta Rate /'+sprintf("%d",testSigma),'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
+legend('Real Zero-Beta Rate /'+sprintf("%.1f",testSigma),'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
 
 hold off
 yline(0, 'k-','HandleVisibility','off');
@@ -148,7 +148,7 @@ plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 2)), '-.', 'LineWidth',2,'Color',
 plot((1:Nlags+use_0)-use_0, (reg_results(:, 1, 3)), '--', 'LineWidth',2,'Color',colors_list{2})
 ylim([-6,4])
 set(gca,'TickLabelInterpreter','latex')
-legend('Real Zero-Beta Rate /'+sprintf("%d",testSigma),'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
+legend('Real Zero-Beta Rate /'+sprintf("%.1f",testSigma),'$\bf{E}[$Real T-Bill Return$]$','$\bf{E}[$Cons. Growth$]$','show','Location','southwest','Interpreter','Latex')
 
 yline(0, 'k-','HandleVisibility','off');
 hold off

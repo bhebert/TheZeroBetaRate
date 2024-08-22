@@ -1,4 +1,4 @@
-function [test, Theta1_final, Sv, portRet, weight, Sigma, Beta, alphas, mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,psi,sig,asset,har,NLConsFactor,SigmaType)
+function [test, Theta1_final, Sv, portRet, weight, Sigma, Beta, alphas, mmoments,cmoments,amoments,thresh,mvar,pvar] = InstrumentGMMWrapperConc(Rinput, Rminput, Zinput, Rbinput, iotaN, iotaM, ConsG,inflation,Rfex,psi,sig,asset,har,NLConsFactor,SigmaType,ThetaInit)
 % This function is a wrapper for the GMM optimization process.
 
 
@@ -21,26 +21,31 @@ if strcmp(asset,'RF') || strcmp(asset,'Mkt')
     %don't do global search if failing for some reason
     cnt = 7;
 else
+
+    if ~exist('ThetaInit','var')
    
-    % run once to build initial guess with zbrate = safe rate
-    [Beta, Sigma] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, 0, zeros(K,1), sig,NLConsFactor,SigmaType);
-    weight =  PortfolioWeight(Beta,Sigma,iotaN);
-    portRet_init = weight * Rinput; 
-
-    %use infeasible OLS as starting point
-    Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
-
-    %repeat to iterate on a better guess
-    [Beta, Sigma] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, Theta0(1),reshape(Theta0(2:1+K), K, 1), sig,NLConsFactor,SigmaType);
-    weight =  PortfolioWeight(Beta,Sigma,iotaN);
-    portRet_init = weight * Rinput; 
-
-    Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
-    Theta0_init = [Theta0; rho_init];
+        % run once to build initial guess with zbrate = safe rate
+        [Beta, Sigma] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, 0, zeros(K,1), sig,NLConsFactor,SigmaType);
+        weight =  PortfolioWeight(Beta,Sigma,iotaN);
+        portRet_init = weight * Rinput; 
+    
+        %use infeasible OLS as starting point
+        Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
+    
+        %repeat to iterate on a better guess
+        [Beta, Sigma] = BetaSigma(Rinput, Rminput, Zinput, Rbinput, ConsG, inflation,iotaN, iotaM, Theta0(1),reshape(Theta0(2:1+K), K, 1), sig,NLConsFactor,SigmaType);
+        weight =  PortfolioWeight(Beta,Sigma,iotaN);
+        portRet_init = weight * Rinput; 
+    
+        Theta0 = [ones(1,size(Zinput,2)); Zinput]' \ (portRet_init-Rbinput)';
+        Theta0_init = [Theta0; rho_init];
+    else
+        Theta0_init = ThetaInit(1:end-1);
+    end
 
     %bounds at large values to avoid singular matrices
-    ub = [ones(K+1,1)*3*max(abs(Theta0_init));.02];
-    lb = -ub;
+    ub = Theta0_init+[ones(K+1,1)*3*max(abs(Theta0_init));.02];
+    lb = 2*Theta0_init-ub;
     TypX = [ones(K+1,1);0.01];
     cnt=1;
 end
