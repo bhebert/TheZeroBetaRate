@@ -31,6 +31,9 @@ One set of reasonable instructions for Windows:
 	b) create a virtual environment:
 		for m1 Mac OS X:
 		conda env create -f requirements.yaml
+		
+		for Ubuntu Linux:
+		conda env create -f requirements_linux.yaml
 
 		for windows/x86:
 		conda env create -f requirements_windows.yaml
