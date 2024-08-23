@@ -100,45 +100,30 @@ set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapSstat2NC.png");
 
 
-%these two graphs are diagnostic, to check that the bootstrap produces
-%reasonable degrees of predictability 
-cfig=figure(7);
-colororder({colors_list{2},colors_list{1}});
-histogram(walds2(reps+1:end),'Normalization','pdf');
-ylim([0,0.2]);
-title('Bootstrap PDF of Wald Statistic under alt. hypothesis')
-xline(waldNC, 'k-',{'Point Estimate'},'HandleVisibility','off');
-tightfig(cfig);
-set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapWald_alt.png");
-
-cfig=figure(8);
-colororder({colors_list{2},colors_list{1}});
-histogram(cFs2(reps+1:end),'Normalization','pdf');
-title('Bootstrap PDF of F Statistic under alt. hypothesis')
-xline(cFNC, 'k-',{'Point Estimate'},'HandleVisibility','off');
-tightfig(cfig);
-set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapF_alt.png");
-
 ps2 = sum(svs2(1:reps,:)>Svs)/reps;
 ps2NC = sum(svs2(reps+1:end,:)>SvsNC)/reps;
 
 pv_alt99 = sum(svs2(1:reps,:)>mean(chi2inv(0.99,5)),1)/reps;
 pv_altNC99 = sum(svs2(reps+1:end,:)>mean(chi2inv(0.99,5)),1)/reps;
 
+pv_alt80 = sum(svs2(1:reps,:)>mean(chi2inv(0.80,5)),1)/reps;
+pv_altNC80 = sum(svs2(reps+1:end,:)>mean(chi2inv(0.80,5)),1)/reps;
+
 pv_alt = sum(svs2(1:reps,:)>mean(thresh),1)/reps;
 pv_altNC = sum(svs2(reps+1:end,:)>mean(thresh),1)/reps;
 %pv_point = sum(svs2>Svs,1)/reps;
 
-cfig=figure(9);
+cfig=figure(7);
 colororder({colors_list{2},colors_list{1}});
 title('Bootstrap of S-stat rejection prob. under alt. hypothesis of corr='+sprintf("%0.2f",corr_target));
 hold on;
+plot(isigs2,pv_alt80,'--x','LineWidth',2,'Color',colors_list{1});
+plot(isigs2,pv_altNC80,'-x','LineWidth',2,'Color',colors_list{2});
 plot(isigs2,pv_alt,'-.','LineWidth',2,'Color',colors_list{1});
 plot(isigs2,pv_altNC,'-','LineWidth',2,'Color',colors_list{2});
 plot(isigs2,pv_alt99,'.','LineWidth',2,'Color',colors_list{1});
 plot(isigs2,pv_altNC99,'--','LineWidth',2,'Color',colors_list{2});
+
 xscale log;
 xticks([min(isigs2) 1/5 1/2 1 max(isigs2)]);
 set(gca,'XMinorTick','Off');
@@ -147,56 +132,29 @@ xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
 ylabel('Prob. of S-stat > Threshold')
 ylim([0,1.1]);
 tightfig(cfig);
-legend('95%, Incl. 2020','95%, Excl. 2020','99%, Incl. 2020','99%, Excl. 2020');
+legend('80%, Incl. 2020','80%, Excl. 2020','95%, Incl. 2020','95%, Excl. 2020','99%, Incl. 2020','99%, Excl. 2020');
 set(cfig,'PaperOrientation','landscape');
 print(cfig, '-dpng', "../Output/BootstrapPower.png");
 
-cfig=figure(10);
-colororder({colors_list{2},colors_list{1}});
 
-xconf = [isigs2 isigs2(end:-1:1)] ;         
-yconf = [log(prctile(svs2(1:reps,:),95,1)) log(prctile(svs2(1:reps,end:-1:1),5,1))];
-p = fill(xconf,yconf,'c');
+pvals = 1-chi2cdf(Svs,K);
+pvalsNC = 1-chi2cdf(SvsNC,K);
 
+cfig=figure(8);
 hold on;
-title('Bootstrap of S-stat under alt. hypothesis of low correlation')
-plot(isigs,log(Svs),'-.','LineWidth',2,'Color',colors_list{1});
-plot(isigs2,log(mean(svs2(1:reps,:),1)),'-','LineWidth',2,'Color',colors_list{2});
-%plot(isigs,log(prctile(svs2,5,1)),'--','LineWidth',2,'Color',colors_list{2});
-%plot(isigs,log(prctile(svs2,95,1)),'--','LineWidth',2,'Color',colors_list{2});
-%plot(isigs,log(threshs),'k:','LineWidth',1.5);
+plot(isigs,pvals,'--','LineWidth',2,'Color',colors_list{1});
+plot(isigs,pvalsNC,'-','LineWidth',2,'Color',colors_list{1});
+plot(isigs,0.05*ones(size(pvals)),'k:','LineWidth',1.5);
 xscale log;
-xticks([min(isigs2) 1/5 1/2 1 max(isigs2)]);
+xticks([min(isigs) 1/5 1/2 1 max(isigs)]);
+ylim([0,1]);
 set(gca,'XMinorTick','Off');
-hold off;
-legend('5-95\% Bootstrap Dist.','Sample S-stat','Bootstrap Mean','Interpreter','Latex');
-ylabel('log(S-stat)','Interpreter','Latex');
+set(gca,'TickLabelInterpreter','latex')
+%legend('Zero-Beta','T-Bill','Market','Threshold','Interpreter','Latex');
+legend('Zero-Beta (Incl. 2020)','Zero-Beta (Excl. 2020)','Threshold','Interpreter','Latex');
+ylabel('S-stat p-value','Interpreter','Latex');
 xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
+hold off;
 tightfig(cfig);
 set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapSstat.png");
-
-cfig=figure(11);
-colororder({colors_list{2},colors_list{1}});
-
-xconf = [isigs2 isigs2(end:-1:1)] ;         
-yconf = [log(prctile(svs2(reps+1:end,:),95,1)) log(prctile(svs2(reps+1:end,end:-1:1),5,1))];
-p = fill(xconf,yconf,'c');
-
-hold on;
-title('Bootstrap of S-stat under alt. hypothesis of low correlation')
-plot(isigs,log(SvsNC),'-.','LineWidth',2,'Color',colors_list{1});
-plot(isigs2,log(mean(svs2(reps+1:end,:),1)),'-','LineWidth',2,'Color',colors_list{2});
-%plot(isigs,log(prctile(svs2,5,1)),'--','LineWidth',2,'Color',colors_list{2});
-%plot(isigs,log(prctile(svs2,95,1)),'--','LineWidth',2,'Color',colors_list{2});
-%plot(isigs,log(threshs),'k:','LineWidth',1.5);
-xscale log;
-xticks([min(isigs2) 1/5 1/2 1 max(isigs2)]);
-set(gca,'XMinorTick','Off');
-hold off;
-legend('5-95\% Bootstrap Dist.','Sample S-stat','Bootstrap Mean','Interpreter','Latex');
-ylabel('log(S-stat)','Interpreter','Latex');
-xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
-tightfig(cfig);
-set(cfig,'PaperOrientation','landscape');
-print(cfig, '-dpng', "../Output/BootstrapSstatNC.png");
+print(cfig, '-dpng', "../Output/StestPval_" + opts.Name + ".png");
