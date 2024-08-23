@@ -11,7 +11,7 @@ addpath("../ExternalCode/");
 load("../Output/MainRun_Main.mat");
 testSigma = 8; %opts.SigmaInit;
 
-%fixed seed for reproducability
+%fixed base seed for reproducability
 randseed = 12302018;
 
 
