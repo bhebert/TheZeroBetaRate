@@ -7,13 +7,12 @@ use_ridge = 0;
 close all;
 addpath("../ExternalCode/");
 
-%use fixed random number seed for reproducibility
-rng(12302018,'twister');
 
 load("../Output/MainRun_Main.mat");
 testSigma = 8; %opts.SigmaInit;
 
-
+%fixed seed for reproducability
+randseed = 12302018;
 
 
 sigs2 = sigs;
@@ -174,25 +173,15 @@ sdsR2 = zeros(Nr,2*reps);
 ppool = gcp;
 fevals(1:2*reps) = parallel.FevalFuture;
 
-%generate bootstrap draws outside of parallel execution
-%uses a lot of memory but ensures reproducability
-eps_samples = zeros([size(eps),reps]);
-eps_samplesNC = zeros([size(epsNC),reps]);
-
-for idx = 1:reps
-    %draw new epsilons with replacement
-    eps_samples(:,:,idx)= datasample(eps,T,2);
-    eps_samplesNC(:,:,idx) = datasample(epsNC,Tmax,2);
-end
 
 
-fhandle = @(ind) runSample (eps_samples(:,:,ind), T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+fhandle = @(ind) runSample (eps, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
     meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
-    testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K);
+    testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K, randseed+ind);
 
-fhandleNC = @(ind) runSample (eps_samplesNC(:,:,ind), Tmax, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+fhandleNC = @(ind) runSample (epsNC, Tmax, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
     meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
-    testSigma, sigs2, Nsigs, Nr, RmZ(:,1:Tmax+1), Nf, cbetasNC, gammaf, ZSDiagNC, K);
+    testSigma, sigs2, Nsigs, Nr, RmZ(:,1:Tmax+1), Nf, cbetasNC, gammaf, ZSDiagNC, K, randseed+ind);
 
 %test a function call
 %fhandleNC(0)
@@ -277,11 +266,13 @@ assert(minWald >= 0 && minWald2 >= 0, "One or more replication failed!");
 
 function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     sdCons, meanR, sdR, meanR2, sdR2] = ...
-    runSample (eps_sample, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+    runSample (eps, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
     meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
-    testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K)
+    testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K, seed)
     
-    
+    s = RandStream('mlfg6331_64','Seed',seed);
+    eps_sample = datasample(s,eps,T,2);
+
      %reconstruct time series
      %unpack residuals
      epsRmZ_sample = eps_sample(1:NRmZ,:);
