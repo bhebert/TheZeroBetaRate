@@ -251,7 +251,7 @@ disp('mean and sd errors of consumption growth')
 mean(meansCons(:,reps+1:end),2) - mean(cons_gr_annNC)
 mean(sdsCons(:,reps+1:end),2) - std(cons_gr_annNC)
 
-disp('print lowest wald statistics-- should be non-negative')
+disp('print lowest wald statistics-- <0 indicates a replication did converge numerically')
 minWald = min(walds)
 minWald2 = min(walds2)
 
