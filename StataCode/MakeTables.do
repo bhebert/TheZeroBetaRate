@@ -1,5 +1,5 @@
 
-//uncomment one of these, depends on your machine type
+//uncomment one of these, depends on the format of the .csv files 
 local dateType DMY //Works on our Mac
 //local dateType YMD //Works on our Windows
 
@@ -226,15 +226,45 @@ local names : subinstr local names  "_cons" ""
 local eN = e(N)
 
 eststo simple_preg
-estadd scalar F_p = Ftail(e(df_m), e(df_r), e(F))
+
+corr ins_*, cov
+matrix zcov = r(C)
+
+
+matrix best = e(b)
+matrix temp = best[1,1..`n_ins'] * zcov * best[1,1..`n_ins']' 
+matrix temp2 = e(V)
+matrix temp3 = temp2[1..`n_ins',1..`n_ins'] * zcov
+local trv = trace(temp3)
+local effF = temp[1,1] / `trv'
+
+//estadd scalar F_p = Ftail(e(df_m), e(df_r), e(F))
+estadd scalar Feff = `effF'
 
 //need to align variable names
 rename ins_* insC_*
 rename insNC_* ins_*
+
+corr ins_*, cov
+matrix zcovNC = r(C)
+
+
 reg portRetNomNC ins_* if month <= ym(2019,12), robust
+
+
+
 eststo simple_pregNC
-estadd scalar F_p = Ftail(e(df_m), e(df_r), e(F))
+//estadd scalar F_p = Ftail(e(df_m), e(df_r), e(F))
 local eN2 = e(N)
+
+matrix best = e(b)
+matrix temp = best[1,1..`n_ins'] * zcovNC * best[1,1..`n_ins']' 
+matrix temp2 = e(V)
+matrix temp3 = temp2[1..`n_ins',1..`n_ins'] * zcovNC
+local trv = trace(temp3)
+local effF = temp[1,1] / `trv'
+
+estadd scalar Feff = `effF'
 
 rename ins_* insNC_*
 rename insC_* ins_*
@@ -269,7 +299,7 @@ local pval = 1 - chi2(`n_ins',`gmm_wald')
 ereturn post b_test V_test, obs(`eN')
 
 eststo gmm_preg
-estadd scalar F = `gmm_wald'
+estadd scalar Feff = `gmm_wald'
 estadd scalar F_p = `pval'
 estadd scalar F_pb = `pWald'
 estadd scalar r2 = `gmmR2'
@@ -295,22 +325,21 @@ local pval2 = 1 - chi2(`n_ins',`gmm_wald2')
 
 ereturn post b_test2 V_test2, obs(`eN2')
 eststo gmm_preg2
-estadd scalar F = `gmm_wald2'
+estadd scalar Feff = `gmm_wald2'
 estadd scalar F_p = `pval2'
 estadd scalar F_pb = `pWaldNC'
 estadd scalar r2 = `gmmR2NC'
 
-esttab gmm_preg simple_preg gmm_preg2 simple_pregNC, scalars("F Wald/F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
+esttab gmm_preg simple_preg gmm_preg2 simple_pregNC, scalars("Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
 
-esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.csv, scalars("F Wald/F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
+esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.csv, scalars("Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
 
-esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.tex, scalars("F Wald/F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) nonumber 
-
-
+esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.tex, scalars("Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) nonumber 
 
 
-corr ins_*, cov
-matrix zcov = r(C)
+
+
+
 
 
 //new code for table with consumption
@@ -401,8 +430,6 @@ estadd scalar F_eff = `effF'
 rename ins_* insC_*
 rename insNC_* ins_*
 
-corr ins_*, cov
-matrix zcovNC = r(C)
 
 reg cons_gr_ann ins_* if covid==0, robust
 eststo simple_cons_pre
