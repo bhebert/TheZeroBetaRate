@@ -174,18 +174,30 @@ sdsR2 = zeros(Nr,2*reps);
 ppool = gcp;
 fevals(1:2*reps) = parallel.FevalFuture;
 
-fhandle = @(ind) runSample (eps, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+%generate bootstrap draws outside of parallel execution
+%uses a lot of memory but ensures reproducability
+eps_samples = zeros([size(eps),reps]);
+eps_samplesNC = zeros([size(epsNC),reps]);
+
+for idx = 1:reps
+    %draw new epsilons with replacement
+    eps_samples(:,:,idx)= datasample(eps,T,2);
+    eps_samplesNC(:,:,idx) = datasample(epsNC,Tmax,2);
+end
+
+
+fhandle = @(ind) runSample (eps_samples(:,:,ind), T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
     meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
     testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K);
 
-fhandleNC = @(ind) runSample (epsNC, Tmax, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+fhandleNC = @(ind) runSample (eps_samplesNC(:,:,ind), Tmax, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
     meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
     testSigma, sigs2, Nsigs, Nr, RmZ(:,1:Tmax+1), Nf, cbetasNC, gammaf, ZSDiagNC, K);
 
 %test a function call
 %fhandleNC(0)
 
-fprintf("Done with test")
+%fprintf("Done with test")
 
 for idx = 1:reps
     fevals(idx) = parfeval(ppool,fhandle,13,idx);
@@ -265,12 +277,9 @@ assert(minWald >= 0 && minWald2 >= 0, "One or more replication failed!");
 
 function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     sdCons, meanR, sdR, meanR2, sdR2] = ...
-    runSample (eps, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
+    runSample (eps_sample, T, NRmZ, Phi, opts, iotaM, iotaN, BetaFull, ...
     meanConsGr, meanZbReal, lamsol, exp_infNC, beta_infNC, BetaFull2, ...
     testSigma, sigs2, Nsigs, Nr, RmZ, Nf, cbetasNC, gammaf, ZSDiagNC, K)
-
-     %draw new epsilons with replacement
-     eps_sample = datasample(eps,T,2);
     
     
      %reconstruct time series
@@ -347,24 +356,28 @@ function [wald, wald2, cF, cF2, sv2, meanRmZ, sdRmZ, meanCons, ...
     [coeffcov2,~,coeff2] = hac(Zinput_sample',cons_gr_ann_sample,Type="HC",Display="off");
     cF2 = coeff2(2:end)'*Zcov*coeff2(2:end)/trace(coeffcov2(2:end,2:end)*Zcov);
 
-    % reconstruct zero-beta rate under null of zbrate = rf + cons
-    [~, Theta_sample, ~, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample] = InstrumentGMMWrapperConc(Rinput_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,testSigma,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
-
-    gamma_sample = reshape(Theta_sample(2:1+K), K, 1);
-    wald = gamma_sample' * inv(pvar_sample(2:end-1,2:end-1)) * gamma_sample;
-
-    % reconstruct zero-beta rate S-test under null of low corr
-    sv2 = zeros(1,Nsigs);
-    for k = 1:Nsigs
+    try
+        % reconstruct zero-beta rate under null of zbrate = rf + cons
+        [~, Theta_sample, ~, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample] = InstrumentGMMWrapperConc(Rinput_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,testSigma,'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
     
-        [~, Theta_sample_k, Sv_sample, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample_k] = InstrumentGMMWrapperConc(Rinput2_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,sigs2(k),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
-        sv2(k) = Sv_sample;
-
-        if sigs2(k) == testSigma
-            gamma_sample2 = reshape(Theta_sample_k(2:1+K), K, 1);
-            wald2 = gamma_sample2' * inv(pvar_sample_k(2:end-1,2:end-1)) * gamma_sample2;
+        gamma_sample = reshape(Theta_sample(2:1+K), K, 1);
+        wald = gamma_sample' * inv(pvar_sample(2:end-1,2:end-1)) * gamma_sample;
+    
+        % reconstruct zero-beta rate S-test under null of low corr
+        sv2 = zeros(1,Nsigs);
+        for k = 1:Nsigs
+        
+            [~, Theta_sample_k, Sv_sample, ~, ~, ~, ~, ~,~,~,~,~,~,pvar_sample_k] = InstrumentGMMWrapperConc(Rinput2_sample, Rminput_sample, Zinput_sample, Rbinput_sample, iotaN, iotaM, cons_gr_ann_sample/12, inflation_sample, Rfex_sample, 0,sigs2(k),'ZB',opts.har,opts.NLConsFactor,opts.SigmaType);
+            sv2(k) = Sv_sample;
+    
+            if sigs2(k) == testSigma
+                gamma_sample2 = reshape(Theta_sample_k(2:1+K), K, 1);
+                wald2 = gamma_sample2' * inv(pvar_sample_k(2:end-1,2:end-1)) * gamma_sample2;
+            end
+           
         end
-       
+    catch
+        warning('Numerical algorithm did not converge for rep');
     end
 
     meanRmZ = mean(RmZ_sample,2);

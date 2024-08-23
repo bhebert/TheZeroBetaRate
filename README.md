@@ -53,7 +53,7 @@ Instructions:
 	f) close and re-open matlab, then run Bootstrap.m
 	
 		i) for unknown reasons, this can "hang" if you don't close and re-open matlab
-		ii) this takes roughly 3-6 minutes per bootstrap rep per core. So 1000 reps on a single-core machine will take about 3 days. A 10-core machine will take about 7 hours, and a 48 core machine will take under 90 minutes.
+		ii) this takes roughly 3-6 minutes per bootstrap rep per core on our machines. So 1000 x 2 reps (the default) on a single-core machine will take about 6 days. A 10-core machine will take about 15 hours, and a 48 core machine will take about 3 hrs.
 		iii) consider setting up the parallel pool first, to use the correct number of cores available. E.g. "parpool(48);" followed by "run Bootstrap.m". Otherwise, it will use the matlab default, which may be fewer cores than are available on your machine.
 		
 	g) run BootstrapGraphs.m
