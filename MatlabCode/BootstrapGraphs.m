@@ -144,14 +144,16 @@ cfig=figure(8);
 hold on;
 plot(isigs,pvals,'--','LineWidth',2,'Color',colors_list{1});
 plot(isigs,pvalsNC,'-','LineWidth',2,'Color',colors_list{1});
+plot(isigs,0.2*ones(size(pvals)),'k--','LineWidth',1.5);
 plot(isigs,0.05*ones(size(pvals)),'k:','LineWidth',1.5);
+plot(isigs,0.01*ones(size(pvals)),'k-.','LineWidth',1.5);
 xscale log;
 xticks([min(isigs) 1/5 1/2 1 max(isigs)]);
 ylim([0,1]);
 set(gca,'XMinorTick','Off');
 set(gca,'TickLabelInterpreter','latex')
 %legend('Zero-Beta','T-Bill','Market','Threshold','Interpreter','Latex');
-legend('Zero-Beta (Incl. 2020)','Zero-Beta (Excl. 2020)','Threshold','Interpreter','Latex');
+legend('Zero-Beta (Incl. 2020)','Zero-Beta (Excl. 2020)','80\% Threshold','95\% Threshold','99\% Threshold','Interpreter','Latex');
 ylabel('S-stat p-value','Interpreter','Latex');
 xlabel('IES $(1/\sigma)$, log scale','Interpreter','Latex');
 hold off;
