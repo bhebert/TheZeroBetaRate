@@ -97,6 +97,8 @@ std(ts,1)
 cape_series = table2array(Instruments(2:end-1,"CAPE"));
 cape_series = cape_series(1:Tmax);
 
+corr_cape_ts = corr(ts,log(cape_series))
+
 save("../Output/EquityAnalysis_"+ opts.Name +".mat");
 
 cfig=figure;
