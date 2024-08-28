@@ -92,8 +92,9 @@ save `temp', replace
 
 import delimited "../Output/zero_beta_rateMainNC.csv", clear
 
-keep var1 var7 var6
+keep var1 var3 var7 var6
 rename var1 date
+rename var3 zbRateRealNC
 rename var6 zbRateNomNC
 rename var7 portRetNomNC
 
@@ -181,6 +182,15 @@ levelsof var2 if var1 == "F-eff", local(pFeff)
 levelsof var2 if var1 == "F-effNC", local(pFeffNC)
 
 use `temp', clear
+
+//calculate mean and SD for table
+su zbRateReal
+local meanMain = `r(mean)'
+local sdMain = `r(sd)'
+	
+su zbRateRealNC
+local meanMainNC = `r(mean)'
+local sdMainNC = `r(sd)'
 
 //changed to portfolio return instead of spread to be consistent with
 //change in definition of gamma in paper
@@ -303,7 +313,8 @@ estadd scalar Feff = `gmm_wald'
 estadd scalar F_p = `pval'
 estadd scalar F_pb = `pWald'
 estadd scalar r2 = `gmmR2'
-
+estadd scalar AnnMean = 12*`meanMain'
+estadd scalar AnnSD = 12*`sdMain'
 
 //no covid GMM
 matrix rownames b_test2 = _cons `names'
@@ -330,11 +341,14 @@ estadd scalar F_p = `pval2'
 estadd scalar F_pb = `pWaldNC'
 estadd scalar r2 = `gmmR2NC'
 
-esttab gmm_preg simple_preg gmm_preg2 simple_pregNC, scalars("Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
+estadd scalar AnnMean = 12*`meanMainNC'
+estadd scalar AnnSD = 12*`sdMainNC'
 
-esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.csv, scalars("Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
+esttab gmm_preg simple_preg gmm_preg2 simple_pregNC, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
 
-esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.tex, scalars("Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) nonumber 
+esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.csv, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) span) nonumber 
+
+esttab gmm_preg simple_preg gmm_preg2 simple_pregNC using ../Output/GMMReg.tex, scalars("AnnMean Avg. Annualized Real ZB Rate" "AnnSD SD of Annualized Real ZB Rate" "Feff Wald/Effective F" "F_p p-value (asymptotic)" "F_pb p-value (bootstrap)" "rmse RMSE") sfmt("%6.0g") se label obslast depvars nostar mtitles("GMM" "OLS (inf.)" "GMM" "OLS (inf.)" ) r2 replace mgroups("Including 2020" "Excluding 2020", pattern(1 0 1 0) prefix(\multicolumn{@span}{c}{) suffix(}) span erepeat(\cmidrule(lr){@span})) nonumber 
 
 
 
