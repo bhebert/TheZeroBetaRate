@@ -212,7 +212,7 @@ separation "3pt"
 shadowsize "4pt"
 framecolor "black"
 backgroundcolor "none"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -243,7 +243,7 @@ separation "3pt"
 shadowsize "4pt"
 framecolor "black"
 backgroundcolor "none"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -283,7 +283,7 @@ separation "3pt"
 shadowsize "4pt"
 framecolor "black"
 backgroundcolor "none"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -314,7 +314,7 @@ separation "3pt"
 shadowsize "4pt"
 framecolor "black"
 backgroundcolor "none"
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Graphics
@@ -393,7 +393,7 @@ input{Output/GMMReg.tex}
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -434,7 +434,7 @@ name "fig:stests-MktRF"
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -458,6 +458,84 @@ name "fig:stests"
 \begin_layout Plain Layout
 \begin_inset Graphics
 	filename Output/Stest_Main.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effects of a Monetary Policy Shock on Real Rates and Consumption Growth
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MP_shocks"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Output/local_projection_ns.png
+	width 130mm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Predicted Valuation Ratio of a Consumption Claim
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Output/ValuationGraph.png
 	width 100col%
 
 \end_inset
@@ -648,100 +726,14 @@ status open
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Effects of a Monetary Policy Shock on Real Rates and Consumption Growth
- 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:MP_shocks"
-
+\begin_inset Newpage pagebreak
 \end_inset
 
 
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49col%"
-special "none"
-height "1in"
-height_special "totalheight"
-thickness "0.4pt"
-separation "3pt"
-shadowsize "4pt"
-framecolor "black"
-backgroundcolor "none"
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename Output/local_projection_rr.png
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "49col%"
-special "none"
-height "1in"
-height_special "totalheight"
-thickness "0.4pt"
-separation "3pt"
-shadowsize "4pt"
-framecolor "black"
-backgroundcolor "none"
-status open
-
-\begin_layout Plain Layout
-\begin_inset Graphics
-	filename Output/local_projection_ns.png
-	width 100col%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+\begin_layout Section
+Appendix Figures and Tables
 \end_layout
 
 \begin_layout Standard
@@ -755,7 +747,18 @@ status collapsed
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Predicted Valuation Ratio of a Consumption Claim
+Effects of a Monetary Policy Shock in the Model 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MP_shocks-model"
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -766,8 +769,8 @@ Predicted Valuation Ratio of a Consumption Claim
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename Output/ValuationGraph.png
-	width 100col%
+	filename Output/model.png
+	width 90col%
 
 \end_inset
 
@@ -780,14 +783,19 @@ Predicted Valuation Ratio of a Consumption Claim
 \end_layout
 
 \begin_layout Standard
-\begin_inset Newpage pagebreak
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{table}{2}
+\end_layout
+
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-Appendix Figures and Tables
 \end_layout
 
 \begin_layout Standard
@@ -839,14 +847,13 @@ sideways false
 status collapsed
 
 \begin_layout Plain Layout
-\align center
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Predicting Consumption Growth and the Market Return
+Summary Statistics of Instruments and Consumption Growth, excluding 2020
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:Predicting-ConsG"
+name "tab:Summary-Statistics-of-1"
 
 \end_inset
 
@@ -856,6 +863,9 @@ name "tab:Predicting-ConsG"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
@@ -863,7 +873,11 @@ status open
 
 
 \backslash
-input{Output/ConsTable.tex}
+resizebox{1
+\backslash
+textwidth}{!}{
+\backslash
+input{Output/Data Output/summary_table_precovid.tex}}
 \end_layout
 
 \end_inset
@@ -871,6 +885,68 @@ input{Output/ConsTable.tex}
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{sidewaystable}[!htbp]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Predicting Consumption Growth and the Market Return} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+resizebox{1
+\backslash
+textwidth}{!}{
+\backslash
+input{Output/ConsTable.tex}} 
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1em}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{sidewaystable}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage clearpage
 \end_inset
 
 
@@ -1271,6 +1347,48 @@ status open
 
 \begin_layout Standard
 \begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+p-Values of S-tests by IES
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:stests-pv"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Output/StestPval_Main.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
 wide false
 sideways false
 status collapsed
@@ -1315,51 +1433,6 @@ name "fig:BootstrapPower"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Bootstrap Distribution of S-statistics Null of Low Correlation 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:BootstrapSNC"
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename Output/BootstrapSstatNC.png
-	width 90col%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -1367,21 +1440,64 @@ name "fig:BootstrapSNC"
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float table
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effects of a Monetary Policy Shock on Real Rates and Consumption Growth
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:MP_shocks-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Output/local_projection_ns_altcpi.png
+	width 130mm
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
 placement H
 wide false
 sideways false
 status open
 
 \begin_layout Plain Layout
-\align center
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Decomposition of the Effects of a Romer-Romer Shock
+Effects of a Monetary Policy Shock on Real Rates and Consumption Growth
+ 
 \begin_inset CommandInset label
 LatexCommand label
-name "tab:Effects-RR"
+name "fig:MP_shocks-1-1"
 
 \end_inset
 
@@ -1391,17 +1507,14 @@ name "tab:Effects-RR"
 \end_inset
 
 
-\size scriptsize
-
-\begin_inset ERT
-status open
+\end_layout
 
 \begin_layout Plain Layout
-
-
-\backslash
-input{Output/RREffects.tex}
-\end_layout
+\noindent
+\align center
+\begin_inset Graphics
+	filename Output/local_projection_rr.png
+	width 130mm
 
 \end_inset
 
@@ -1418,7 +1531,7 @@ input{Output/RREffects.tex}
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -1461,51 +1574,6 @@ input{Output/NSEffects.tex}
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status collapsed
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Effects of a Monetary Policy Shock in the Model 
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:MP_shocks-model"
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename Output/model.png
-	width 90col%
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Newpage clearpage
 \end_inset
 
@@ -1527,7 +1595,8 @@ begin{sidewaystable}[!htbp]
 
 
 \backslash
-caption{Estimates of the Zero-Beta Rate with Alternative Data} 
+caption{Estimates of the Zero-Beta Rate with Alternative Data and with Ridge}
+ 
 \backslash
 label{tab:robustness}
 \end_layout
@@ -3138,7 +3207,7 @@ S-tests:
 
 \begin_layout Standard
 \begin_inset Note Note
-status open
+status collapsed
 
 \begin_layout Plain Layout
 ADD IN THE BELOW IF YOU HAVE INFORMATIVE FACTORS DATA
@@ -3527,7 +3596,7 @@ S-tests:
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -3802,11 +3871,337 @@ S-tests:
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
+\begin_inset Float figure
+placement H
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
-TODO: ADD SAHM
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+AltCPI: Results with the Lagged Inflation Instrument
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+Sample including 2020:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/ZBvCons_AltCPI.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+Sample excluding 2020:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/ZBvCons_AltCPINC.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+S-tests:
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Output/Stest_AltCPI.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+AltSahm: Results with the Sahm Real-Time Instrument
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\align center
+Sample including 2020:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/ZBvCons_AltSAHM.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\align center
+Sample excluding 2020:
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename Output/ZBvCons_AltSAHMNC.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "49col%"
+special "none"
+height "1in"
+height_special "totalheight"
+thickness "0.4pt"
+separation "3pt"
+shadowsize "4pt"
+framecolor "black"
+backgroundcolor "none"
+status open
+
+\begin_layout Plain Layout
+\align center
+S-tests:
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Output/Stest_AltSAHM.png
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\size scriptsize
+Notes: These panels present results for the 
+\begin_inset Quotes eld
+\end_inset
+
+AltSahm
+\begin_inset Quotes erd
+\end_inset
+
+ robustness exercise (Appendix Section 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Robustness-Exercises"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+).
+ The top panels plot the estimated real zero-beta rate against expected
+ consumption growth, as estimated in samples including (left) and excluding
+ (right) 2020.
+ Expected real returns are constructed using the nominal zero-beta rate
+ less expected inflation.
+ Expected inflation and expected consumption growth are generated from predictiv
+e regressions using the same instruments used to construct the zero-beta
+ rate.
+ The right vertical axis is consumption growth, centered at its mean, with
+ limits equal to +/- four standard deviations.
+ The left vertical axis is the same for the real zero beta rate, and both
+ series are annualized.
+ The bottom panel plots the log of the 
+\begin_inset Formula $\hat{S}(\sigma)$
+\end_inset
+
+ statistic for values of 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ from 0.1 to 10, which is constructed using the Euler equation moments 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:cons-test-moment"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ as applied to the zero-beta rate, for both the sample including 2020 and
+ the sample excluding 2020.
+ The dotted threshold line is the log of the 95th percentile critical value
+ of a chi-square distribution with degrees of freedom equal to the number
+ of instruments (5).
 \end_layout
 
 \end_inset
@@ -3818,7 +4213,7 @@ TODO: ADD SAHM
 \begin_inset Float figure
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -4096,7 +4491,7 @@ S-tests:
 \begin_inset Float figure
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
