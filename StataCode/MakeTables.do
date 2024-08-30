@@ -6,16 +6,16 @@ local dateType DMY //Works on our Mac
 //make sure this lines up with the instruments used in "Main" specification
 local insts L.rf L.ump L.ebp L.tsp L2.cpi_rolling 
 
-//uncomment "informative factors" if you have that data
+
 local allspecs AltData AltFactors AltInstruments AltPorts
 
 local AltData Main NoDrop20 FF3Industry NDOnly Ridge
-local AltFactors Main LinearCons WithConsSigma1 WithConsSigma5 WithConsSigma10 MktOnly FF3Only VaryingBetas InfFactors
+
+//uncomment "informative factors" if you have that data
+local AltFactors Main LinearCons WithConsSigma1 WithConsSigma5 WithConsSigma10 MktOnly FF3Only VaryingBetas //InfFactors
 local AltInstruments Main AltBAAS AltCAPE LagCons Shadow AltCPI AltSahm
 local AltPorts Main CovSample CovPCA CovI
 
-//old
-//local specs Main NoDrop20 FF3Industry LinearCons WithConsSigma1 WithConsSigma5 MktOnly FF3Only AltBAAS AltCAPE LagCons Shadow VaryingBetas NDOnly NoCOVID //InformativeFactors
 
 local nameMain RF UMP EBP TSP CPI_Rolling
 local nameFF3Industry RF UMP EBP TSP CPI_Rolling

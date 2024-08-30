@@ -260,12 +260,12 @@ RunTest;
 % close
 % 7. Save as .csv
 
-opts = optsDefault;
-opts.Name = 'InfFactors';
-opts.Factors = {'Mkt','SMB','HML','RMW','CMA','term_spread','DEF'};
-opts.Pre2020Only = true;
-opts.FactorFile = 'InformativeFactors.csv';
-RunTest;
+% opts = optsDefault;
+% opts.Name = 'InfFactors';
+% opts.Factors = {'Mkt','SMB','HML','RMW','CMA','term_spread','DEF'};
+% opts.Pre2020Only = true;
+% opts.FactorFile = 'InformativeFactors.csv';
+% RunTest;
 
 
 
