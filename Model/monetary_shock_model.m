@@ -181,4 +181,4 @@ ylabel('Spread','Interpreter','Latex')
 set(gca,'TickLabelInterpreter','latex')
 
 f.Position = [200 200 700 400]
-saveas(gcf, "../OutputForPaper/model_sigma75.png")
+saveas(gcf, "../Output/model_sigma75.png")
