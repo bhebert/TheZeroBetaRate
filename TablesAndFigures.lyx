@@ -741,7 +741,7 @@ Appendix Figures and Tables
 placement H
 wide false
 sideways false
-status collapsed
+status open
 
 \begin_layout Plain Layout
 \begin_inset Caption Standard
@@ -769,7 +769,7 @@ name "fig:MP_shocks-model"
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename Output/model.png
+	filename Output/model_sigma75.png
 	width 90col%
 
 \end_inset
