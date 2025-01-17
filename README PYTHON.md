@@ -17,6 +17,9 @@ One set of reasonable instructions for Mac OS X:
 		sudo chown -R $USER ~/.conda
 
 	d) update packages: conda update --all
+	
+	e) for OS X, postgresql is also required:
+	brew install postgresql
 
 One set of reasonable instructions for Windows: 
 
