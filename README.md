@@ -74,7 +74,7 @@ Instructions:
 	c) do MakeTables.do
 	
 		i) depending on your Matlab and Stata versions and Mac/Windows/Linux, the dates in the intermediate .csv files might be "DMY" or "MDY" format
-		   Try the "DMY" format on Mac and the "MDY" on Windows (lines 3-4 of MakeTables.do), or inspect ../Output/zero_beta_rateMain.csv to see what the format is 
+		   Try one format and then the other, or inspect ../Output/zero_beta_rateMain.csv to see what the format is. If you have the wrong format, you will get an "invalid syntax" error from Stata after the command "local meanMain = `r(mean)'"
 	
 		ii) this will run very quickly.
 		
