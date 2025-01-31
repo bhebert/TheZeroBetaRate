@@ -84,7 +84,7 @@ Instructions:
 
 	a) The output can be found in the "Output" folder
 	
-	b) To view the output as tables and figures, use LyX (tested with v2.3.6.2) to compile TablesAndFigures.lyx 
+	b) To view the output as tables and figures, use LyX (tested with v2.4.2.1) to compile TablesAndFigures.lyx 
 
 
 
