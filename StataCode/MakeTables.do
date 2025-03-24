@@ -1,7 +1,7 @@
 
 //uncomment one of these, depends on the format of the .csv files 
-local dateType DMY //Works on our Mac
-//local dateType YMD //Works on our Windows
+//local dateType DMY //Works on our old Mac
+local dateType YMD //Works on our Windows, newer Mac
 
 //make sure this lines up with the instruments used in "Main" specification
 local insts L.rf L.ump L.ebp L.tsp L2.cpi_rolling 
@@ -619,11 +619,17 @@ use `temp', clear
 
 
 import delimited ../Output/RRData_Main.csv, clear
-gen dt = date(date,"DMY") //used to be MDY
+gen dt = date(date,"`dateType'") //used to be MDY
 gen month = mofd(dt)
 sort month
 
 tsset month
+
+//this code protects from having the wrong date format
+//the results will but subtly but not obviously wrong if the date format
+//is wrong
+count if month != .
+assert(`r(N)'>0)
 
 gen shock_rr = L.resid_full
 label var shock_rr "RR_shock"
@@ -670,11 +676,17 @@ esttab `ests' using ../Output/RREffects.tex, not label nostar replace gaps
 esttab DTBillRR DZeroBetaRR Dp_consRR, not label nostar gaps
 
 import delimited ../Output/NSData_Main.csv, clear
-gen dt = date(date,"DMY") //used to be MDY
+gen dt = date(date,"`dateType'") //used to be MDY
 gen month = mofd(dt)
 sort month
 
 tsset month
+
+//this code protects from having the wrong date format
+//the results will but subtly but not obviously wrong if the date format
+//is wrong
+count if month != .
+assert(`r(N)'>0)
 
 gen shock = L.ns_shock
 label var shock "NS_shock"
