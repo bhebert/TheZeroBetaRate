@@ -717,6 +717,9 @@ if strcmp(opts.Name,'Main')
     set(cfig,'PaperOrientation','landscape');
     print(cfig, '-dpng', "../Output/TBillvCons_"+opts.Name+"Robust.png");
 
+
+    %print correlations mentioned in footnote in text
+    corr(ZinputNC')-eye(5)
 end
     
 clear cfig ans;
